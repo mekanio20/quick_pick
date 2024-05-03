@@ -145,6 +145,14 @@ const PromocodeUses = database.define('promocod_ uses', {
     updatedAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW }
 })
 
+const Baskets = database.define('baskets', {
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false, unique: true },
+    quantity: { type: DataTypes.SMALLINT, allowNull: false },
+    isActive: { type: DataTypes.BOOLEAN, defaultValue: true },
+    createdAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW },
+    updatedAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW }
+})
+
 const Orders = database.define('orders', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false, unique: true },
     status: { type: DataTypes.ENUM({ values: ['Order Placed', 'Order Placed', 'Preparation Started', 'Ready in 5 Minutes', 'Order Finished', 'Order Collected', 'Order Cancelled'] }), defaultValue: 'Order Placed' },
@@ -186,6 +194,6 @@ const PunchCardSteps = database.define('punchcard_steps', {
 module.exports = {
     Users, Places, Categories, PlaceImages, PlaceSchedules, 
     Meals, PlaceCategory, ExtraMeals, MealSizes, Allergens,
-    Recommendations, Promocodes, PromocodeUses, Orders,
-    OrderItems, Punchcards, PunchCardSteps
+    Recommendations, Promocodes, Baskets, PromocodeUses, 
+    Orders, OrderItems, Punchcards, PunchCardSteps
 }
