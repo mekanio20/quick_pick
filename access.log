@@ -98,3 +98,8 @@
 ::ffff:127.0.0.1 - - [04/May/2024:16:40:45 +0000] "POST /api/v1/user/register HTTP/1.1" 200 582
 ::ffff:127.0.0.1 - - [04/May/2024:16:40:59 +0000] "POST /api/v1/user/verification HTTP/1.1" 400 106
 ::ffff:127.0.0.1 - - [04/May/2024:16:41:16 +0000] "POST /api/v1/user/verification HTTP/1.1" 201 277
+::ffff:127.0.0.1 - - [04/May/2024:19:18:56 +0000] "POST /api/v1/user/login HTTP/1.1" 400 98
+::ffff:127.0.0.1 - - [04/May/2024:19:19:25 +0000] "POST /api/v1/user/login HTTP/1.1" 200 269
+::ffff:127.0.0.1 - - [04/May/2024:19:19:31 +0000] "POST /api/v1/user/login HTTP/1.1" 403 93
+::ffff:127.0.0.1 - - [04/May/2024:19:19:58 +0000] "POST /api/v1/user/login HTTP/1.1" 200 269
+::ffff:127.0.0.1 - - [04/May/2024:19:20:41 +0000] "GET /api/v1/user/profile HTTP/1.1" 404 224

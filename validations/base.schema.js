@@ -4,9 +4,8 @@ const baseSchema = {
     idControl: Joi.object({
         id: Joi.number().positive().required()
     }),
-    loginControl: Joi.object({
-        phone: Joi.string().required(),
-        password: Joi.string().min(4).max(25).regex(/^[a-zA-Z0-9!?^.,_@#$%&*:;=+]{4,25}$/).required(),
+    checkControl: Joi.object({
+       code: Joi.string().required()
     }),
     queryControl: Joi.object({
         page: Joi.number().positive().optional(),

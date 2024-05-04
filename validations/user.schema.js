@@ -9,7 +9,10 @@ const userSchema = {
         lastname: Joi.string().required(),
         password: Joi.string().min(4).max(25).regex(/^[a-zA-Z0-9!?^.,_@#$%&*:;=+]{4,25}$/).required()
     }),
-    check: Joi.object({ code: Joi.string().required() }),
+    userLogin: Joi.object({
+        email: Joi.string().email().required(),
+        password: Joi.string().min(4).max(25).regex(/^[a-zA-Z0-9!?^.,_@#$%&*:;=+]{4,25}$/).required()
+    })
 }
 
 module.exports = userSchema

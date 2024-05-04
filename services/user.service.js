@@ -58,9 +58,21 @@ class UserService {
       const customer = await Models.Users.create(user)
         .catch((err) => { console.log(err) })
       if (!customer) { return Response.BadRequest('An unknown error occurred', []) }
-      const token = await Functions.generateJwt({ id: customer.id, emai: customer.email }, '30d')
+      const token = await Functions.generateJwt({ id: customer.id, emai: customer.email })
         .catch((err) => { console.log(err) })
       return Response.Created('User is registered!', { token })
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
+  async userLoginService(body) {
+    try {
+      const user = await Models.Users.findOne({ where: { email: body.email } })
+      if (!user) { return Response.Unauthorized('User not found!', []) }
+      const hash = await bcrypt.compare(body.password, user.password)
+      if (!hash) { return Response.Forbidden('Password is incorrect', []) }
+      const token = await Functions.generateJwt({ id: user.id, email: user.email })
+      return Response.Success('Login confirmed', { token })
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }

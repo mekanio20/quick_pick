@@ -5,6 +5,7 @@ const validationMiddleware = require('../middlewares/validation.middleware')
 const authMiddleware = require('../middlewares/auth.middleware')
 const otpMiddleware = require('../middlewares/otp.middleware')
 const userSchema = require('../validations/user.schema')
+const baseSchema = require('../validations/base.schema')
 
 router.post('/register',
     limitterMiddleware(),
@@ -14,7 +15,12 @@ router.post('/register',
 router.post('/verification',
     limitterMiddleware(),
     otpMiddleware,
-    validationMiddleware(userSchema.check, 'body'),
+    validationMiddleware(baseSchema.checkControl, 'body'),
     userController.userVerification)
+
+router.post('/login',
+    limitterMiddleware(),
+    validationMiddleware(userSchema.userLogin, 'body'),
+    userController.userLogin)
 
 module.exports = router
