@@ -26,13 +26,13 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use('/uploads', express.static('public'))
 
-app.use('/api', router)
+app.use('/api/v1', router)
 app.all('*', (req, res) => { return res.status(404).sendFile(`${path.join(__dirname + '/public/404.html')}`) })
 
 app.listen(port, async () => {
     try {
         await database.authenticate()
-        await database.sync({})
+        await database.sync({ force: true })
         console.log('Database connected...')
         console.log(`Server is running: http://${ip}:${port}`)
     } catch (error) {

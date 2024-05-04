@@ -71,7 +71,7 @@ const PlaceSchedules = database.define('place_schedules', {
     updatedAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW }
 })
 
-const PlaceCategory = database.define('place_categories', {
+const PlaceCategories = database.define('place_categories', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false, unique: true },
     name: { type: DataTypes.STRING, allowNull: false },
     slug: { type: DataTypes.STRING, allowNull: false, unique: true },
@@ -98,7 +98,7 @@ const Meals = database.define('meals', {
 const ExtraMeals = database.define('extra_meals', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false, unique: true },
     name: { type: DataTypes.STRING, allowNull: false },
-    price: { type: DataTypes.DOUBLE, allowNull: false },
+    price: { type: DataTypes.DOUBLE, allowNull: false }, // +0.25$
     isActive: { type: DataTypes.BOOLEAN, defaultValue: true },
     createdAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW },
     updatedAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW }
@@ -121,24 +121,17 @@ const Allergens = database.define('allergens', {
     updatedAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW }
 })
 
-const Recommendations = database.define('recommendations', {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false, unique: true },
-    isActive: { type: DataTypes.BOOLEAN, defaultValue: true },
-    createdAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW },
-    updatedAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW }
-})
-
 const Promocodes = database.define('promocodes', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false, unique: true },
     code: { type: DataTypes.STRING(50), allowNull: false },
-    min_price: { type: DataTypes.INTEGER, allowNull: false },
-    percentage: { type: DataTypes.SMALLINT, allowNull: false },
+    min_price: { type: DataTypes.INTEGER, allowNull: false }, // 100$
+    percentage: { type: DataTypes.SMALLINT, allowNull: false }, // 25%
     isActive: { type: DataTypes.BOOLEAN, defaultValue: true },
     createdAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW },
     updatedAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW }
 })
 
-const PromocodeUses = database.define('promocod_ uses', {
+const PromocodeUses = database.define('promocode_uses', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false, unique: true },
     isActive: { type: DataTypes.BOOLEAN, defaultValue: true },
     createdAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW },
@@ -149,13 +142,15 @@ const Baskets = database.define('baskets', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false, unique: true },
     quantity: { type: DataTypes.SMALLINT, allowNull: false },
     isActive: { type: DataTypes.BOOLEAN, defaultValue: true },
+    extra_meals: { type: DataTypes.JSON, allowNull: true },
+    meal_sizes: { type: DataTypes.JSON, allowNull: true },
     createdAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW },
     updatedAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW }
 })
 
 const Orders = database.define('orders', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false, unique: true },
-    status: { type: DataTypes.ENUM({ values: ['Order Placed', 'Order Placed', 'Preparation Started', 'Ready in 5 Minutes', 'Order Finished', 'Order Collected', 'Order Cancelled'] }), defaultValue: 'Order Placed' },
+    status: { type: DataTypes.ENUM({ values: ['Order Placed', 'Preparation Started', 'Ready in 5 Minutes', 'Order Finished', 'Order Collected', 'Order Cancelled'] }), defaultValue: 'Order Placed' },
     payment: { type: DataTypes.ENUM({ values: ['Cash', 'Card'] }), allowNull: false },
     type: { type: DataTypes.ENUM({ values: ['Pick-up', 'Dine-in'] }), allowNull: false },
     sum: { type: DataTypes.DOUBLE, allowNull: false },
@@ -168,8 +163,10 @@ const Orders = database.define('orders', {
 
 const OrderItems = database.define('order_items', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false, unique: true },
-    count: { type: DataTypes.SMALLINT, allowNull: false },
+    quantity: { type: DataTypes.SMALLINT, allowNull: false },
     total_price: { type: DataTypes.DOUBLE, allowNull: false },
+    extra_meals: { type: DataTypes.JSON, allowNull: true },
+    meal_sizes: { type: DataTypes.JSON, allowNull: true },
     createdAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW },
     updatedAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW }
 })
@@ -191,9 +188,99 @@ const PunchCardSteps = database.define('punchcard_steps', {
     updatedAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW }
 })
 
+// PlaceImages -> PlaceId
+
+Places.hasMany(PlaceImages, { onDelete: "cascade" })
+PlaceImages.belongsTo(Places)
+
+// PlaceSchedules -> PlaceId
+
+Places.hasMany(PlaceSchedules, { onDelete: "cascade" })
+PlaceSchedules.belongsTo(Places)
+
+// PlaceCategories -> PlaceId
+
+Places.hasMany(PlaceCategories, { onDelete: "cascade" })
+PlaceCategories.belongsTo(Places)
+
+// Meals -> PlaceCategoryId
+
+PlaceCategories.hasMany(Meals, { onDelete: "cascade" })
+Meals.belongsTo(PlaceCategories)
+
+// ExtraMeals -> MealId
+
+Meals.hasMany(ExtraMeals, { onDelete: "cascade" })
+ExtraMeals.belongsTo(Meals)
+
+// MealSizes -> MealId
+
+Meals.hasMany(MealSizes, { onDelete: "cascade" })
+MealSizes.belongsTo(Meals)
+
+// Allergens -> MealId
+
+Meals.hasMany(Allergens, { onDelete: "cascade" })
+Allergens.belongsTo(Meals)
+
+// Promocodes -> PlaceId
+
+Places.hasMany(Promocodes, { onDelete: "cascade" })
+Promocodes.belongsTo(Places)
+
+// PromocodeUses -> PromocodesId
+
+Promocodes.hasMany(PromocodeUses)
+PromocodeUses.belongsTo(Promocodes)
+
+// PromocodeUses -> UserId
+
+Users.hasMany(PromocodeUses)
+PromocodeUses.belongsTo(Users)
+
+// Baskets -> UserId
+
+Users.hasMany(Baskets)
+Baskets.belongsTo(Users)
+
+// Baskets -> MealId
+
+Meals.hasMany(Baskets)
+Baskets.belongsTo(Meals)
+
+// OrderItems -> OrderId
+
+Orders.hasMany(OrderItems)
+OrderItems.belongsTo(Orders)
+
+// OrderItems -> UserId
+
+Users.hasMany(OrderItems)
+OrderItems.belongsTo(Users)
+
+// OrderItems -> MealId
+
+Meals.hasMany(OrderItems)
+OrderItems.belongsTo(Meals)
+
+// Punchcards -> PlaceId
+
+Places.hasOne(Punchcards)
+Punchcards.belongsTo(Places)
+
+// PunchcardSteps -> PunchcardId
+
+Punchcards.hasMany(PunchCardSteps)
+PunchCardSteps.belongsTo(Punchcards)
+
+// PunchcardSteps -> UserId
+
+Users.hasMany(PunchCardSteps)
+PunchCardSteps.belongsTo(Users)
+
 module.exports = {
     Users, Places, Categories, PlaceImages, PlaceSchedules, 
-    Meals, PlaceCategory, ExtraMeals, MealSizes, Allergens,
-    Recommendations, Promocodes, Baskets, PromocodeUses, 
-    Orders, OrderItems, Punchcards, PunchCardSteps
+    Meals, PlaceCategories, ExtraMeals, MealSizes, Allergens,
+    Promocodes, Baskets, PromocodeUses, Orders, OrderItems, 
+    Punchcards, PunchCardSteps
 }
