@@ -3,7 +3,7 @@ const Models = require('../config/models')
 class VerificationService {
     async isExists(email, status) {
         try {
-            let whereState = { phone: phone }
+            let whereState = { email: email }
             if (status == true) { whereState = { email: email, isActive: true } }
             return Models.Users.findOne({
                 attributes: ['id', 'email', 'phone', 'username', 'img', 'firstname', 'lastname', 'birthday'],

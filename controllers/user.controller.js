@@ -22,6 +22,14 @@ class UserController {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
         }
     }
+    async userVerification(req, res) {
+        try {
+            const data = await userService.userVerificationService(req.body.code, req.userDto)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
 }
 
 module.exports = new UserController()
