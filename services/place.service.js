@@ -1,12 +1,10 @@
 const Models = require('../config/models')
-const Verification = require('../helpers/verification.service')
-const bcrypt = require('bcrypt')
 
-class UserService {
+class PlaceService {
   // POST
   async userRegisterService(body, ip, device) {
     try {
-      const user = await Verification.isExists(body.email)
+      const user = await Verification.isExists(body.phone)
       if (user) { return Response.BadRequest("User already exists!", []) }
       const hash = await bcrypt.hash(body.password, 5)
       let _user = {
@@ -22,14 +20,6 @@ class UserService {
       throw { status: 500, type: "error", msg: error, detail: [] };
     }
   }
-
-  async sendOtpService(data) {
-    try {
-      
-    } catch (error) {
-      throw { status: 500, type: "error", msg: error, detail: [] };
-    }
-  }
 }
 
-module.exports = new UserService()
+module.exports = new PlaceService()

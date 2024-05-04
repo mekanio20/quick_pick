@@ -32,7 +32,7 @@ app.all('*', (req, res) => { return res.status(404).sendFile(`${path.join(__dirn
 app.listen(port, async () => {
     try {
         await database.authenticate()
-        await database.sync({ force: true })
+        await database.sync({})
         console.log('Database connected...')
         console.log(`Server is running: http://${ip}:${port}`)
     } catch (error) {
