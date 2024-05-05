@@ -1,9 +1,14 @@
 const Joi = require('joi')
 
 const placeSchema = {
+    placeLogin: Joi.object({
+        email: Joi.string().max(100).email().required(),
+        password: Joi.string().min(4).max(25).regex(/^[a-zA-Z0-9!?^.,_@#$%&*:;=+]{4,25}$/).required()
+    }),
     placeRegister: Joi.object({
         name: Joi.string().max(100).required(),
         type: Joi.string().valid('Cafe', 'Bakery', 'Restaurant', 'Bar').required(),
+        password: Joi.string().min(4).max(25).regex(/^[a-zA-Z0-9!?^.,_@#$%&*:;=+]{4,25}$/).required(),
         email: Joi.string().max(100).email().required(),
         phone_primary: Joi.string().max(20).required(),
         address: Joi.string().max(255).required(),

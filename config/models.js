@@ -40,6 +40,7 @@ const Places = database.define('places', {
     slug: { type: DataTypes.STRING(100), allowNull: false, unique: true },
     type: { type: DataTypes.ENUM({ values: ['Cafe', 'Bakery', 'Restaurant', 'Bar'] }), allowNull: false },
     email: { type: DataTypes.STRING(50), allowNull: false, validate: { isEmail: true }, unique: true },
+    password: { type: DataTypes.STRING, allowNull: false },
     desc: { type: DataTypes.STRING, allowNull: true },
     phone_primary: { type: DataTypes.STRING(20), allowNull: false },
     phone_secondary: { type: DataTypes.STRING(20), allowNull: true },

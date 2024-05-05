@@ -4,6 +4,18 @@ const Response = require('../helpers/response.service')
 
 class PlaceService {
   // POST
+  async placeLoginService(body) {
+    try {
+      const place = await Models.Places.findOne({ where: { email: body.email }, attributes: ['id', 'email', 'password'] })
+      if (!place) { return Response.NotFound('No information found!', []) }
+      const hash = await bcrypt.compare(body.password, place.password)
+      if (!hash) { return Response.Forbidden('Password is incorrect!', []) }
+      const token = await Functions.generateJwt({ id: place.id, email: place.email, role: "place" })
+      return Response.Success('Login confirmed', { token })
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
   async placeAddAlbumService(placeId, files) {
     try {
       if (files?.photo?.length > 0) {

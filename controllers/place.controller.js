@@ -2,19 +2,30 @@ const baseService = require('../services/base.service')
 const placeService = require('../services/place.service')
 const Functions = require('../helpers/functions.service')
 const Models = require('../config/models')
+const bcrypt = require('bcrypt')
 
 class PlaceController {
     // POST
     async placeRegister(req, res) {
         try {
+            const hash = await bcrypt.hash(req.bod.password, 5)
             const slug = await Functions.generateSlug(req.body.name)
             const isExist = { slug: slug, email: req.body.email }
             const body = req.body
+            delete body.password
+            body.password = hash
             body.slug = slug
-            body.logo = req.file.filename
             const data = await new baseService(Models.Places).addService(isExist, body)
             const token = await Functions.generateJwt({ id: data.detail.id, email: data.detail.email, role: "place" })
             data.detail.token = token
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
+    async placeLogin(req, res) {
+        try {
+            const data = await placeService.placeLoginService(req.body)
             return res.status(data.status).json(data)
         } catch (error) {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })

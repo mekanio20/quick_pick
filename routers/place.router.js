@@ -11,9 +11,13 @@ const baseSchema = require('../validations/base.schema')
 // POST
 router.post('/register',
     limitterMiddleware(),
-    imageMiddleware(process.env.PLACES_PATH).single('logo'),
     validationMiddleware(placeSchema.placeRegister, 'body'),
     placeController.placeRegister)
+
+router.post('/login',
+    limitterMiddleware(),
+    validationMiddleware(placeSchema.placeLogin, 'body'),
+    placeController.placeLogin)
 
 router.post('/add/album',
     authMiddleware,
