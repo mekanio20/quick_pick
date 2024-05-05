@@ -1,9 +1,15 @@
 const { Sequelize, DataTypes } = require('sequelize')
 const database = require('./database')
 
+const Roles = database.define('roles', {
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false, unique: true },
+    name: { type: DataTypes.STRING(10), allowNull: false },
+    createdAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW }
+})
+
 const Users = database.define('users', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false, unique: true },
-    email: { type: DataTypes.STRING(50), allowNull: false, validate: { isEmail: true } },
+    email: { type: DataTypes.STRING(50), allowNull: false, validate: { isEmail: true }, unique: true },
     phone: { type: DataTypes.STRING(20), allowNull: false, unique: true },
     username: { type: DataTypes.STRING(50), allowNull: false, unique: true },
     img: { type: DataTypes.STRING, defaultValue: 'default_user.png' },
@@ -33,8 +39,8 @@ const Places = database.define('places', {
     name: { type: DataTypes.STRING(100), allowNull: false, unique: true },
     slug: { type: DataTypes.STRING(100), allowNull: false, unique: true },
     type: { type: DataTypes.ENUM({ values: ['Cafe', 'Bakery', 'Restaurant', 'Bar'] }), allowNull: false },
-    email: { type: DataTypes.STRING(50), allowNull: false, validate: { isEmail: true } },
-    desc: { type: DataTypes.STRING, allowNull: false },
+    email: { type: DataTypes.STRING(50), allowNull: false, validate: { isEmail: true }, unique: true },
+    desc: { type: DataTypes.STRING, allowNull: true },
     phone_primary: { type: DataTypes.STRING(20), allowNull: false },
     phone_secondary: { type: DataTypes.STRING(20), allowNull: true },
     address: { type: DataTypes.STRING, allowNull: false },
@@ -44,13 +50,14 @@ const Places = database.define('places', {
     longitude: { type: DataTypes.STRING, allowNull: false },
     logo: { type: DataTypes.STRING, allowNull: false },
     banner: { type: DataTypes.STRING, allowNull: true },
+    reward: { type: DataTypes.STRING, defaultValue: 'reward.png' },
     color: { type: DataTypes.STRING(50), allowNull: true },
     copacity: { type: DataTypes.ENUM({ values: ['Quite', 'Moderate', 'Busy'] }), defaultValue: 'Quite' },
     dine_in: { type: DataTypes.BOOLEAN, defaultValue: true }, // otyryp iymek, alyp gitmek
     tax: { type: DataTypes.SMALLINT, defaultValue: 0 }, // otyryan yerin ucin toleg, prosentde
     open_close: { type: DataTypes.BOOLEAN, defaultValue: true },
     auto_accept: { type: DataTypes.BOOLEAN, defaultValue: false },
-    isActive: { type: DataTypes.BOOLEAN, defaultValue: true },
+    isActive: { type: DataTypes.BOOLEAN, defaultValue: false },
     createdAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW },
     updatedAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW }
 })
@@ -121,7 +128,7 @@ const Allergens = database.define('allergens', {
     updatedAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW }
 })
 
-const Promocodes = database.define('promocodes', {
+const Promotions = database.define('promotions', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false, unique: true },
     code: { type: DataTypes.STRING(50), allowNull: false },
     min_price: { type: DataTypes.INTEGER, allowNull: false }, // 100$
@@ -131,7 +138,7 @@ const Promocodes = database.define('promocodes', {
     updatedAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW }
 })
 
-const PromocodeUses = database.define('promocode_uses', {
+const PromotionUses = database.define('promotion_uses', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false, unique: true },
     isActive: { type: DataTypes.BOOLEAN, defaultValue: true },
     createdAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW },
@@ -188,6 +195,11 @@ const PunchCardSteps = database.define('punchcard_steps', {
     updatedAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW }
 })
 
+// Users -> RoleId
+
+Roles.hasMany(Users)
+Users.belongsTo(Roles)
+
 // PlaceImages -> PlaceId
 
 Places.hasMany(PlaceImages, { onDelete: "cascade" })
@@ -223,20 +235,20 @@ MealSizes.belongsTo(Meals)
 Meals.hasMany(Allergens, { onDelete: "cascade" })
 Allergens.belongsTo(Meals)
 
-// Promocodes -> PlaceId
+// Promotions -> PlaceId
 
-Places.hasMany(Promocodes, { onDelete: "cascade" })
-Promocodes.belongsTo(Places)
+Places.hasMany(Promotions, { onDelete: "cascade" })
+Promotions.belongsTo(Places)
 
-// PromocodeUses -> PromocodesId
+// PromotionUses -> PromotionsId
 
-Promocodes.hasMany(PromocodeUses)
-PromocodeUses.belongsTo(Promocodes)
+Promotions.hasMany(PromotionUses)
+PromotionUses.belongsTo(Promotions)
 
-// PromocodeUses -> UserId
+// PromotionUses -> UserId
 
-Users.hasMany(PromocodeUses)
-PromocodeUses.belongsTo(Users)
+Users.hasMany(PromotionUses)
+PromotionUses.belongsTo(Users)
 
 // Baskets -> UserId
 
@@ -279,8 +291,8 @@ Users.hasMany(PunchCardSteps)
 PunchCardSteps.belongsTo(Users)
 
 module.exports = {
-    Users, Places, Categories, PlaceImages, PlaceSchedules, 
+    Roles, Users, Places, Categories, PlaceImages, PlaceSchedules, 
     Meals, PlaceCategories, ExtraMeals, MealSizes, Allergens,
-    Promocodes, Baskets, PromocodeUses, Orders, OrderItems, 
+    Promotions, Baskets, PromotionUses, Orders, OrderItems, 
     Punchcards, PunchCardSteps
 }

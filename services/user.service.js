@@ -26,7 +26,8 @@ class UserService {
         password: hash,
         ip: ip,
         device: device,
-        uuid: uuid.v4()
+        uuid: uuid.v4(),
+        roleId: 2
       }
       const token = await Functions.generateJwt(customer, '3m')
       let transporter = nodemailer.createTransport({
@@ -58,7 +59,7 @@ class UserService {
       const customer = await Models.Users.create(user)
         .catch((err) => { console.log(err) })
       if (!customer) { return Response.BadRequest('An unknown error occurred', []) }
-      const token = await Functions.generateJwt({ id: customer.id, emai: customer.email })
+      const token = await Functions.generateJwt({ id: customer.id, email: customer.email, role: "user" })
         .catch((err) => { console.log(err) })
       return Response.Created('User is registered!', { token })
     } catch (error) {
@@ -71,8 +72,32 @@ class UserService {
       if (!user) { return Response.Unauthorized('User not found!', []) }
       const hash = await bcrypt.compare(body.password, user.password)
       if (!hash) { return Response.Forbidden('Password is incorrect', []) }
-      const token = await Functions.generateJwt({ id: user.id, email: user.email })
+      const token = await Functions.generateJwt({ id: user.id, email: user.email, role: "user" })
       return Response.Success('Login confirmed', { token })
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
+  // GET
+  async userProfileService(user) {
+    try {
+      const customer = await Models.Users.findOne({
+        attributes: { exclude: ['password', 'ip', 'device', 'uuid', 'createdAt', 'updatedAt'] },
+        where: {
+          id: user.id,
+          email: user.email,
+          isActive: true
+        }
+      }).catch((err) => { console.log(err) })
+      if (!customer) { return Response.Unauthorized('User not found!', []) }
+      return Response.Success('Successful!', customer)
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
+  async userRewardsService(user) {
+    try {
+      
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }

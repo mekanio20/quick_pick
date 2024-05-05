@@ -43,7 +43,7 @@ class BaseService {
             }
             await this.Model.update(obj, { where: { id: Number(body.id) } })
                 .catch((err) => { console.log(err) })
-            return Response.Success('Successful', [])
+            return Response.Success('Successful!', [])
         } catch (error) {
             throw { status: 500, type: 'error', msg: error, detail: [] }
         }

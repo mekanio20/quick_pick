@@ -38,7 +38,23 @@ class UserController {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
         }
     }
-    
+    // GET
+    async userProfile(req, res) {
+        try {
+            const data = await userService.userProfileService(req.user)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
+    async userRewards(req, res) {
+        try {
+            const data = await userService.userRewardsService(req.user)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
 }
 
 module.exports = new UserController()
