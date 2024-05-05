@@ -13,8 +13,16 @@ class PlaceController {
             body.slug = slug
             body.logo = req.file.filename
             const data = await new baseService(Models.Places).addService(isExist, body)
-            const token = await Functions.generateJwt({ id: data.detail.id, email: data.detail.email })
+            const token = await Functions.generateJwt({ id: data.detail.id, email: data.detail.email, role: "place" })
             data.detail.token = token
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
+    async placeAddAlbum(req, res) {
+        try {
+            const data = await placeService.placeAddAlbumService(req.user.id, req.files)
             return res.status(data.status).json(data)
         } catch (error) {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })

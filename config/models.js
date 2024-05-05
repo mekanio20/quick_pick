@@ -48,7 +48,7 @@ const Places = database.define('places', {
     zipcode: { type: DataTypes.STRING(50), allowNull: true },
     latitude: { type: DataTypes.STRING, allowNull: false },
     longitude: { type: DataTypes.STRING, allowNull: false },
-    logo: { type: DataTypes.STRING, allowNull: false },
+    logo: { type: DataTypes.STRING, allowNull: true },
     banner: { type: DataTypes.STRING, allowNull: true },
     reward: { type: DataTypes.STRING, defaultValue: 'reward.png' },
     color: { type: DataTypes.STRING(50), allowNull: true },

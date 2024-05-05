@@ -3,8 +3,10 @@ const placeController = require('../controllers/place.controller')
 const validationMiddleware = require('../middlewares/validation.middleware')
 const limitterMiddleware = require('../middlewares/limitter.middleware')
 const imageMiddleware = require('../middlewares/image.middleware')
-const placeSchema = require('../validations/place.schema')
+const rolesMiddleware = require('../middlewares/roles.middleware')
 const authMiddleware = require('../middlewares/auth.middleware')
+const placeSchema = require('../validations/place.schema')
+const baseSchema = require('../validations/base.schema')
 
 // POST
 router.post('/register',
@@ -13,9 +15,17 @@ router.post('/register',
     validationMiddleware(placeSchema.placeRegister, 'body'),
     placeController.placeRegister)
 
+router.post('/add/album',
+    authMiddleware,
+    rolesMiddleware(['place']),
+    imageMiddleware(process.env.PLACES_PATH)
+    .fields([ { name: "photo", maxCount: 5 } ]),
+    placeController.placeAddAlbum)
+
 // PUT
 router.put('/edit',
     authMiddleware,
+    rolesMiddleware(['place']),
     imageMiddleware(process.env.PLACES_PATH).fields([
         { name: "logo", maxCount: 1 },
         { name: "banner", maxCount: 1 },

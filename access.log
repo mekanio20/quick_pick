@@ -142,3 +142,13 @@
 ::ffff:127.0.0.1 - - [04/May/2024:20:36:50 +0000] "GET /api/v1/admin/default HTTP/1.1" 200 23
 ::ffff:127.0.0.1 - - [04/May/2024:20:37:23 +0000] "GET /api/v1/admin/default HTTP/1.1" 200 23
 ::ffff:127.0.0.1 - - [05/May/2024:08:54:42 +0000] "POST /api/v1/user/login HTTP/1.1" 200 301
+::ffff:127.0.0.1 - - [05/May/2024:14:06:18 +0000] "POST /api/v1/place/add/album HTTP/1.1" 200 88
+::ffff:127.0.0.1 - - [05/May/2024:14:06:27 +0000] "POST /api/v1/place/add/album HTTP/1.1" 200 88
+::ffff:127.0.0.1 - - [05/May/2024:14:06:35 +0000] "POST /api/v1/place/add/album HTTP/1.1" 200 88
+::ffff:127.0.0.1 - - [05/May/2024:14:06:41 +0000] "POST /api/v1/place/add/album HTTP/1.1" 500 50
+::ffff:127.0.0.1 - - [05/May/2024:14:07:04 +0000] "POST /api/v1/place/add/album HTTP/1.1" 500 50
+::ffff:127.0.0.1 - - [05/May/2024:14:07:11 +0000] "POST /api/v1/place/add/album HTTP/1.1" 500 98
+::ffff:127.0.0.1 - - [05/May/2024:14:07:24 +0000] "POST /api/v1/place/add/album HTTP/1.1" 500 98
+::ffff:127.0.0.1 - - [05/May/2024:14:07:48 +0000] "POST /api/v1/place/add/album HTTP/1.1" 500 98
+::ffff:127.0.0.1 - - [05/May/2024:14:08:08 +0000] "POST /api/v1/place/add/album HTTP/1.1" 500 98
+::ffff:127.0.0.1 - - [05/May/2024:14:08:41 +0000] "POST /api/v1/place/add/album HTTP/1.1" 200 67
