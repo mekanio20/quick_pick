@@ -99,6 +99,7 @@ const Meals = database.define('meals', {
     point: { type: DataTypes.SMALLINT, defaultValue: 0 },
     time: { type: DataTypes.STRING(10), allowNull: false },
     type: { type: DataTypes.ENUM({ values: ['Meat', 'Vegan', 'Kosher', 'Vegetarian', 'Halal', 'Gluten Free'] }) },
+    recomendo: { type: DataTypes.BOOLEAN, defaultValue: false },
     isActive: { type: DataTypes.BOOLEAN, defaultValue: true },
     createdAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW },
     updatedAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW }
@@ -147,16 +148,6 @@ const PromotionUses = database.define('promotion_uses', {
     updatedAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW }
 })
 
-const Baskets = database.define('baskets', {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false, unique: true },
-    quantity: { type: DataTypes.SMALLINT, allowNull: false },
-    isActive: { type: DataTypes.BOOLEAN, defaultValue: true },
-    extra_meals: { type: DataTypes.JSON, allowNull: true },
-    meal_sizes: { type: DataTypes.JSON, allowNull: true },
-    createdAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW },
-    updatedAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW }
-})
-
 const Orders = database.define('orders', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false, unique: true },
     status: { type: DataTypes.ENUM({ values: ['Order Placed', 'Preparation Started', 'Ready in 5 Minutes', 'Order Finished', 'Order Collected', 'Order Cancelled'] }), defaultValue: 'Order Placed' },
@@ -182,9 +173,8 @@ const OrderItems = database.define('order_items', {
 
 const Punchcards = database.define('punchcards', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false, unique: true },
-    name: { type: DataTypes.STRING(20), allowNull: false }, // free fries
+    name: { type: DataTypes.STRING(100), allowNull: false }, // free fries
     point: { type: DataTypes.SMALLINT, allowNull: false },
-    icon: { type: DataTypes.STRING, defaultValue: 'punchcard.png' },
     isActive: { type: DataTypes.BOOLEAN, defaultValue: true },
     createdAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW },
     updatedAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW }
@@ -253,16 +243,6 @@ PromotionUses.belongsTo(Promotions)
 Users.hasMany(PromotionUses)
 PromotionUses.belongsTo(Users)
 
-// Baskets -> UserId
-
-Users.hasMany(Baskets)
-Baskets.belongsTo(Users)
-
-// Baskets -> MealId
-
-Meals.hasMany(Baskets)
-Baskets.belongsTo(Meals)
-
 // OrderItems -> OrderId
 
 Orders.hasMany(OrderItems)
@@ -288,10 +268,10 @@ Punchcards.belongsTo(Places)
 Meals.hasOne(Punchcards)
 Punchcards.belongsTo(Meals)
 
-// PunchcardSteps -> PunchcardId
+// PunchcardSteps -> PlaceId
 
-Punchcards.hasMany(PunchCardSteps)
-PunchCardSteps.belongsTo(Punchcards)
+Places.hasMany(PunchCardSteps)
+PunchCardSteps.belongsTo(Places)
 
 // PunchcardSteps -> UserId
 
@@ -301,6 +281,6 @@ PunchCardSteps.belongsTo(Users)
 module.exports = {
     Roles, Users, Places, Categories, PlaceImages, PlaceSchedules, 
     Meals, PlaceCategories, ExtraMeals, MealSizes, Allergens,
-    Promotions, Baskets, PromotionUses, Orders, OrderItems, 
+    Promotions, PromotionUses, Orders, OrderItems, 
     Punchcards, PunchCardSteps
 }

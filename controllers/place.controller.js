@@ -52,6 +52,16 @@ class PlaceController {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
         }
     }
+    async placeAddSchedule(req, res) {
+        try {
+            const body = req.body
+            body.placeId = req.user.id
+            const data = await new baseService(Models.PlaceSchedules).addService(body, body)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
     async placeAddMeal(req, res) {
         try {
             const slug = await Functions.generateSlug(req.body.name)
@@ -92,7 +102,6 @@ class PlaceController {
         try {
             const body = req.body
             body.placeId = req.user.id
-            body.icon = req.file.filename
             const punchcard = await Models.Punchcards.count({ where: { placeId: req.user.id } })
             if (punchcard >= 3) {
                 const result = await Response.Forbidden('Adding more than 3 is not allowed', [])

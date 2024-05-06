@@ -31,6 +31,12 @@ router.post('/add/category',
     validationMiddleware(placeSchema.placeAddCategory, 'body'),
     placeController.placeAddCategory)
 
+router.post('/add/schedule',
+    authMiddleware,
+    rolesMiddleware(['place']),
+    validationMiddleware(placeSchema.placeAddSchedule, 'body'),
+    placeController.placeAddSchedule)
+
 router.post('/add/meal',
     authMiddleware,
     rolesMiddleware(['place']),
@@ -59,7 +65,6 @@ router.post('/add/allergen',
 router.post('/add/punchcard',
     authMiddleware,
     rolesMiddleware(['place']),
-    imageMiddleware(process.env.PUNCH_PATH).single('icon'),
     validationMiddleware(placeSchema.placeAddPunchcard, 'body'),
     placeController.placeAddPunchcard)
 

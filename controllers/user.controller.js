@@ -47,9 +47,25 @@ class UserController {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
         }
     }
+    async fetchPlace(req, res) {
+        try {
+            const data = await userService.fetchPlaceService(req.params.slug)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
+    async fetchPunchcard(req, res) {
+        try {
+            const data = await userService.fetchPunchcardService(req.params.slug, req.user.id)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
     async userRewards(req, res) {
         try {
-            const data = await userService.userRewardsService(req.user)
+            const data = await userService.userRewardsService(req.user.id)
             return res.status(data.status).json(data)
         } catch (error) {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })

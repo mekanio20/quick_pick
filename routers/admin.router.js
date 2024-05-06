@@ -6,7 +6,7 @@ const adminSchema = require('../validations/admin.schema')
 
 // GET
 router.get('/default',
-    rolesMiddleware(['admin']),
+    // rolesMiddleware(['admin']),
     adminController.Default)
 
 // PUT
