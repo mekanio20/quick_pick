@@ -182,6 +182,7 @@ const OrderItems = database.define('order_items', {
 
 const Punchcards = database.define('punchcards', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false, unique: true },
+    name: { type: DataTypes.STRING(20), allowNull: false }, // free fries
     point: { type: DataTypes.SMALLINT, allowNull: false },
     icon: { type: DataTypes.STRING, defaultValue: 'punchcard.png' },
     isActive: { type: DataTypes.BOOLEAN, defaultValue: true },
@@ -281,6 +282,11 @@ OrderItems.belongsTo(Meals)
 
 Places.hasOne(Punchcards)
 Punchcards.belongsTo(Places)
+
+// Punchcards -> MealId
+
+Meals.hasOne(Punchcards)
+Punchcards.belongsTo(Meals)
 
 // PunchcardSteps -> PunchcardId
 

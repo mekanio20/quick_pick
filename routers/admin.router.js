@@ -2,7 +2,6 @@ const router = require('express').Router()
 const adminController = require('../controllers/admin.controller')
 const validationMiddleware = require('../middlewares/validation.middleware')
 const rolesMiddleware = require('../middlewares/roles.middleware')
-const baseSchema = require('../validations/base.schema')
 const adminSchema = require('../validations/admin.schema')
 
 // GET
