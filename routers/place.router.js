@@ -6,7 +6,6 @@ const imageMiddleware = require('../middlewares/image.middleware')
 const rolesMiddleware = require('../middlewares/roles.middleware')
 const authMiddleware = require('../middlewares/auth.middleware')
 const placeSchema = require('../validations/place.schema')
-const baseSchema = require('../validations/base.schema')
 
 // POST
 router.post('/register',
@@ -35,7 +34,7 @@ router.post('/add/category',
 router.post('/add/meal',
     authMiddleware,
     rolesMiddleware(['place']),
-    imageMiddleware(process.env.FOOD_PATH).single('img'),
+    imageMiddleware(process.env.MEAL_PATH).single('img'),
     validationMiddleware(placeSchema.placeAddMeal, 'body'),
     placeController.placeAddMeal)
 
@@ -56,6 +55,13 @@ router.post('/add/allergen',
     rolesMiddleware(['place']),
     validationMiddleware(placeSchema.placeAddAllergen, 'body'),
     placeController.placeAddAllergen)
+
+router.post('/add/punchcard',
+    authMiddleware,
+    rolesMiddleware(['place']),
+    imageMiddleware(process.env.PUNCH_PATH).single('icon'),
+    validationMiddleware(placeSchema.placeAddPunchcard, 'body'),
+    placeController.placeAddPunchcard)
 
 // PUT
 router.put('/edit',

@@ -59,6 +59,11 @@ const placeSchema = {
         price: Joi.number().positive().required(),
         mealId: Joi.number().positive().required()
     }),
+    placeAddPunchcard: Joi.object({
+        name: Joi.string().max(255).required(),
+        point: Joi.number().positive().required(),
+        mealId: Joi.number().positive().required()
+    }),
 }
 
 module.exports = placeSchema

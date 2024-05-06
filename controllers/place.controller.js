@@ -1,6 +1,7 @@
 const baseService = require('../services/base.service')
 const placeService = require('../services/place.service')
 const Functions = require('../helpers/functions.service')
+const Response = require('../helpers/response.service')
 const Models = require('../config/models')
 const bcrypt = require('bcrypt')
 
@@ -82,6 +83,22 @@ class PlaceController {
     async placeAddAllergen(req, res) {
         try {
             const data = await new baseService(Models.Allergens).addService(req.body, req.body)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
+    async placeAddPunchcard(req, res) {
+        try {
+            const body = req.body
+            body.placeId = req.user.id
+            body.icon = req.file.filename
+            const punchcard = await Models.Punchcards.count({ where: { placeId: req.user.id } })
+            if (punchcard >= 3) {
+                const result = await Response.Forbidden('Adding more than 3 is not allowed', [])
+                return result
+            } 
+            const data = await new baseService(Models.Punchcards).addService(req.body, req.body)
             return res.status(data.status).json(data)
         } catch (error) {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
