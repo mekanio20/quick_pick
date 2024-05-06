@@ -173,13 +173,6 @@ class UserService {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
   }
-  async userRewardsService(userId) {
-    try {
-      
-    } catch (error) {
-      throw { status: 500, type: "error", msg: error, detail: [] }
-    }
-  }
 }
 
 module.exports = new UserService()

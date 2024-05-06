@@ -43,9 +43,4 @@ router.get('/punchcard/:slug',
     validationMiddleware(baseSchema.slugControl, 'params'),
     userController.fetchPunchcard)
 
-router.get('/rewards',
-    authMiddleware,
-    rolesMiddleware(['user']),
-    userController.userRewards)
-
 module.exports = router
