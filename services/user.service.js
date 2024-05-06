@@ -82,7 +82,7 @@ class UserService {
   async userProfileService(user) {
     try {
       const customer = await Models.Users.findOne({
-        attributes: { exclude: ['password', 'ip', 'device', 'uuid', 'createdAt', 'updatedAt'] },
+        attributes: { exclude: ['password', 'ip', 'device', 'uuid', 'roleId', 'createdAt', 'updatedAt'] },
         where: {
           id: user.id,
           email: user.email,
@@ -105,7 +105,14 @@ class UserService {
         }
       }).catch((err) => console.log(err))
       if (!place) { return Response.NotFound('No information found!', []) }
-      result.push(place)
+      result.push({ info: place })
+
+      const images = await Models.PlaceImages.findAndCountAll({
+        where: { placeId: place.id },
+        attributes: ['id', 'img']
+      }).catch((err) => console.log(err))
+      if (images.count > 0) result.push({ album: images })
+      else result.push({ album: [] })
       
       const schedule = await Models.PlaceSchedules.findAll({
         where: { placeId: place.id },
@@ -115,7 +122,7 @@ class UserService {
       const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
       const day = days[new Date().getDay() - 1]
       if (schedule.length > 0) {
-        result.push(schedule)
+        result.push({ schedule: schedule })
         for (let item of schedule) {
           if (day === item.day) {
             result.push({ opening_time: [item.open_time, item.close_time] })
@@ -134,6 +141,32 @@ class UserService {
       const prices = await mesals.map((item) => item.price)
       if (prices.length >= 2) result.push({ prices: [Math.min(...prices), Math.max(...prices)] })
       else result.push({ prices: prices[0] })
+
+      return Response.Success('Successful!', result)
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
+  async fetchPunchcardService(slug, userId) {
+    try {
+      const result = []
+      const punchcard_steps = await Models.PunchCardSteps.findOne({
+        where: { userId: userId, isActive: true },
+        attributes: ['id', 'score'],
+        include: {
+          model: Models.Places,
+          attributes: ['id', 'slug'],
+          where: { slug: slug, isActive: true }
+        }
+      }).catch((err) => console.log(err))
+      if (!punchcard_steps) { return Response.NotFound('No information found!', []) }
+      result.push({ user: punchcard_steps})
+
+      const punchcards = await Models.Punchcards.findAll({
+        attributes: ['id', 'name', 'point', 'mealId'],
+        where: { placeId: punchcard_steps.place.id, isActive: true },
+      }).catch((err) => console.log(err))
+      result.push({ punchcards: punchcards })
 
       return Response.Success('Successful!', result)
     } catch (error) {

@@ -65,7 +65,6 @@ router.post('/add/allergen',
 router.post('/add/punchcard',
     authMiddleware,
     rolesMiddleware(['place']),
-    imageMiddleware(process.env.PUNCH_PATH).single('icon'),
     validationMiddleware(placeSchema.placeAddPunchcard, 'body'),
     placeController.placeAddPunchcard)
 

@@ -51,6 +51,7 @@ const placeSchema = {
         point: Joi.number().positive().optional(),
         time: Joi.string().max(10).required(),
         type: Joi.string().valid('Meat', 'Vegan', 'Kosher', 'Vegetarian', 'Halal', 'Gluten Free'),
+        recomendo: Joi.boolean().optional(),
         placeCategoryId: Joi.number().positive().required()
     }),
     placeAddAllergen: Joi.object({
