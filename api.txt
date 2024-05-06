@@ -4,7 +4,8 @@
 2) http://31.44.2.32:5001/api/v1/user/verification --- POST --- req.body { code } --- req.header.Authorization: Bearer {token}
 3) http://31.44.2.32:5001/api/v1/user/login --- POST --- req.body { email, password }
 // GET
-4) http://31.44.2.32:5001/api/v1/user/profile --- GET --- req.header.Authorization: Bearer {token}
+4) http://31.44.2.32:5001/api/v1/user/place/:slug --- GET --- req.header.Authorization: Bearer {token}
+5) http://31.44.2.32:5001/api/v1/user/profile --- GET --- req.header.Authorization: Bearer {token}
 
 #### PLACE ####
 // POST

@@ -31,6 +31,12 @@ router.get('/profile',
     rolesMiddleware(['user']),
     userController.userProfile)
 
+router.get('/place/:slug',
+    authMiddleware,
+    rolesMiddleware(['user']),
+    validationMiddleware(baseSchema.slugControl, 'params'),
+    userController.fetchPlace)
+
 router.get('/rewards',
     authMiddleware,
     rolesMiddleware(['user']),
