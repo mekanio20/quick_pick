@@ -49,6 +49,16 @@ const placeSchema = {
         name: Joi.string().max(255).required(),
         mealId: Joi.number().positive().required()
     }),
+    placeAddMealSize: Joi.object({
+        size: Joi.string().valid('Small', 'Medium', 'Large').required(),
+        price: Joi.number().positive().required(),
+        mealId: Joi.number().positive().required()
+    }),
+    placeAddMealExtra: Joi.object({
+        name: Joi.string().max(255).required(),
+        price: Joi.number().positive().required(),
+        mealId: Joi.number().positive().required()
+    }),
 }
 
 module.exports = placeSchema

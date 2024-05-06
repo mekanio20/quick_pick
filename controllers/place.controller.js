@@ -63,6 +63,22 @@ class PlaceController {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
         }
     }
+    async placeAddMealSize(req, res) {
+        try {
+            const data = await new baseService(Models.MealSizes).addService(req.body, req.body)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
+    async placeAddMealExtra(req, res) {
+        try {
+            const data = await new baseService(Models.ExtraMeals).addService(req.body, req.body)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
     async placeAddAllergen(req, res) {
         try {
             const data = await new baseService(Models.Allergens).addService(req.body, req.body)

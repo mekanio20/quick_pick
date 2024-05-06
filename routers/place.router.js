@@ -39,6 +39,18 @@ router.post('/add/meal',
     validationMiddleware(placeSchema.placeAddMeal, 'body'),
     placeController.placeAddMeal)
 
+router.post('/add/meal-size',
+    authMiddleware,
+    rolesMiddleware(['place']),
+    validationMiddleware(placeSchema.placeAddMealSize, 'body'),
+    placeController.placeAddMealSize)
+
+router.post('/add/meal-extra',
+    authMiddleware,
+    rolesMiddleware(['place']),
+    validationMiddleware(placeSchema.placeAddMealExtra, 'body'),
+    placeController.placeAddMealExtra)
+
 router.post('/add/allergen',
     authMiddleware,
     rolesMiddleware(['place']),
