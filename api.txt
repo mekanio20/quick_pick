@@ -1,0 +1,17 @@
+#### USER ####
+// POST
+1) http://31.44.2.32:5001/api/v1/user/register --- POST --- req.body { phone, email, username, firstname, lastname, password }
+2) http://31.44.2.32:5001/api/v1/user/verification --- POST --- req.body { code } --- req.header.Authorization: Bearer {token}
+3) http://31.44.2.32:5001/api/v1/user/login --- POST --- req.body { email, password }
+// GET
+4) http://31.44.2.32:5001/api/v1/user/profile --- GET --- req.header.Authorization: Bearer {token}
+
+#### PLACE ####
+// POST
+1) http://31.44.2.32:5001/api/v1/place/register --- POST --- req.body { name, type: ['Cafe', 'Bakery', 'Restaurant', 'Bar'], password, email, phone_primary, address, latitude, longitude }
+2) http://31.44.2.32:5001/api/v1/place/login --- POST --- req.body { email, password }
+3) http://31.44.2.32:5001/api/v1/place/add/album --- POST --- req.files { photo: { maxCount: 5 } } --- req.header.Authorization: Bearer {token}
+4) http://31.44.2.32:5001/api/v1/place/add/category --- POST --- req.body { name } --- req.header.Authorization: Bearer {token}
+4) http://31.44.2.32:5001/api/v1/place/add/meal --- POST --- req.body { name, desc, price, point, time, type: ['Meat', 'Vegan', 'Kosher', 'Vegetarian', 'Halal', 'Gluten Free'] } --- req.header.Authorization: Bearer {token}
+// PUT
+5) http://31.44.2.32:5001/api/v1/place/edit --- PUT --- req.body { name, type, desc, phone_primary, phone_secondary, address, latitude, longitude, website, zipcode, color, copacity, dine_in, tax, open_close, auto_accept } (optional) --- req.files { logo, banner, reward } --- req.header.Authorization: Bearer {token}

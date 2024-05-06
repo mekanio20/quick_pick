@@ -26,6 +26,19 @@ router.post('/add/album',
     .fields([ { name: "photo", maxCount: 5 } ]),
     placeController.placeAddAlbum)
 
+router.post('/add/category',
+    authMiddleware,
+    rolesMiddleware(['place']),
+    validationMiddleware(placeSchema.placeAddCategory, 'body'),
+    placeController.placeAddCategory)
+
+router.post('/add/meal',
+    authMiddleware,
+    rolesMiddleware(['place']),
+    imageMiddleware(process.env.FOOD_PATH).single('img'),
+    validationMiddleware(placeSchema.placeAddMeal, 'body'),
+    placeController.placeAddMeal)
+
 // PUT
 router.put('/edit',
     authMiddleware,

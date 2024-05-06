@@ -39,6 +39,26 @@ class PlaceController {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
         }
     }
+    async placeAddCategory(req, res) {
+        try {
+            const slug = await Functions.generateSlug(req.body.name)
+            const body = req.body
+            body.slug = slug
+            body.placeId = req.user.id
+            const data = await new baseService(Models.PlaceCategories).addService(slug, body)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
+    async placeAddMeal(req, res) {
+        try {
+            const data = await placeService.placeAddMealService(req.body, req.file.filename)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
     // PUT
     async placeEdit(req, res) {
         try {

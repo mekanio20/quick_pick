@@ -58,7 +58,7 @@ class UserService {
       if (String(code) !== systemcode) { return Response.BadRequest('The verification code is invalid', []) }
       const customer = await Models.Users.create(user)
         .catch((err) => { console.log(err) })
-      if (!customer) { return Response.BadRequest('An unknown error occurred', []) }
+      if (!customer) { return Response.BadRequest('An unknown error occurred!', []) }
       const token = await Functions.generateJwt({ id: customer.id, email: customer.email, role: "user" })
         .catch((err) => { console.log(err) })
       return Response.Created('User is registered!', { token })

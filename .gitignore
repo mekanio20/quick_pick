@@ -4,3 +4,4 @@ node_modules/
 access.log
 *.log
 yarn.lock
+test

@@ -47,6 +47,7 @@ const Places = database.define('places', {
     address: { type: DataTypes.STRING, allowNull: false },
     website: { type: DataTypes.STRING, allowNull: true },
     zipcode: { type: DataTypes.STRING(50), allowNull: true },
+    rating: { type: DataTypes.DOUBLE, defaultValue: 0 },
     latitude: { type: DataTypes.STRING, allowNull: false },
     longitude: { type: DataTypes.STRING, allowNull: false },
     logo: { type: DataTypes.STRING, allowNull: true },

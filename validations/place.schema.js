@@ -32,6 +32,18 @@ const placeSchema = {
         tax: Joi.number().positive().optional(),
         open_close: Joi.boolean().optional(),
         auto_accept: Joi.boolean().optional()
+    }),
+    placeAddCategory: Joi.object({
+        name: Joi.string().max(255).required()
+    }),
+    placeAddMeal: Joi.object({
+        name: Joi.string().max(255).required(),
+        desc: Joi.string().max(255).optional(),
+        price: Joi.number().positive().required(),
+        point: Joi.number().positive().optional(),
+        time: Joi.string().max(10).required(),
+        type: Joi.string().valid('Meat', 'Vegan', 'Kosher', 'Vegetarian', 'Halal', 'Gluten Free'),
+        placeCategoryId: Joi.number().positive().required()
     })
 }
 
