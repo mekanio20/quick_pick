@@ -39,6 +39,12 @@ router.post('/add/meal',
     validationMiddleware(placeSchema.placeAddMeal, 'body'),
     placeController.placeAddMeal)
 
+router.post('/add/allergen',
+    authMiddleware,
+    rolesMiddleware(['place']),
+    validationMiddleware(placeSchema.placeAddAllergen, 'body'),
+    placeController.placeAddAllergen)
+
 // PUT
 router.put('/edit',
     authMiddleware,

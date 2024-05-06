@@ -53,7 +53,19 @@ class PlaceController {
     }
     async placeAddMeal(req, res) {
         try {
-            const data = await placeService.placeAddMealService(req.body, req.file.filename)
+            const slug = await Functions.generateSlug(req.body.name)
+            const body = req.body
+            body.slug = slug
+            body.img = req.file.filename
+            const data = await new baseService(Models.Meals).addService(slug, body)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
+    async placeAddAllergen(req, res) {
+        try {
+            const data = await new baseService(Models.Allergens).addService(req.body, req.body)
             return res.status(data.status).json(data)
         } catch (error) {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })

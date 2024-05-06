@@ -44,7 +44,11 @@ const placeSchema = {
         time: Joi.string().max(10).required(),
         type: Joi.string().valid('Meat', 'Vegan', 'Kosher', 'Vegetarian', 'Halal', 'Gluten Free'),
         placeCategoryId: Joi.number().positive().required()
-    })
+    }),
+    placeAddAllergen: Joi.object({
+        name: Joi.string().max(255).required(),
+        mealId: Joi.number().positive().required()
+    }),
 }
 
 module.exports = placeSchema
