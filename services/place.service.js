@@ -16,6 +16,21 @@ class PlaceService {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
   }
+  async placeAddMealService(body, img) {
+    try {
+      const slug = await Functions.generateSlug(body.name)
+      const isExist = await Models.Meals.findOne({ where: { slug: slug } })
+      if (isExist) { return Response.BadRequest('Already exists!', []) }
+      body.slug = slug
+      body.img = img
+      const meal = await Models.Meals.create(body)
+        .catch((err) => console.log(err))
+      if (!meal) { return Response.BadRequest('An unknown error occurred!', []) }
+      return Response.Success('Created successfully!', meal)
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
   async placeAddAlbumService(placeId, files) {
     try {
       if (files?.photo?.length > 0) {
@@ -23,7 +38,7 @@ class PlaceService {
           await Models.PlaceImages.create({
             id: Number(placeId),
             img: file.filename
-          })
+          }).catch((err) => console.log(err))
         }
       } else return Response.BadRequest('No file!', [])
       return Response.Created('Created successfully!', [])
