@@ -52,6 +52,16 @@ class PlaceController {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
         }
     }
+    async placeAddSchedule(req, res) {
+        try {
+            const body = req.body
+            body.placeId = req.user.id
+            const data = await new baseService(Models.PlaceSchedules).addService(body, body)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
     async placeAddMeal(req, res) {
         try {
             const slug = await Functions.generateSlug(req.body.name)

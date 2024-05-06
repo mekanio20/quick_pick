@@ -36,6 +36,14 @@ const placeSchema = {
     placeAddCategory: Joi.object({
         name: Joi.string().max(255).required()
     }),
+    placeAddSchedule: Joi.object({
+        day: Joi.string().valid('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday').required(),
+        open_time: Joi.string().max(50).required(),
+        close_time: Joi.string().max(50).required()
+    }),
+    placeAddCategory: Joi.object({
+        name: Joi.string().max(255).required()
+    }),
     placeAddMeal: Joi.object({
         name: Joi.string().max(255).required(),
         desc: Joi.string().max(255).optional(),
