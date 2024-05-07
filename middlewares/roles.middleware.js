@@ -15,6 +15,7 @@ module.exports = function (requiredRoles) {
             }
             const decoded = jwt.verify(token, process.env.PRIVATE_KEY)
             const access = requiredRoles.includes(decoded.role)
+            console.log(decoded, access)
             if (!access) {
                 return res.json({ 
                     status: 401,

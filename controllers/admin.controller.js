@@ -26,12 +26,13 @@ class AdminController {
             ]).then(() => { console.log('Roles created') }).catch((err) => { console.log(err) })
 
             await Models.Users.bulkCreate([
-                { email: "quickpick.developer@gmail.com", phone: "123456", username: "admin", password: admin_pass, firstname: "test", lastname: "test", uuid: uuid.v4(), roleId: 1 },
-                { email: "mekanbaylyyew@gmail.com", phone: "1234567", username: "mekan", password: user_pass, firstname: "mekan", lastname: "bayly", uuid: uuid.v4(), roleId: 2 },
+                { email: "quickpick.developer@gmail.com", username: "admin", password: admin_pass, uuid: uuid.v4(), roleId: 1 },
+                { email: "mekanbaylyyew@gmail.com", username: "mekan", password: user_pass, uuid: uuid.v4(), roleId: 2 },
             ]).then(() => { console.log('Users created') }).catch((err) => { console.log(err) })
 
             await Models.Places.bulkCreate([
-                { name: 'mekan dukan', slug: 'mekan-dukan', type: 'Cafe', email: 'mrxyok138@gmail.com', password: place_pass, phone_primary: '987654321', address: 'Anew, 27', rating: 4.3, latitude: '283.1231.4122.213', longitude: '24.42.13.213', isActive: true }
+                { name: 'mekan dukan', slug: 'mekan-dukan', type: 'Cafe', email: 'mrxyok138@gmail.com', password: place_pass, phone_primary: '987654321', address: 'Anew, 27', rating: 4.3, latitude: '283.1231.4122.213', longitude: '24.42.13.213', isActive: true },
+                { name: 'sumbar dukan', slug: 'sumbar-dukan', type: 'Cafe', email: 'mrxyok139@gmail.com', password: place_pass, phone_primary: '987654322', address: 'Anew, 27', rating: 5.0, latitude: '283.1231.4122.213', longitude: '24.42.13.213', isActive: true },
             ]).then(() => { console.log('Places created') }).catch((err) => { console.log(err) })
 
             await Models.PlaceSchedules.bulkCreate([
@@ -46,7 +47,8 @@ class AdminController {
             ]).then(() => { console.log('Place Schedules created') }).catch((err) => { console.log(err) })
 
             await Models.PlaceCategories.bulkCreate([
-                { name: 'Meats', slug: 'meats', placeId: 1 }
+                { name: 'Meats', slug: 'meats', placeId: 1 },
+                { name: 'Meats2', slug: 'meats-2', placeId: 2 },
             ]).then(() => { console.log('PlaceCategories created') }).catch((err) => { console.log(err) })
 
             await Models.Meals.bulkCreate([
@@ -57,11 +59,15 @@ class AdminController {
             await Models.Punchcards.bulkCreate([
                 { name: 'Free pizza', point: 25, placeId: 1, mealId: 1 },
                 { name: 'Free pizza 2', point: 50, placeId: 1, mealId: 2 },
-                { name: 'Free pizza 3', point: 75, placeId: 1, mealId: 2 }
+                { name: 'Free pizza 3', point: 75, placeId: 1, mealId: 2 },
+                { name: 'Free pizza', point: 25, placeId: 2, mealId: 1 },
+                { name: 'Free pizza 2', point: 50, placeId: 2, mealId: 2 },
+                { name: 'Free pizza 3', point: 75, placeId: 2, mealId: 2 },
             ]).then(() => { console.log('Punchcards created') }).catch((err) => { console.log(err) })
             
             await Models.PunchCardSteps.bulkCreate([
-                { score: 12, placeId: 1, userId: 2 }
+                { score: 12, placeId: 1, userId: 2 },
+                { score: 24, placeId: 2, userId: 2 }
             ]).then(() => { console.log('PunchCardSteps created') }).catch((err) => { console.log(err) })
             
             return res.json({ message: "Completed"})
