@@ -6,10 +6,11 @@ const bcrypt = require('bcrypt')
 const uuid = require('uuid')
 const redis = require('../ioredis')
 const Models = require('../config/models')
+const { Op } = require('sequelize')
 
 class UserService {
   // POST
-  async userRegisterService(body, ip, device) {
+  async userRegisterService(body, ip, os) {
     try {
       const user = await Verification.isExists(body.email)
       if (user) { return Response.BadRequest("User already exists!", []) }
@@ -19,13 +20,12 @@ class UserService {
       const hash = await bcrypt.hash(body.password, 5)
       let customer = {
         email: body.email,
-        phone: body.phone,
-        username: body.username,
-        firstname: body.firstname,
-        lastname: body.lastname,
         password: hash,
+        username: body.username || null,
+        fullname: body.fullname || null,
+        phone: body.phone || null,
         ip: ip,
-        device: device,
+        os: os,
         uuid: uuid.v4(),
         roleId: 2
       }
@@ -155,7 +155,7 @@ class UserService {
         attributes: ['id', 'score'],
         include: {
           model: Models.Places,
-          attributes: ['id', 'slug'],
+          attributes: ['id', 'name', 'slug'],
           where: { slug: slug, isActive: true }
         }
       }).catch((err) => console.log(err))
@@ -168,6 +168,48 @@ class UserService {
       }).catch((err) => console.log(err))
       result.push({ punchcards: punchcards })
 
+      return Response.Success('Successful!', result)
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
+  async fetchAllPunchcardsService(userId) {
+    try {
+      const punchcard_steps = await Models.PunchCardSteps.findAll({
+        where: {
+          userId: userId, 
+          isActive: true,
+          score: { [Op.gt]: 0 }
+        },
+        attributes: ['id', 'score'],
+        include: {
+          model: Models.Places,
+          attributes: ['id', 'name', 'slug'],
+          where: { isActive: true },
+          include: {
+            model: Models.Punchcards,
+            attributes: ['id', 'name', 'point', 'mealId'],
+            where: { isActive: true }
+          }
+        }
+      }).catch((err) => console.log(err))
+      if (!punchcard_steps) { return Response.NotFound('No information found!', []) }
+      
+      const result = []
+      punchcard_steps.forEach(item => {
+        const existingPlace = result.find(place => place.id === item.place.id)
+        if (!existingPlace) {
+          result.push({
+            id: item.place.id,
+            name: item.place.name,
+            slug: item.place.slug,
+            score: item.score,
+            punchcards: [item.place.punchcard]
+          })
+        } else {
+          existingPlace.punchcards.push(item.place.punchcard)
+        }
+      })
       return Response.Success('Successful!', result)
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
