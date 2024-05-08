@@ -11,16 +11,13 @@ class BaseService {
             throw { status: 500, type: 'error', msg: error, detail: [] }
         }
     }
-    async getService(query) {
+    async getService(query, whereState) {
         try {
             let page = query.page || 1
             let limit = query.limit || 10
             let offset = page * limit - limit
             let sort = query.sort || 'id'
             let order = query.order || 'asc'
-            let status = query.status || true
-            let whereState = { isActive: status }
-            if (status === 'all') { whereState = {} }
             const data = await this.Model.findAndCountAll({
                 where: whereState,
                 limit: Number(limit),

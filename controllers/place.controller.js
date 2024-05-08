@@ -113,6 +113,15 @@ class PlaceController {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
         }
     }
+    // GET
+    async fetchPlace(req, res) {
+        try {
+            const data = await placeService.fetchPlaceService(req.params.slug)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
     // PUT
     async placeEdit(req, res) {
         try {

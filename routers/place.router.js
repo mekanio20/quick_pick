@@ -6,6 +6,7 @@ const imageMiddleware = require('../middlewares/image.middleware')
 const rolesMiddleware = require('../middlewares/roles.middleware')
 const authMiddleware = require('../middlewares/auth.middleware')
 const placeSchema = require('../validations/place.schema')
+const baseSchema = require('../validations/base.schema')
 
 // POST
 router.post('/register',
@@ -67,6 +68,13 @@ router.post('/add/punchcard',
     rolesMiddleware(['place']),
     validationMiddleware(placeSchema.placeAddPunchcard, 'body'),
     placeController.placeAddPunchcard)
+
+// GET
+router.get('/:slug',
+    // authMiddleware,
+    // rolesMiddleware(['user']),
+    validationMiddleware(baseSchema.slugControl, 'params'),
+    placeController.fetchPlace)
 
 // PUT
 router.put('/edit',
