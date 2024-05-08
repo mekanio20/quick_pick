@@ -31,6 +31,59 @@ class PlaceService {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
   }
+  // GET
+  async fetchPlaceService(slug) {
+    try {
+      let result = []
+      const place = await Models.Places.findOne({
+        where: { slug: slug, isActive: true },
+        attributes: {
+          exclude: ['password', 'zipcode', 'reward', 'dine_in', 'tax', 'auto_accept', 'createdAt', 'updatedAt']
+        }
+      }).catch((err) => console.log(err))
+      if (!place) { return Response.NotFound('No information found!', []) }
+      result.push({ info: place })
+
+      const images = await Models.PlaceImages.findAndCountAll({
+        where: { placeId: place.id },
+        attributes: ['id', 'img']
+      }).catch((err) => console.log(err))
+      if (images.count > 0) result.push({ album: images })
+      else result.push({ album: [] })
+      
+      const schedule = await Models.PlaceSchedules.findAll({
+        where: { placeId: place.id },
+        attributes: { exclude: ['createdAt', 'updatedAt'] }
+      }).catch((err) => console.log(err))
+
+      const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+      const day = days[new Date().getDay() - 1]
+      if (schedule.length > 0) {
+        result.push({ schedule: schedule })
+        for (let item of schedule) {
+          if (day === item.day) {
+            result.push({ opening_time: [item.open_time, item.close_time] })
+          }
+        }
+      }
+      const mesals = await Models.Meals.findAll({
+        attributes: ['price'],
+        include: {
+          model: Models.PlaceCategories,
+          attributes: ['placeId'],
+          where: { placeId: place.id }
+        }
+      }).catch((err) => console.log(err))
+      
+      const prices = await mesals.map((item) => item.price)
+      if (prices.length >= 2) result.push({ prices: [Math.min(...prices), Math.max(...prices)] })
+      else result.push({ prices: prices[0] })
+
+      return Response.Success('Successful!', result)
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
 }
 
 module.exports = new PlaceService()
