@@ -6,7 +6,9 @@ const homeSchema = require('../validations/home.schema')
 
 // GET
 router.get('/main',
-    // validationMiddleware(),
+    validationMiddleware(homeSchema.homeMain, 'query'),
     homeController.homeMain)
+
+router.get('/categories', homeController.homeCategories)
 
 module.exports = router

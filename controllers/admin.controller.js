@@ -25,14 +25,27 @@ class AdminController {
                 { name: 'user' }
             ]).then(() => { console.log('Roles created') }).catch((err) => { console.log(err) })
 
+            await Models.Categories.bulkCreate([
+                { name: 'Burger', slug: 'burger' },
+                { name: 'Breakfast', slug: 'breakfast' },
+                { name: 'Street food', slug: 'street-food' },
+                { name: 'Pizza', slug: 'pizza' },
+                { name: 'Soup', slug: 'soup' },
+                { name: 'Chicken', slug: 'chicken' },
+                { name: 'Salad', slug: 'salad' },
+                { name: 'Italian', slug: 'italian' },
+                { name: 'Falafel', slug: 'falafel' },
+                { name: 'Bakery', slug: 'bakery' },
+            ]).then(() => { console.log('Categories created') }).catch((err) => { console.log(err) })
+
             await Models.Users.bulkCreate([
                 { email: "quickpick.developer@gmail.com", username: "admin", password: admin_pass, uuid: uuid.v4(), roleId: 1 },
                 { email: "mekanbaylyyew@gmail.com", username: "mekan", password: user_pass, uuid: uuid.v4(), roleId: 2 },
             ]).then(() => { console.log('Users created') }).catch((err) => { console.log(err) })
 
             await Models.Places.bulkCreate([
-                { name: 'mekan dukan', slug: 'mekan-dukan', type: 'Cafe', email: 'mrxyok138@gmail.com', password: place_pass, phone_primary: '987654321', address: 'Anew, 27', rating: 4.3, latitude: '283.1231.4122.213', longitude: '24.42.13.213', isActive: true },
-                { name: 'sumbar dukan', slug: 'sumbar-dukan', type: 'Cafe', email: 'mrxyok139@gmail.com', password: place_pass, phone_primary: '987654322', address: 'Anew, 27', rating: 5.0, latitude: '283.1231.4122.213', longitude: '24.42.13.213', isActive: true },
+                { name: 'mekan dukan', slug: 'mekan-dukan', type: 'Cafe', email: 'mrxyok138@gmail.com', password: place_pass, phone_primary: '987654321', address: 'Anew, 27', rating: 4.3, latitude: '283.1231.4122.213', longitude: '24.42.13.213', categoryId: 1, isActive: true },
+                { name: 'sumbar dukan', slug: 'sumbar-dukan', type: 'Cafe', email: 'mrxyok139@gmail.com', password: place_pass, phone_primary: '987654322', address: 'Anew, 27', rating: 5.0, latitude: '283.1231.4122.213', longitude: '24.42.13.213', categoryId: 2, isActive: true },
             ]).then(() => { console.log('Places created') }).catch((err) => { console.log(err) })
 
             await Models.PlaceSchedules.bulkCreate([

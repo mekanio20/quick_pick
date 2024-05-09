@@ -192,6 +192,11 @@ const PunchCardSteps = database.define('punchcard_steps', {
 Roles.hasMany(Users)
 Users.belongsTo(Roles)
 
+// Place -> CategoryId
+
+Categories.hasMany(Places)
+Places.belongsTo(Categories)
+
 // PlaceImages -> PlaceId
 
 Places.hasMany(PlaceImages, { onDelete: "cascade" })

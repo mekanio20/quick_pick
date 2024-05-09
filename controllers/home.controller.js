@@ -12,6 +12,14 @@ class HomeController {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
         }
     }    
+    async homeCategories(req, res) {
+        try {
+            const data = await homeService.homeCategoriesService()
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }    
 }
 
 module.exports = new HomeController()
