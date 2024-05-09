@@ -70,6 +70,10 @@ router.post('/add/punchcard',
     placeController.placeAddPunchcard)
 
 // GET
+router.get('/categories/:slug',
+    validationMiddleware(baseSchema.slugControl, 'params'),
+    placeController.fetchPlaceCateogries)
+
 router.get('/:slug',
     validationMiddleware(baseSchema.slugControl, 'params'),
     placeController.fetchPlace)

@@ -32,6 +32,30 @@ class PlaceService {
     }
   }
   // GET
+  async fetchPlaceCateogriesService(slug) {
+    try {
+      const place_categories = await Models.PlaceCategories.findAll({
+        attributes: ['id', 'name', 'slug'],
+        where: { isActive: true },
+        include: [
+          {
+            model: Models.Meals,
+            attributes: ['id', 'name', 'slug', 'img', 'price', 'point', 'time', 'type'],
+            where: { isActive: true }
+          },
+          {
+            model: Models.Places,
+            where: { slug: slug, isActive: true },
+            attributes: []
+          }
+        ]
+      })
+     if (place_categories.length === 0) { return Response.NotFound('No information found!', []) }
+     return Response.Success('Successful!', place_categories)
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
   async fetchPlaceService(slug) {
     try {
       let result = []

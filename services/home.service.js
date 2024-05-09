@@ -6,39 +6,38 @@ class HomeService {
     async homeMainService(query) {
         try {
             const whereState = {
-                categories: [1,2,3,4,5,6,7,8,9,10],
-                startPrice: query.startPrice || 0,
-                endPrice: query.endPrice || 10000
+                isActive: true,
+                price: {
+                    [Op.gte]: Number(query.startPrice) || 0,
+                    [Op.lte]: Number(query.endPrice) || 10000
+                }
             }
-            if (query.cat) whereState.categories = [Number(query.cat)]
+            let cats = [1,2,3,4,5,6,7,8,9,10]
+            if (query.cat) cats = [Number(query.cat)]
+            if (query.type) whereState.type = query.type
             const places = await Models.Meals.findAll({
-                attributes: ['id', 'name', 'price'],
-                where: {
-                    isActive: true,
-                    price: {
-                        [Op.gte]: whereState.startPrice,
-                        [Op.lte]: whereState.endPrice
-                    },
-                },
+                attributes: ['id', 'name', 'type', 'price'],
+                where: whereState,
                 include: {
                     model: Models.PlaceCategories,
                     attributes: ['id', 'name'],
+                    where: { isActive: true },
+                    required: true,
                     include: {
                         model: Models.Places,
+                        required: true,
                         attributes: [
                             'id', 'name', 'slug', 'type', 'rating',
                             'latitude', 'longitude', 'logo', 'copacity'
                         ],
                         where: {
                             isActive: true,
-                            categoryId: {
-                                [Op.in]: whereState.categories
-                            }
-                        }
+                            categoryId: cats
+                        },
                     }
                 }
             }).catch((err) => console.log(err))
-            if (places[0].place_category === null) { return Response.NotFound('No information found!', []) }
+            if (places.length === 0 || places[0]?.place_category === null) { return Response.NotFound('No information found!', []) }
             return Response.Success('Successful!', places)
         } catch (error) {
             throw { status: 500, type: "error", msg: error, detail: [] }
