@@ -16,18 +16,18 @@ class HomeService {
             if (query.cat) cats = [Number(query.cat)]
             if (query.type) whereState.type = query.type
             const places = await Models.Meals.findAll({
-                attributes: ['id', 'name', 'type', 'price'],
                 where: whereState,
+                attributes: [],
                 include: {
                     model: Models.PlaceCategories,
-                    attributes: ['id', 'name'],
                     where: { isActive: true },
+                    attributes: ['placeId'],
                     required: true,
                     include: {
                         model: Models.Places,
                         required: true,
                         attributes: [
-                            'id', 'name', 'slug', 'type', 'rating',
+                            'name', 'slug', 'type', 'rating',
                             'latitude', 'longitude', 'logo', 'copacity'
                         ],
                         where: {

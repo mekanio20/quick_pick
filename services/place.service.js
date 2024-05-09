@@ -1,6 +1,7 @@
 const Models = require('../config/models')
 const Functions = require('../helpers/functions.service')
 const Response = require('../helpers/response.service')
+const bcrypt = require('bcrypt')
 
 class PlaceService {
   // POST
