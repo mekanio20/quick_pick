@@ -57,6 +57,18 @@ class PlaceService {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
   }
+  async fetchPlaceProfileService(placeId) {
+    try {
+      const place = await Models.Places.findOne({
+        attributes: { exclude: ['password', 'createdAt', 'updatedAt'] },
+        where: { id: placeId, isActive: true }
+      }).catch((err) => console.log(err))
+      if (!place) { return Response.Forbidden('Not allowed', []) }
+      return Response.Success('Successful!', place)
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
   async fetchPlaceService(slug) {
     try {
       let result = []
