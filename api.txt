@@ -21,10 +21,11 @@
 9) http://31.44.2.32:5001/api/v1/place/add/allergen --- POST --- req.body { name, mealId } --- req.header.Authorization: Bearer {token}
 10) http://31.44.2.32:5001/api/v1/place/add/punchcard --- POST --- req.body { name, point, mealId } --- req.file { icon } --- req.header.Authorization: Bearer {token}
 // GET
-11) http://31.44.2.32:5001/api/v1/place/:slug --- GET --- req.params { slug } --- req.header.Authorization: Bearer {token}
+11) http://31.44.2.32:5001/api/v1/place/categories/:slug --- GET --- req.params { slug }
+11) http://31.44.2.32:5001/api/v1/place/:slug --- GET --- req.params { slug }
 // PUT
 12) http://31.44.2.32:5001/api/v1/place/edit --- PUT --- req.body { name, type, desc, phone_primary, phone_secondary, address, latitude, longitude, website, zipcode, color, copacity, dine_in, tax, open_close, auto_accept } (optional) --- req.files { logo, banner, reward } --- req.header.Authorization: Bearer {token}
 
 ### HOME ###
-1) http://31.44.2.32:5001/api/v1/home/main? --- GET --- req.query { cat, startPrice, endPrice }
+1) http://31.44.2.32:5001/api/v1/home/main? --- GET --- req.query { cat: "categoryId", type: {'Meat', 'Vegan', 'Kosher', 'Vegetarian', 'Halal', 'Gluten Free'} startPrice, endPrice }
 2) http://31.44.2.32:5001/api/v1/home/categories --- GET
