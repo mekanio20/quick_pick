@@ -12,7 +12,7 @@ const baseSchema = require('../validations/base.schema')
 router.post('/register',
     limitterMiddleware(),
     validationMiddleware(placeSchema.placeRegister, 'body'),
-    placeController.placeRegister)
+    placeController.placeRegister) 
 
 router.post('/login',
     limitterMiddleware(),
@@ -71,8 +71,6 @@ router.post('/add/punchcard',
 
 // GET
 router.get('/:slug',
-    // authMiddleware,
-    // rolesMiddleware(['user']),
     validationMiddleware(baseSchema.slugControl, 'params'),
     placeController.fetchPlace)
 

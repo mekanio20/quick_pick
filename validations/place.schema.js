@@ -13,7 +13,8 @@ const placeSchema = {
         phone_primary: Joi.string().max(20).required(),
         address: Joi.string().max(255).required(),
         latitude: Joi.string().max(100).required(),
-        longitude: Joi.string().max(100).required()
+        longitude: Joi.string().max(100).required(),
+        categoryId: Joi.number().positive().required()
     }),
     placeEdit: Joi.object({
         name: Joi.string().max(100).optional(),

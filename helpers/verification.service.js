@@ -6,7 +6,7 @@ class VerificationService {
             let whereState = { email: email }
             if (status == true) { whereState = { email: email, isActive: true } }
             return Models.Users.findOne({
-                attributes: ['id', 'email', 'phone', 'username', 'img', 'firstname', 'lastname', 'birthday'],
+                attributes: ['id', 'email', 'phone', 'username', 'img', 'fullname', 'birthday'],
                 where: whereState,
             })
         } catch (error) {
