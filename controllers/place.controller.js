@@ -122,6 +122,14 @@ class PlaceController {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
         }
     }
+    async fetchPlaceProfile(req, res) {
+        try {
+            const data = await placeService.fetchPlaceProfileService(req.user.id)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
     async fetchPlace(req, res) {
         try {
             const data = await placeService.fetchPlaceService(req.params.slug)

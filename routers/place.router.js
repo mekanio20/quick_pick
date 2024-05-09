@@ -74,6 +74,11 @@ router.get('/categories/:slug',
     validationMiddleware(baseSchema.slugControl, 'params'),
     placeController.fetchPlaceCateogries)
 
+router.get('/profile',
+    authMiddleware,
+    rolesMiddleware(['place']),
+    placeController.fetchPlaceProfile)
+
 router.get('/:slug',
     validationMiddleware(baseSchema.slugControl, 'params'),
     placeController.fetchPlace)
