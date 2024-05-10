@@ -63,6 +63,12 @@ const placeSchema = {
         point: Joi.number().positive().required(),
         mealId: Joi.number().positive().required()
     }),
+    placeMeals: Joi.object({
+        caf: Joi.string().max(255).required(),
+        cat: Joi.string().max(255).required(),
+        page: Joi.number().positive().optional(),
+        limit: Joi.number().positive().optional()
+    })
 }
 
 module.exports = placeSchema

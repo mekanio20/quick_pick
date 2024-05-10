@@ -44,26 +44,48 @@ class PlaceService {
     }
   }
   // GET
-  async fetchPlaceCateogriesService(slug) {
+  async fetchPlaceMealsService(query) {
     try {
-      const place_categories = await Models.PlaceCategories.findAll({
+      let page = query.page || 1
+      let limit = query.limit || 10
+      let offset = page * limit - limit
+      const meals = await Models.PlaceCategories.findAll({
         attributes: ['id', 'name', 'slug'],
-        where: { isActive: true },
+        where: { slug: query.cat, isActive: true },
         include: [
           {
             model: Models.Meals,
             attributes: ['id', 'name', 'slug', 'img', 'price', 'point', 'time', 'type'],
-            where: { isActive: true }
+            where: { isActive: true },
+            limit: Number(limit),
+            offset: Number(offset)
           },
           {
             model: Models.Places,
-            where: { slug: slug, isActive: true },
+            where: { slug: query.caf, isActive: true },
             attributes: []
           }
-        ]
+        ],
       })
-     if (place_categories.length === 0) { return Response.NotFound('No information found!', []) }
-     return Response.Success('Successful!', place_categories)
+     if (meals.length === 0) { return Response.NotFound('No information found!', []) }
+     return Response.Success('Successful!', meals)
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
+  async placeCategoriesService(slug) {
+    try {
+      const place_categories = await Models.PlaceCategories.findAndCountAll({
+        attributes: ['id', 'name', 'slug'],
+        where: { isActive: true },
+        include: {
+          model: Models.Places,
+          where: { slug: slug, isActive: true },
+          attributes: []
+        }
+      }).catch((err) => console.log(err))
+      if (place_categories.count === 0) { return Response.NotFound('No information found!', []) }
+      return Response.Success('Successful!', place_categories)
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }

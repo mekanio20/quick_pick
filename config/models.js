@@ -124,6 +124,13 @@ const PromotionUses = database.define('promotion_uses', {
     updatedAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW }
 })
 
+const Baskets = database.define('baskets', {
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false, unique: true },
+    isActive: { type: DataTypes.BOOLEAN, defaultValue: true },
+    createdAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW },
+    updatedAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW }
+})
+
 const Orders = database.define('orders', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false, unique: true },
     status: { type: DataTypes.ENUM({ values: ['Order Placed', 'Preparation Started', 'Ready in 5 Minutes', 'Order Finished', 'Order Collected', 'Order Cancelled'] }), defaultValue: 'Order Placed' },
