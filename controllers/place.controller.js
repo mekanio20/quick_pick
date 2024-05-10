@@ -90,9 +90,17 @@ class PlaceController {
         }
     }
     // GET
-    async fetchPlaceCateogries(req, res) {
+    async fetchPlaceMeals(req, res) {
         try {
-            const data = await placeService.fetchPlaceCateogriesService(req.params.slug)
+            const data = await placeService.fetchPlaceMealsService(req.query)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
+    async placeCategories(req, res) {
+        try {
+            const data = await placeService.placeCategoriesService(req.params.slug)
             return res.status(data.status).json(data)
         } catch (error) {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
