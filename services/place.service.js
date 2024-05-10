@@ -44,6 +44,23 @@ class PlaceService {
     }
   }
   // GET
+  async fetchPlaceCategoriesService(slug) {
+    try {
+      const place_categories = await Models.PlaceCategories.findAndCountAll({
+        attributes: ['id', 'name', 'slug'],
+        where: { isActive: true },
+        include: {
+          model: Models.Places,
+          where: { slug: slug, isActive: true },
+          attributes: []
+        }
+      }).catch((err) => console.log(err))
+      if (place_categories.count === 0) { return Response.NotFound('No information found!', []) }
+      return Response.Success('Successful!', place_categories)
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
   async fetchPlaceMealsService(query) {
     try {
       let page = query.page || 1
@@ -73,19 +90,35 @@ class PlaceService {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
   }
-  async placeCategoriesService(slug) {
+  async fetchPlaceMealDetailService(slug) {
     try {
-      const place_categories = await Models.PlaceCategories.findAndCountAll({
-        attributes: ['id', 'name', 'slug'],
-        where: { isActive: true },
+      const meal = await Models.Meals.findOne({
+        where: { slug: slug, isActive: true },
+        attributes: { exclude: ['recomendo', 'placeCategoryId', 'isActive', 'createdAt', 'updatedAt'] }
+      }).catch((err) => console.log(err))
+      if (!meal) { return Response.NotFound('No information found!', []) }
+      return Response.Success('Successful!', meal)
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
+  async fetchPlaceRecommendationsService(slug) {
+    try {
+      const recommendations = await Models.Meals.findAndCountAll({
+        where: { isActive: true, recomendo: true },
+        attributes: { exclude: ['recomendo', 'placeCategoryId', 'isActive', 'createdAt', 'updatedAt'] },
         include: {
-          model: Models.Places,
-          where: { slug: slug, isActive: true },
-          attributes: []
+          model: Models.PlaceCategories,
+          where: { isActive: true },
+          attributes: [],
+          include: {
+            model: Models.Places,
+            where: { slug: slug, isActive: true }
+          }
         }
       }).catch((err) => console.log(err))
-      if (place_categories.count === 0) { return Response.NotFound('No information found!', []) }
-      return Response.Success('Successful!', place_categories)
+      if (recommendations.count === 0) { return Response.NotFound('No information found!', []) }
+      return Response.Success('Successful!', recommendations)
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }

@@ -52,13 +52,21 @@ router.post('/add/punchcard',
     placeController.placeAddPunchcard)
 
 // GET
+router.get('/categories/:slug',
+    validationMiddleware(baseSchema.slugControl, 'params'),
+    placeController.fetchPlaceCategories)
+
 router.get('/meals',
     validationMiddleware(placeSchema.placeMeals, 'query'),
     placeController.fetchPlaceMeals)
 
-router.get('/categories/:slug',
+router.get('/meal/:slug',
     validationMiddleware(baseSchema.slugControl, 'params'),
-    placeController.placeCategories)
+    placeController.fetchPlaceMealDetail)
+    
+router.get('/recommendations/:slug',
+    validationMiddleware(baseSchema.slugControl, 'params'),
+    placeController.fetchPlaceRecommendations)
 
 router.get('/profile',
     authMiddleware,
