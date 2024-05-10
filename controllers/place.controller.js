@@ -90,6 +90,14 @@ class PlaceController {
         }
     }
     // GET
+    async fetchPlaceCategories(req, res) {
+        try {
+            const data = await placeService.fetchPlaceCategoriesService(req.params.slug)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
     async fetchPlaceMeals(req, res) {
         try {
             const data = await placeService.fetchPlaceMealsService(req.query)
@@ -98,9 +106,17 @@ class PlaceController {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
         }
     }
-    async placeCategories(req, res) {
+    async fetchPlaceMealDetail(req, res) {
         try {
-            const data = await placeService.placeCategoriesService(req.params.slug)
+            const data = await placeService.fetchPlaceMealDetailService(req.params.slug)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
+    async fetchPlaceRecommendations(req, res) {
+        try {
+            const data = await placeService.fetchPlaceRecommendationsService(req.params.slug)
             return res.status(data.status).json(data)
         } catch (error) {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
@@ -125,7 +141,9 @@ class PlaceController {
     // PUT
     async placeEdit(req, res) {
         try {
-            let newObj = { id: req.user.id }
+            let newObj = req.body
+            newObj.id = req.user.id
+            if (req.body?.name) { newObj.slug = await Functions.generateSlug(req.body.name) }
             const place = await Models.Places.findOne({ where: { id: req.user.id, isActive: true }, attributes: ['id'] })
             if (!place) { return Response.NotFound('No information found!', []) }
             if (req.files?.logo) { newObj.logo = req.files.logo[0].filename }
