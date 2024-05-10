@@ -51,23 +51,12 @@ const placeSchema = {
         price: Joi.number().positive().required(),
         point: Joi.number().positive().optional(),
         time: Joi.string().max(10).required(),
-        type: Joi.string().valid('Meat', 'Vegan', 'Kosher', 'Vegetarian', 'Halal', 'Gluten Free'),
         recomendo: Joi.boolean().optional(),
+        type: Joi.string().valid('Meat', 'Vegan', 'Kosher', 'Vegetarian', 'Halal', 'Gluten Free').required(),
+        extra_meals: Joi.array().items(Joi.object({ name: Joi.string().required(), price: Joi.number().positive().required() })).optional(),
+        meal_sizes: Joi.array().items(Joi.object({ size: Joi.string().valid('Small', 'Medium', 'Large').required(), price: Joi.number().positive().required() })).optional(),        
+        allergens: Joi.array().items(Joi.object({ name: Joi.string().required() })).optional(),      
         placeCategoryId: Joi.number().positive().required()
-    }),
-    placeAddAllergen: Joi.object({
-        name: Joi.string().max(255).required(),
-        mealId: Joi.number().positive().required()
-    }),
-    placeAddMealSize: Joi.object({
-        size: Joi.string().valid('Small', 'Medium', 'Large').required(),
-        price: Joi.number().positive().required(),
-        mealId: Joi.number().positive().required()
-    }),
-    placeAddMealExtra: Joi.object({
-        name: Joi.string().max(255).required(),
-        price: Joi.number().positive().required(),
-        mealId: Joi.number().positive().required()
     }),
     placeAddPunchcard: Joi.object({
         name: Joi.string().max(255).required(),

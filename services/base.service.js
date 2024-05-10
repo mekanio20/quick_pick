@@ -5,6 +5,7 @@ class BaseService {
     async addService(isExist, body) {
         try {
             const [data, created] = await this.Model.findOrCreate({ where: isExist, defaults: body })
+                .catch((err) => console.log(err))
             if (!created) { return Response.BadRequest('Already exists!', []) }
             return Response.Created('Created successfully!', data)
         } catch (error) {

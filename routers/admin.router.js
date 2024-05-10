@@ -5,9 +5,12 @@ const rolesMiddleware = require('../middlewares/roles.middleware')
 const adminSchema = require('../validations/admin.schema')
 
 // GET
+router.get('/test', adminController.Test)
+
 router.get('/default',
     // rolesMiddleware(['admin']),
     adminController.Default)
+
 
 // PUT
 router.put('/edit/status',
