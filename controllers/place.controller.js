@@ -141,7 +141,9 @@ class PlaceController {
     // PUT
     async placeEdit(req, res) {
         try {
-            let newObj = { id: req.user.id }
+            let newObj = req.body
+            newObj.id = req.user.id
+            if (req.body?.name) { newObj.slug = await Functions.generateSlug(req.body.name) }
             const place = await Models.Places.findOne({ where: { id: req.user.id, isActive: true }, attributes: ['id'] })
             if (!place) { return Response.NotFound('No information found!', []) }
             if (req.files?.logo) { newObj.logo = req.files.logo[0].filename }
