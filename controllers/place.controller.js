@@ -68,31 +68,7 @@ class PlaceController {
             const body = req.body
             body.slug = slug
             body.img = req.file.filename
-            const data = await new baseService(Models.Meals).addService(slug, body)
-            return res.status(data.status).json(data)
-        } catch (error) {
-            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
-        }
-    }
-    async placeAddMealSize(req, res) {
-        try {
-            const data = await new baseService(Models.MealSizes).addService(req.body, req.body)
-            return res.status(data.status).json(data)
-        } catch (error) {
-            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
-        }
-    }
-    async placeAddMealExtra(req, res) {
-        try {
-            const data = await new baseService(Models.ExtraMeals).addService(req.body, req.body)
-            return res.status(data.status).json(data)
-        } catch (error) {
-            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
-        }
-    }
-    async placeAddAllergen(req, res) {
-        try {
-            const data = await new baseService(Models.Allergens).addService(req.body, req.body)
+            const data = await placeService.placeAddMealService(body)
             return res.status(data.status).json(data)
         } catch (error) {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })

@@ -17,6 +17,17 @@ class PlaceService {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
   }
+  async placeAddMealService(body) {
+    try {
+      const isExist = await Models.Meals.findOne({ where: { slug: body.slug } })
+      if (isExist) { return Response.BadRequest('Give another name value!', []) }
+      const meal = await Models.Meals.create(body)
+        .catch((err) => console.log(err))
+      return Response.Success('Successfully created!', meal)
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
   async placeAddAlbumService(placeId, files) {
     try {
       if (files?.photo?.length > 0) {

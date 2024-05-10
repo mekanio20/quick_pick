@@ -98,33 +98,10 @@ const Meals = database.define('meals', {
     point: { type: DataTypes.SMALLINT, defaultValue: 0 },
     time: { type: DataTypes.STRING(10), allowNull: false },
     type: { type: DataTypes.ENUM({ values: ['Meat', 'Vegan', 'Kosher', 'Vegetarian', 'Halal', 'Gluten Free'] }) },
+    extra_meals: { type: DataTypes.ARRAY(DataTypes.JSON(DataTypes.STRING)), allowNull: true },
+    meal_sizes: { type: DataTypes.ARRAY(DataTypes.JSON(DataTypes.STRING)), allowNull: true },
+    allergens: { type: DataTypes.ARRAY(DataTypes.JSON(DataTypes.STRING)), allowNull: true },
     recomendo: { type: DataTypes.BOOLEAN, defaultValue: false },
-    isActive: { type: DataTypes.BOOLEAN, defaultValue: true },
-    createdAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW },
-    updatedAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW }
-})
-
-const ExtraMeals = database.define('extra_meals', {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false, unique: true },
-    name: { type: DataTypes.STRING, allowNull: false },
-    price: { type: DataTypes.DOUBLE, allowNull: false }, // +0.25$
-    isActive: { type: DataTypes.BOOLEAN, defaultValue: true },
-    createdAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW },
-    updatedAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW }
-})
-
-const MealSizes = database.define('meal_sizes', {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false, unique: true },
-    size: { type: DataTypes.ENUM({ values: ['Small', 'Medium', 'Large'] }), allowNull: false },
-    price: { type: DataTypes.DOUBLE, defaultValue: 0 }, // +0.50$, 0.75$
-    isActive: { type: DataTypes.BOOLEAN, defaultValue: true },
-    createdAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW },
-    updatedAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW }
-})
-
-const Allergens = database.define('allergens', {
-    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false, unique: true },
-    name: { type: DataTypes.STRING, allowNull: false },
     isActive: { type: DataTypes.BOOLEAN, defaultValue: true },
     createdAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW },
     updatedAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW }
@@ -217,21 +194,6 @@ PlaceCategories.belongsTo(Places)
 PlaceCategories.hasMany(Meals, { onDelete: "cascade" })
 Meals.belongsTo(PlaceCategories)
 
-// ExtraMeals -> MealId
-
-Meals.hasMany(ExtraMeals, { onDelete: "cascade" })
-ExtraMeals.belongsTo(Meals)
-
-// MealSizes -> MealId
-
-Meals.hasMany(MealSizes, { onDelete: "cascade" })
-MealSizes.belongsTo(Meals)
-
-// Allergens -> MealId
-
-Meals.hasMany(Allergens, { onDelete: "cascade" })
-Allergens.belongsTo(Meals)
-
 // Promotions -> PlaceId
 
 Places.hasMany(Promotions, { onDelete: "cascade" })
@@ -284,7 +246,6 @@ PunchCardSteps.belongsTo(Users)
 
 module.exports = {
     Roles, Users, Places, Categories, PlaceImages, PlaceSchedules, 
-    Meals, PlaceCategories, ExtraMeals, MealSizes, Allergens,
-    Promotions, PromotionUses, Orders, OrderItems, 
+    Meals, PlaceCategories, Promotions, PromotionUses, Orders, OrderItems, 
     Punchcards, PunchCardSteps
 }

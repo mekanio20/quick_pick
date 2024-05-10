@@ -15,10 +15,7 @@
 3) http://31.44.2.32:5001/api/v1/place/add/album --- POST --- req.files { photo: { maxCount: 5 } } --- req.header.Authorization: Bearer {token}
 4) http://31.44.2.32:5001/api/v1/place/add/category --- POST --- req.body { name } --- req.header.Authorization: Bearer {token}
 5) http://31.44.2.32:5001/api/v1/place/add/schedule --- POST --- req.body { day: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], opent_time, close_time } --- req.header.Authorization: Bearer {token}
-6) http://31.44.2.32:5001/api/v1/place/add/meal --- POST --- req.body { name, desc, price, point, time, type: ['Meat', 'Vegan', 'Kosher', 'Vegetarian', 'Halal', 'Gluten Free'], recomendo, paceCategoryId } --- req.header.Authorization: Bearer {token}
-7) http://31.44.2.32:5001/api/v1/place/add/meal-size --- POST --- req.body { size: ['Small', 'Medium', 'Large'], price, mealId } --- req.header.Authorization: Bearer {token}
-8) http://31.44.2.32:5001/api/v1/place/add/meal-extra --- POST --- req.body { name, price, mealId } --- req.header.Authorization: Bearer {token}
-9) http://31.44.2.32:5001/api/v1/place/add/allergen --- POST --- req.body { name, mealId } --- req.header.Authorization: Bearer {token}
+6) http://31.44.2.32:5001/api/v1/place/add/meal --- POST --- req.body { name, desc, price, point, time, type: ['Meat', 'Vegan', 'Kosher', 'Vegetarian', 'Halal', 'Gluten Free'], recomendo, extra_meals[{name: ,price: }], meal_sizes[{size: , price: }], allergens[{name: }], paceCategoryId } --- req.header.Authorization: Bearer {token}
 10) http://31.44.2.32:5001/api/v1/place/add/punchcard --- POST --- req.body { name, point, mealId } --- req.file { icon } --- req.header.Authorization: Bearer {token}
 // GET
 11) http://31.44.2.32:5001/api/v1/place/profile --- GET --- req.header.Authorization: Bearer {token}

@@ -12,7 +12,7 @@ class UserService {
   // POST
   async userRegisterService(body, ip, os) {
     try {
-      const user = await Verification.isExists(body.email)
+      const user = await Verification.isExists(body.email, true)
       if (user) { return Response.BadRequest("User already exists!", []) }
       const code = (100000 + Math.floor(Math.random() * 100000)).toString()
       await redis.set(body.email, code)

@@ -13,6 +13,15 @@ class AdminController {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
         }
     }
+    // GET
+    async Test(req, res) {
+        try {
+            const meals = await Models.Meals.findOne({ where: { id: 1 }})
+            return res.status(200).json(meals)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
     // DEFAULT
     async Default(req, res) {
         try {
@@ -65,7 +74,8 @@ class AdminController {
             ]).then(() => { console.log('PlaceCategories created') }).catch((err) => { console.log(err) })
 
             await Models.Meals.bulkCreate([
-                { name: 'Pepperoni Pizza', slug: 'pepperoni-pizza', img: 'test.jpg', price: 25.15, point: 3, time: '14 min', type: 'Meat', placeCategoryId: 1 },
+                { name: 'Pepperoni Pizza', slug: 'pepperoni-pizza', img: 'test.jpg', price: 25.15, point: 3, time: '14 min', type: 'Meat',
+                    extra_meals: [{ name: "sosis", price: "0.25" }], meal_sizes: [{ size: "Small", price: "0.30" }, { size: "Medium", price: "0.50" }], allergens: [{ test: "test1" }], placeCategoryId: 1 },
                 { name: 'Pepperoni Pizza 2', slug: 'pepperoni-pizza-2', img: 'test2.jpg', price: 54.15, point: 6, time: '28 min', type: 'Meat', placeCategoryId: 1 }
             ]).then(() => { console.log('Meals created') }).catch((err) => { console.log(err) })
 
