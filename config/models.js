@@ -126,6 +126,9 @@ const PromotionUses = database.define('promotion_uses', {
 
 const Baskets = database.define('baskets', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false, unique: true },
+    count: { type: DataTypes.SMALLINT, defaultValue: 1 },
+    extra_meals: { type: DataTypes.ARRAY(DataTypes.JSON(DataTypes.STRING)), allowNull: true },
+    meal_sizes: { type: DataTypes.ARRAY(DataTypes.JSON(DataTypes.STRING)), allowNull: true },
     isActive: { type: DataTypes.BOOLEAN, defaultValue: true },
     createdAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW },
     updatedAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW }
@@ -251,8 +254,18 @@ PunchCardSteps.belongsTo(Places)
 Users.hasMany(PunchCardSteps)
 PunchCardSteps.belongsTo(Users)
 
+// Baskets -> UserId
+
+Users.hasMany(Baskets)
+Baskets.belongsTo(Users)
+
+// Baskets -> MealId
+
+Meals.hasMany(Baskets)
+Baskets.belongsTo(Meals)
+
 module.exports = {
     Roles, Users, Places, Categories, PlaceImages, PlaceSchedules, 
     Meals, PlaceCategories, Promotions, PromotionUses, Orders, OrderItems, 
-    Punchcards, PunchCardSteps
+    Punchcards, PunchCardSteps, Baskets
 }

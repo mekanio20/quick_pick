@@ -76,7 +76,8 @@ class AdminController {
             await Models.Meals.bulkCreate([
                 { name: 'Pepperoni Pizza', slug: 'pepperoni-pizza', img: 'test.jpg', price: 25.15, point: 3, time: '14 min', type: 'Meat',
                     extra_meals: [{ name: "sosis", price: "0.25" }], meal_sizes: [{ size: "Small", price: "0.30" }, { size: "Medium", price: "0.50" }], allergens: [{ test: "test1" }], placeCategoryId: 1 },
-                { name: 'Pepperoni Pizza 2', slug: 'pepperoni-pizza-2', img: 'test2.jpg', price: 54.15, point: 6, time: '28 min', type: 'Meat', placeCategoryId: 1 }
+                { name: 'Pepperoni Pizza 2', slug: 'pepperoni-pizza-2', img: 'test2.jpg', price: 54.15, point: 6, time: '28 min', type: 'Meat',
+                    extra_meals: [{ name: "sosis", price: "0.25" }], meal_sizes: [{ size: "Small", price: "0.30" }, { size: "Medium", price: "0.50" }], placeCategoryId: 2 }
             ]).then(() => { console.log('Meals created') }).catch((err) => { console.log(err) })
 
             await Models.Punchcards.bulkCreate([
@@ -87,11 +88,16 @@ class AdminController {
                 { name: 'Free pizza 2', point: 50, placeId: 2, mealId: 2 },
                 { name: 'Free pizza 3', point: 75, placeId: 2, mealId: 2 },
             ]).then(() => { console.log('Punchcards created') }).catch((err) => { console.log(err) })
-            
+
             await Models.PunchCardSteps.bulkCreate([
                 { score: 12, placeId: 1, userId: 2 },
                 { score: 24, placeId: 2, userId: 2 }
             ]).then(() => { console.log('PunchCardSteps created') }).catch((err) => { console.log(err) })
+
+            await Models.Baskets.bulkCreate([
+                { count: 2, extra_meals: [{ name: "sosis", price: "0.25" }], meal_sizes: [{ size: "Small", price: "0.30" }], mealId: 1, userId: 2 },
+                { count: 3, extra_meals: [{ name: "sosis", price: "0.25" }], meal_sizes: [{ size: "Small", price: "0.30" }], mealId: 2, userId: 2 },
+            ]).then(() => { console.log('Baskets created') }).catch((err) => { console.log(err) })
             
             return res.json({ message: "Completed"})
         } catch (error) {

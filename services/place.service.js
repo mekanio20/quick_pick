@@ -23,7 +23,7 @@ class PlaceService {
       if (isExist) { return Response.BadRequest('Give another name value!', []) }
       const meal = await Models.Meals.create(body)
         .catch((err) => console.log(err))
-      return Response.Success('Successfully created!', meal)
+      return Response.Created('Created successfully!', meal)
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
@@ -131,6 +131,16 @@ class PlaceService {
       }).catch((err) => console.log(err))
       if (!place) { return Response.Forbidden('Not allowed', []) }
       return Response.Success('Successful!', place)
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
+  async placeLogoutService(placeId) {
+    try {
+      await Models.Places.update({ isActive: false }, { where: { id: placeId } })
+        .catch((err) => console.log(err))
+      const token = jwt.sign({}, process.env.PRIVATE_KEY, { expiresIn: 0 })
+      return Response.Success('Successful!', { token })
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }

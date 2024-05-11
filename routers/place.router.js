@@ -73,6 +73,11 @@ router.get('/profile',
     rolesMiddleware(['place']),
     placeController.fetchPlaceProfile)
 
+router.get('/logout',
+    authMiddleware,
+    rolesMiddleware(['place']),
+    placeController.placeLogout)
+
 router.get('/:slug',
     validationMiddleware(baseSchema.slugControl, 'params'),
     placeController.fetchPlace)
@@ -88,5 +93,6 @@ router.put('/edit',
     ]),
     validationMiddleware(placeSchema.placeEdit, 'body'),
     placeController.placeEdit)
+
 
 module.exports = router
