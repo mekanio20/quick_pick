@@ -17,7 +17,7 @@ class PlaceController {
             body.password = hash
             body.slug = slug
             const data = await new baseService(Models.Places).addService(isExist, body)
-            const token = await Functions.generateJwt({ id: data.detail.id, email: data.detail.email, role: "place" })
+            const token = await Functions.generateJwt({ id: data.detail.id, role: "place" })
             data.detail.token = token
             return res.status(data.status).json(data)
         } catch (error) {
@@ -143,7 +143,21 @@ class PlaceController {
         try {
             let newObj = req.body
             newObj.id = req.user.id
-            if (req.body?.name) { newObj.slug = await Functions.generateSlug(req.body.name) }
+            if (req.body?.name) {
+                newObj.slug = await Functions.generateSlug(req.body.name)
+                const isExist = await Models.Places.findOne({ where: { slug: newObj.slug } })
+                if (isExist) {
+                    const result = await Response.BadRequest('Enter a different name value!', [])
+                    return res.status(result.status).json(result)
+                }
+            }
+            if (req.body?.email) {
+                const isExist = await Models.Places.findOne({ where: { email: newObj.email } })
+                if (isExist) {
+                    const result = await Response.BadRequest('Enter a different email value!', [])
+                    return res.status(result.status).json(result)
+                }
+            }
             const place = await Models.Places.findOne({ where: { id: req.user.id, isActive: true }, attributes: ['id'] })
             if (!place) { return Response.NotFound('No information found!', []) }
             if (req.files?.logo) { newObj.logo = req.files.logo[0].filename }

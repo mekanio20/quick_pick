@@ -63,6 +63,14 @@ class UserController {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
         }
     }
+    async userLogout(req, res) {
+        try {
+            const data = await userService.userLogoutService(req.user.id)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
 }
 
 module.exports = new UserController()

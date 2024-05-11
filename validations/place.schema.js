@@ -18,6 +18,7 @@ const placeSchema = {
     }),
     placeEdit: Joi.object({
         name: Joi.string().max(100).optional(),
+        email: Joi.string().max(200).optional(),
         type: Joi.string().valid('Cafe', 'Bakery', 'Restaurant', 'Bar').optional(),
         desc: Joi.string().optional(),
         phone_primary: Joi.string().max(20).optional(),

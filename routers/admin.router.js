@@ -11,11 +11,13 @@ router.get('/default',
     // rolesMiddleware(['admin']),
     adminController.Default)
 
-
 // PUT
 router.put('/edit/status',
     rolesMiddleware(['admin']),
     validationMiddleware(adminSchema.editStatus, 'body'),
     adminController.editStatus)
+
+// DELETE
+router.delete('/user/:email', adminController.deleteUser)
 
 module.exports = router

@@ -98,6 +98,17 @@ class AdminController {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
         }
     }
+    // DELETE
+    async deleteUser(req, res) {
+        try {
+            const user = await Models.Users.destroy({ where: { email: req.params.email } })
+                .catch((err) => console.log(err))
+            if (user) { return res.status(200).json({ message: "Completed!" }) }
+            return res.status(400).json({ message: "Error occurred!" })
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
 }
 
 module.exports = new AdminController()
