@@ -126,9 +126,9 @@ const PromotionUses = database.define('promotion_uses', {
 
 const Baskets = database.define('baskets', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false, unique: true },
+    count: { type: DataTypes.SMALLINT, defaultValue: 1 },
     extra_meals: { type: DataTypes.ARRAY(DataTypes.JSON(DataTypes.STRING)), allowNull: true },
     meal_sizes: { type: DataTypes.ARRAY(DataTypes.JSON(DataTypes.STRING)), allowNull: true },
-    count: { type: DataTypes.SMALLINT, allowNull: false },
     isActive: { type: DataTypes.BOOLEAN, defaultValue: true },
     createdAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW },
     updatedAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW }

@@ -11,6 +11,12 @@ const userSchema = {
     userLogin: Joi.object({
         email: Joi.string().max(100).email().required(),
         password: Joi.string().min(4).max(25).regex(/^[a-zA-Z0-9!?^.,_@#$%&*:;=+]{4,25}$/).required()
+    }),
+    userBasket: Joi.object({
+        mealId: Joi.number().positive().required(),
+        count: Joi.number().positive().optional(),
+        extra_meals: Joi.array().items(Joi.object({ name: Joi.string().required(), price: Joi.number().positive().required() })).optional(),
+        meal_sizes: Joi.array().items(Joi.object({ size: Joi.string().valid('Small', 'Medium', 'Large').required(), price: Joi.number().positive().required() })).optional()
     })
 }
 

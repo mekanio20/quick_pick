@@ -6,8 +6,8 @@ const bcrypt = require('bcrypt')
 const uuid = require('uuid')
 const redis = require('../ioredis')
 const Models = require('../config/models')
-const { Op } = require('sequelize')
 const jwt = require('jsonwebtoken')
+const { Op } = require('sequelize')
 
 class UserService {
   // POST
@@ -81,44 +81,44 @@ class UserService {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
   }
-  // GET
-  async userProfileService(user) {
+  async userAddBasketService(body, userId) {
     try {
-      const customer = await Models.Users.findOne({
-        attributes: { exclude: ['password', 'ip', 'device', 'uuid', 'roleId', 'createdAt', 'updatedAt'] },
-        where: {
-          id: user.id,
-          isActive: true
-        }
-      }).catch((err) => { console.log(err) })
-      if (!customer) { return Response.Unauthorized('User not found!', []) }
-      return Response.Success('Successful!', customer)
+      body.userId = userId
+      const basket = await Models.Baskets.create(body)
+      if (!basket) { return Response.BadRequest('Error occurred!', []) }
+      return Response.Created('Created successfully!', [])
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
   }
-  async fetchPunchcardService(slug, userId) {
+  // PUT
+  async userUpdateBasketService(body, userId) {
     try {
-      const result = []
-      const punchcard_steps = await Models.PunchCardSteps.findOne({
-        where: { userId: userId, isActive: true },
-        attributes: ['id', 'score'],
-        include: {
-          model: Models.Places,
-          attributes: ['id', 'name', 'slug'],
-          where: { slug: slug, isActive: true }
-        }
-      }).catch((err) => console.log(err))
-      if (!punchcard_steps) { return Response.NotFound('No information found!', []) }
-      result.push({ user: punchcard_steps})
-
-      const punchcards = await Models.Punchcards.findAll({
-        attributes: ['id', 'name', 'point', 'mealId'],
-        where: { placeId: punchcard_steps.place.id, isActive: true },
-      }).catch((err) => console.log(err))
-      result.push({ punchcards: punchcards })
-
-      return Response.Success('Successful!', result)
+      const isExist = await Models.Baskets.findOne({
+        where: { isActive: true, mealId: body.mealId, userId: userId },
+        attributes: ['id'],
+     }).catch((err) => console.log(err))
+     if (isExist) {
+      const obj = {}
+      for (const item in body) if (item) obj[item] = body[item] 
+      await Models.Baskets.update(obj, { where: { id: isExist.id } })
+        .catch((err) => console.log(err))
+      return Response.Success('Updated!', [])
+    }
+    return Response.BadRequest('An unknown error occurred!', [])
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
+  // GET
+  async userProfileService(user) {
+    try {
+      const customer = await Models.Users.findOne({
+        where: { id: user.id, isActive: true },
+        attributes: { exclude: ['password', 'ip', 'os', 'uuid', 'roleId', 'isActive', 'createdAt', 'updatedAt'] }
+      }).catch((err) => { console.log(err) })
+      if (!customer) { return Response.Unauthorized('User not found!', []) }
+      return Response.Success('Successful!', customer)
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
@@ -165,12 +165,79 @@ class UserService {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
   }
+  async fetchPunchcardService(slug, userId) {
+    try {
+      const result = []
+      const punchcard_steps = await Models.PunchCardSteps.findOne({
+        where: { userId: userId, isActive: true },
+        attributes: ['id', 'score'],
+        include: {
+          model: Models.Places,
+          attributes: ['id', 'name', 'slug'],
+          where: { slug: slug, isActive: true }
+        }
+      }).catch((err) => console.log(err))
+      if (!punchcard_steps) { return Response.NotFound('No information found!', []) }
+      result.push({ user: punchcard_steps})
+
+      const punchcards = await Models.Punchcards.findAll({
+        attributes: ['id', 'name', 'point', 'mealId'],
+        where: { placeId: punchcard_steps.place.id, isActive: true },
+      }).catch((err) => console.log(err))
+      result.push({ punchcards: punchcards })
+
+      return Response.Success('Successful!', result)
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
+  async fetchBasketService(slug, userId) {
+    try {
+      const basket = await Models.Baskets.findAndCountAll({
+        where: { isActive: true, userId: userId },
+        attributes: ['id', 'count', 'extra_meals', 'meal_sizes'],
+        include: {
+          model: Models.Meals,
+          where: { isActive: true },
+          attributes: ['id', 'name', 'slug', 'price', 'point', 'img', 'time'],
+          include: {
+            model: Models.PlaceCategories,
+            where: { isActive: true },
+            attributes: [],
+            required: true,
+            include: {
+              model: Models.Places,
+              where: { slug: slug },
+              attributes: ['slug'],
+              required: true
+            }
+          }
+        }
+      }).catch((err) => console.log(err))
+      if (basket.count === 0) { return Response.NotFound('No information found!', []) }
+      return Response.Success('Successful!', basket)
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
   async userLogoutService(userId) {
     try {
       await Models.Users.update({ isActive: false }, { where: { id: userId } })
         .catch((err) => console.log(err))
       const token = jwt.sign({}, process.env.PRIVATE_KEY, { expiresIn: 0 })
       return Response.Success('Successful!', { token })
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
+  // DELETE
+  async userDeleteBasketService(id, userId) {
+    try {
+      const basket = await Models.Baskets.destroy({
+        where: { id: id, userId: userId, isActive: true }
+      }).catch((err) => console.log(err))
+      if (!basket) { return Response.Forbidden('Not allowed!', []) }
+      return Response.Success('Successfully deleted!', [])
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }

@@ -23,7 +23,7 @@ class PlaceService {
       if (isExist) { return Response.BadRequest('Give another name value!', []) }
       const meal = await Models.Meals.create(body)
         .catch((err) => console.log(err))
-      return Response.Success('Successfully created!', meal)
+      return Response.Created('Created successfully!', meal)
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }

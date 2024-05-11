@@ -25,6 +25,19 @@ router.post('/login',
     validationMiddleware(userSchema.userLogin, 'body'),
     userController.userLogin)
 
+router.post('/add/basket',
+    authMiddleware,
+    rolesMiddleware(['user']),
+    validationMiddleware(userSchema.userBasket, 'body'),
+    userController.userAddBasket)
+
+// PUT
+router.put('/update/basket',
+    authMiddleware,
+    rolesMiddleware(['user']),
+    validationMiddleware(userSchema.userBasket, 'body'),
+    userController.userUpdateBasket)
+
 // GET
 router.get('/profile',
     authMiddleware,
@@ -42,9 +55,22 @@ router.get('/punchcard/:slug',
     validationMiddleware(baseSchema.slugControl, 'params'),
     userController.fetchPunchcard)
 
+router.get('/basket/:slug',
+    authMiddleware,
+    rolesMiddleware(['user']),
+    validationMiddleware(baseSchema.slugControl, 'params'),
+    userController.fetchBasket)
+
 router.get('/logout',
     authMiddleware,
     rolesMiddleware(['user']),
     userController.userLogout)
+
+// DELETE
+router.delete('/basket/:id',
+    authMiddleware,
+    rolesMiddleware(['user']),
+    validationMiddleware(baseSchema.idControl, 'params'),
+    userController.userDeleteBasket)
 
 module.exports = router

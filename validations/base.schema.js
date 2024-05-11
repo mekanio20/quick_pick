@@ -1,11 +1,14 @@
 const Joi = require('joi')
 
 const baseSchema = {
+    idControl: Joi.object({
+        id: Joi.number().positive().required()
+    }),
     slugControl: Joi.object({
         slug: Joi.string().max(255).required()
     }),
     checkControl: Joi.object({
-       code: Joi.string().required()
+       code: Joi.string().max(6).required()
     }),
     queryControl: Joi.object({
         page: Joi.number().positive().optional(),

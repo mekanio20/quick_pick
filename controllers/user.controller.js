@@ -1,5 +1,6 @@
 const baseService = require('../services/base.service')
 const userService = require('../services/user.service')
+const Models = require('../config/models')
 
 class UserController {
     // POST
@@ -38,18 +39,27 @@ class UserController {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
         }
     }
-    // GET
-    async userProfile(req, res) {
+    async userAddBasket(req, res) {
         try {
-            const data = await userService.userProfileService(req.user)
+            const data = await userService.userAddBasketService(req.body, req.user.id)
             return res.status(data.status).json(data)
         } catch (error) {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
         }
     }
-    async fetchPunchcard(req, res) {
+    // PUT
+    async userUpdateBasket(req, res) {
         try {
-            const data = await userService.fetchPunchcardService(req.params.slug, req.user.id)
+            const data = await userService.userUpdateBasketService(req.body, req.user.id)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
+    // GET
+    async userProfile(req, res) {
+        try {
+            const data = await userService.userProfileService(req.user)
             return res.status(data.status).json(data)
         } catch (error) {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
@@ -63,9 +73,34 @@ class UserController {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
         }
     }
+    async fetchPunchcard(req, res) {
+        try {
+            const data = await userService.fetchPunchcardService(req.params.slug, req.user.id)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
+    async fetchBasket(req, res) {
+        try {
+            const data = await userService.fetchBasketService(req.params.slug, req.user.id)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
     async userLogout(req, res) {
         try {
             const data = await userService.userLogoutService(req.user.id)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
+    // DELETE
+    async userDeleteBasket(req, res) {
+        try {
+            const data = await userService.userDeleteBasketService(req.params.id, req.user.id)
             return res.status(data.status).json(data)
         } catch (error) {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
