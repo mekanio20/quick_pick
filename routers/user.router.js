@@ -30,17 +30,17 @@ router.get('/profile',
     authMiddleware,
     rolesMiddleware(['user']),
     userController.userProfile)
+    
+router.get('/punchcards',
+    authMiddleware,
+    rolesMiddleware(['user']),
+    userController.fetchAllPunchcards)
 
 router.get('/punchcard/:slug',
     authMiddleware,
     rolesMiddleware(['user']),
     validationMiddleware(baseSchema.slugControl, 'params'),
     userController.fetchPunchcard)
-
-router.get('/punchcards',
-    authMiddleware,
-    rolesMiddleware(['user']),
-    userController.fetchAllPunchcards)
 
 router.get('/logout',
     authMiddleware,

@@ -135,6 +135,16 @@ class PlaceService {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
   }
+  async placeLogoutService(placeId) {
+    try {
+      await Models.Places.update({ isActive: false }, { where: { id: placeId } })
+        .catch((err) => console.log(err))
+      const token = jwt.sign({}, process.env.PRIVATE_KEY, { expiresIn: 0 })
+      return Response.Success('Successful!', { token })
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
   async fetchPlaceService(slug) {
     try {
       let result = []

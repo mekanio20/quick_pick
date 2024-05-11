@@ -170,7 +170,7 @@ class UserService {
       await Models.Users.update({ isActive: false }, { where: { id: userId } })
         .catch((err) => console.log(err))
       const token = jwt.sign({}, process.env.PRIVATE_KEY, { expiresIn: 0 })
-      return Response.Success('Successful!', token)
+      return Response.Success('Successful!', { token })
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
