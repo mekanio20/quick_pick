@@ -42,4 +42,9 @@ router.get('/punchcards',
     rolesMiddleware(['user']),
     userController.fetchAllPunchcards)
 
+router.get('/logout',
+    authMiddleware,
+    rolesMiddleware(['user']),
+    userController.userLogout)
+
 module.exports = router

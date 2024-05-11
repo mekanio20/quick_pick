@@ -35,7 +35,7 @@ const Categories = database.define('categories', {
 
 const Places = database.define('places', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false, unique: true },
-    name: { type: DataTypes.STRING(100), allowNull: false, unique: true },
+    name: { type: DataTypes.STRING(100), allowNull: false },
     slug: { type: DataTypes.STRING(100), allowNull: false, unique: true },
     type: { type: DataTypes.ENUM({ values: ['Cafe', 'Bakery', 'Restaurant', 'Bar'] }), allowNull: false },
     email: { type: DataTypes.STRING(50), allowNull: false, validate: { isEmail: true }, unique: true },

@@ -7,6 +7,7 @@ const uuid = require('uuid')
 const redis = require('../ioredis')
 const Models = require('../config/models')
 const { Op } = require('sequelize')
+const jwt = require('jsonwebtoken')
 
 class UserService {
   // POST
@@ -59,7 +60,7 @@ class UserService {
       const customer = await Models.Users.create(user)
         .catch((err) => { console.log(err) })
       if (!customer) { return Response.BadRequest('An unknown error occurred!', []) }
-      const token = await Functions.generateJwt({ id: customer.id, email: customer.email, role: "user" })
+      const token = await Functions.generateJwt({ id: customer.id, role: "user" })
         .catch((err) => { console.log(err) })
       return Response.Created('User is registered!', { token })
     } catch (error) {
@@ -72,7 +73,9 @@ class UserService {
       if (!user) { return Response.Unauthorized('User not found!', []) }
       const hash = await bcrypt.compare(body.password, user.password)
       if (!hash) { return Response.Forbidden('Password is incorrect', []) }
-      const token = await Functions.generateJwt({ id: user.id, email: user.email, role: "user" })
+      user.isActive = true
+      await user.save()
+      const token = await Functions.generateJwt({ id: user.id, role: "user" })
       return Response.Success('Login confirmed', { token })
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
@@ -85,7 +88,6 @@ class UserService {
         attributes: { exclude: ['password', 'ip', 'device', 'uuid', 'roleId', 'createdAt', 'updatedAt'] },
         where: {
           id: user.id,
-          email: user.email,
           isActive: true
         }
       }).catch((err) => { console.log(err) })
@@ -159,6 +161,16 @@ class UserService {
         }
       })
       return Response.Success('Successful!', result)
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
+  async userLogoutService(userId) {
+    try {
+      await Models.Users.update({ isActive: false }, { where: { id: userId } })
+        .catch((err) => console.log(err))
+      const token = jwt.sign({}, process.env.PRIVATE_KEY, { expiresIn: 0 })
+      return Response.Success('Successful!', token)
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
