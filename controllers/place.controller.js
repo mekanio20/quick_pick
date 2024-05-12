@@ -46,7 +46,7 @@ class PlaceController {
             const body = req.body
             body.slug = slug
             body.placeId = req.user.id
-            const data = await new baseService(Models.PlaceCategories).addService(slug, body)
+            const data = await new baseService(Models.PlaceCategories).addService(body, body)
             return res.status(data.status).json(data)
         } catch (error) {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
@@ -138,6 +138,14 @@ class PlaceController {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
         }
     }
+    async fetchPlaceAlbums(req, res) {
+        try {
+            const data = await placeService.fetchPlaceAlbumsService(req.params.slug)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
     async fetchPlace(req, res) {
         try {
             const data = await placeService.fetchPlaceService(req.params.slug)
@@ -172,6 +180,79 @@ class PlaceController {
             if (req.files?.banner) { newObj.banner = req.files.banner[0].filename }
             if (req.files?.reward) { newObj.reward = req.files.reward[0].filename }
             const data = await new baseService(Models.Places).updateService(newObj)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
+    async placeEditAlbum(req, res) {
+        try {
+            const data = await placeService.placeEditAlbumService(req.params.id, req.file.filname, req.user.id)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
+    async placeEditSchedule(req, res) {
+        try {
+            const data = await placeService.placeEditScheduleService(req.body, req.user.id)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
+    async placeEditCategory(req, res) {
+        try {
+            const data = await placeService.placeEditCategoryService(req.body, req.user.id)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
+    async placeEditMeal(req, res) {
+        try {
+            const data = await placeService.placeEditMealService(req.body, req.file.filename, req.user.id)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
+    async placeEditPunchcard(req, res) {
+        try {
+            const data = await placeService.placeEditPunchcardService(req.body, req.user.id)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
+    // DELETE
+    async deleteAlbum(req, res) {
+        try {
+            const data = await placeService.deleteAlbumService(req.params.id, req.user.id)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
+    async deleteSchedule(req, res) {
+        try {
+            const data = await placeService.deleteScheduleService(req.params.id, req.user.id)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
+    async deleteMeal(req, res) {
+        try {
+            const data = await placeService.deleteMealService(req.params.id, req.user.id)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
+    async deletePunchcard(req, res) {
+        try {
+            const data = await placeService.deletePunchcardService(req.params.id, req.user.id)
             return res.status(data.status).json(data)
         } catch (error) {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })

@@ -135,6 +135,22 @@ class PlaceService {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
   }
+  async fetchPlaceAlbumsService(slug) {
+    try {
+      const photos = await Models.PlaceImages.findAndCountAll({
+        attributes: ['id', 'img'],
+        include: {
+          model: Models.Places,
+          where: { isActive: true, slug: slug },
+          attributes: []
+        }
+      }).catch((err) => console.log(err))
+      if (photos.count === 0) { return Response.NotFound('No information found!', []) }
+      return Response.Success('Successful!', photos)
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
   async placeLogoutService(placeId) {
     try {
       await Models.Places.update({ isActive: false }, { where: { id: placeId } })
@@ -193,6 +209,119 @@ class PlaceService {
       else result.push({ prices: prices[0] })
 
       return Response.Success('Successful!', result)
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
+  // PUT
+  async placeEditAlbumService(id, img, placeId) {
+    try {
+      if (!img) { return Response.BadRequest('Image required!', []) }
+      const album = await Models.PlaceImages.update({ img: img },
+        { where: { id: id, placeId: placeId } })
+        .catch((err) => console.log(err))
+      if (!album) { return Response.Forbidden('Not allowed!', []) }
+      return Response.Success('Successfully updated!', [])
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
+  async placeEditScheduleService(body, placeId) {
+    try {
+      const obj = {}
+      for (const item in body) if (item && item !== 'id') obj[item] = body[item]
+      const schedule = await Models.PlaceSchedules.update(obj,
+        { where: { id: body.id, placeId: placeId } })
+        .catch((err) => console.log(err))
+      if (!schedule) { return Response.Forbidden('Not allowed!', []) }
+      return Response.Success('Successfully updated!', [])
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
+  async placeEditCategoryService(body, placeId) {
+    try {
+      const slug = await Functions.generateSlug(body.name)
+      const category = await Models.PlaceCategories.findOne({
+        where: { id: body.id, placeId: placeId }
+      }).catch((err) => console.log(err))
+      if (!category) { return Response.Forbidden('Not allowed!', []) }
+      category.name = body.name
+      category.slug = slug
+      await category.save()
+      return Response.Success('Successfully updated!', [])
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
+  async placeEditMealService(body, img, placeId) {
+    try {
+      const obj = {}
+      if (img) { obj.img = img }
+      for (const item in body) if (item && item !== 'id') obj[item] = body[item]
+      const meal = await Models.Meals.update(obj,
+        { where: { id: body.id, placeId: placeId } })
+        .catch((err) => console.log(err))
+      if (!meal) { return Response.Forbidden('Not allowed!', []) }
+      return Response.Success('Successfully updated!', [])
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
+  async placeEditPunchcardService(body, placeId) {
+    try {
+      const obj = {}
+      for (const item in body) if (item && item !== 'id') obj[item] = body[item]
+      const punchcard = await Models.Punchcards.update(obj,
+        { where: { id: body.id, placeId: placeId } })
+        .catch((err) => console.log(err))
+      if (!punchcard) { return Response.Forbidden('Not allowed!', []) }
+      return Response.Success('Successfully updated!', [])
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
+  // DELETE
+  async deleteAlbumService(id, placeId) {
+    try {
+      const photo = await Models.PlaceImages.destroy({
+        where: { id: id, placeId: placeId }
+      }).catch((err) => console.log(err))
+      if (!photo) { return Response.Forbidden('Not allowed!', []) }
+      return Response.Success('successfully updated!', [])
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
+  async deleteScheduleService(id, placeId) {
+    try {
+      const schedule = await Models.PlaceSchedules.destroy({
+        where: { id: id, placeId: placeId }
+      }).catch((err) => console.log(err))
+      if (!schedule) { return Response.Forbidden('Not allowed!', []) }
+      return Response.Success('Successfully deleted!', [])
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
+  async deleteMealService(id, placeId) {
+    try {
+      const meal = await Models.Meals.destroy({
+        where: { id: id, placeId: placeId }
+      }).catch((err) => console.log(err))
+      if (!meal) { return Response.Forbidden('Not allowed!', []) }
+      return Response.Success('Successfully deleted!', [])
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
+  async deletePunchcardService(id, placeId) {
+    try {
+      const punchcard = await Models.Punchcards.destroy({
+        where: { id: id, placeId: placeId }
+      }).catch((err) => console.log(err))
+      if (!punchcard) { return Response.Forbidden('Not allowed!', []) }
+      return Response.Success('Successfully deleted!', [])
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }

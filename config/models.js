@@ -82,7 +82,7 @@ const PlaceSchedules = database.define('place_schedules', {
 const PlaceCategories = database.define('place_categories', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false, unique: true },
     name: { type: DataTypes.STRING, allowNull: false },
-    slug: { type: DataTypes.STRING, allowNull: false, unique: true },
+    slug: { type: DataTypes.STRING, allowNull: false },
     isActive: { type: DataTypes.BOOLEAN, defaultValue: true },
     createdAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW },
     updatedAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW }

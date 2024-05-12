@@ -43,9 +43,6 @@ const placeSchema = {
         open_time: Joi.string().max(50).required(),
         close_time: Joi.string().max(50).required()
     }),
-    placeAddCategory: Joi.object({
-        name: Joi.string().max(255).required()
-    }),
     placeAddMeal: Joi.object({
         name: Joi.string().max(255).required(),
         desc: Joi.string().max(255).optional(),
@@ -69,6 +66,36 @@ const placeSchema = {
         cat: Joi.string().max(255).required(),
         page: Joi.number().positive().optional(),
         limit: Joi.number().positive().optional()
+    }),
+    placeEditSchedule: Joi.object({
+        id: Joi.number().positive().required(),
+        day: Joi.string().valid('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday').optional(),
+        open_time: Joi.string().max(50).optional(),
+        close_time: Joi.string().max(50).optional()
+    }),
+    placeEditCategory: Joi.object({
+        id: Joi.number().positive().required(),
+        name: Joi.string().max(255).required()
+    }),
+    placeEditMeal: Joi.object({
+        id: Joi.number().positive().required(),
+        name: Joi.string().max(255).optional(),
+        desc: Joi.string().max(255).optional(),
+        price: Joi.number().positive().optional(),
+        point: Joi.number().positive().optional(),
+        time: Joi.string().max(10).optional(),
+        recomendo: Joi.boolean().optional(),
+        type: Joi.string().valid('Meat', 'Vegan', 'Kosher', 'Vegetarian', 'Halal', 'Gluten Free').optional(),
+        extra_meals: Joi.array().items(Joi.object({ name: Joi.string().required(), price: Joi.number().positive().required() })).optional(),
+        meal_sizes: Joi.array().items(Joi.object({ size: Joi.string().valid('Small', 'Medium', 'Large').required(), price: Joi.number().positive().required() })).optional(),        
+        allergens: Joi.array().items(Joi.object({ name: Joi.string().required() })).optional(),      
+        placeCategoryId: Joi.number().positive().optional()
+    }),
+    placeEditPunchcard: Joi.object({
+        id: Joi.number().positive().required(),
+        name: Joi.string().max(255).optional(),
+        point: Joi.number().positive().optional(),
+        mealId: Joi.number().positive().optional()
     })
 }
 
