@@ -95,19 +95,20 @@ class UserService {
   async userUpdateProfileService(body, img, userId) {
     try {
       const obj = {}
-      if (img) obj.img = img
-      if (body.password) {
+      if (img?.filename) obj.img = img.filename
+      if (body?.password) {
         const hash = await bcrypt.hash(body.password, 5)
         obj.password = hash
       }
-      if (body.email) {
+      if (body?.email) {
         const isExist = await Models.Users.findOne({ where: { email: body.email } })
         if (isExist) return Response.BadRequest('The user for this email already exists!', [])
         obj.email = body.email
       }
-      for (const item in body)
+      for (const item in body) {
         if (item && item !== 'password' && item !== 'email')
           obj[item] = body[item]
+      }
       const user = await Models.Users.update(obj, { where: { id: userId } })
         .catch((err) => console.log(err))
       if (!user) { return Response.Forbidden('Not allowed!', []) }
