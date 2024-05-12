@@ -48,6 +48,14 @@ class UserController {
         }
     }
     // PUT
+    async userUpdateProfile(req, res) {
+        try {
+            const data = await userService.userUpdateProfileService(req.body, req.file.filename, req.user.id)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
     async userUpdateBasket(req, res) {
         try {
             const data = await userService.userUpdateBasketService(req.body, req.user.id)

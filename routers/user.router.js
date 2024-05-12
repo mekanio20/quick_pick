@@ -2,6 +2,7 @@ const router = require('express').Router()
 const userController = require('../controllers/user.controller')
 const limitterMiddleware = require('../middlewares/limitter.middleware')
 const validationMiddleware = require('../middlewares/validation.middleware')
+const imageMiddleware = require('../middlewares/image.middleware')
 const rolesMiddleware = require('../middlewares/roles.middleware')
 const authMiddleware = require('../middlewares/auth.middleware')
 const otpMiddleware = require('../middlewares/otp.middleware')
@@ -32,6 +33,13 @@ router.post('/add/basket',
     userController.userAddBasket)
 
 // PUT
+router.put('/update/profile',
+    authMiddleware,
+    rolesMiddleware(['user']),
+    imageMiddleware(process.env.USER_PATH).single('img'),
+    validationMiddleware(userSchema.userUpdateProfile, 'body'),
+    userController.userUpdateProfile)
+
 router.put('/update/basket',
     authMiddleware,
     rolesMiddleware(['user']),
