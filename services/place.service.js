@@ -1,17 +1,20 @@
 const Models = require('../config/models')
 const Functions = require('../helpers/functions.service')
 const Response = require('../helpers/response.service')
+const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 
 class PlaceService {
   // POST
   async placeLoginService(body) {
     try {
-      const place = await Models.Places.findOne({ where: { email: body.email }, attributes: ['id', 'email', 'password'] })
+      const place = await Models.Places.findOne({ where: { email: body.email } })
       if (!place) { return Response.NotFound('No information found!', []) }
       const hash = await bcrypt.compare(body.password, place.password)
       if (!hash) { return Response.Forbidden('Password is incorrect!', []) }
-      const token = await Functions.generateJwt({ id: place.id, email: place.email, role: "place" })
+      place.isActive = true
+      await place.save()
+      const token = await Functions.generateJwt({ id: place.id, role: "place" })
       return Response.Success('Login confirmed', { token })
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
@@ -155,7 +158,7 @@ class PlaceService {
     try {
       await Models.Places.update({ isActive: false }, { where: { id: placeId } })
         .catch((err) => console.log(err))
-      const token = jwt.sign({}, process.env.PRIVATE_KEY, { expiresIn: 0 })
+      const token =  jwt.sign({}, process.env.PRIVATE_KEY, { expiresIn: 0 })
       return Response.Success('Successful!', { token })
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
