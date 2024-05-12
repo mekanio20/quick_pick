@@ -5,15 +5,16 @@
 3) http://31.44.2.32:5001/api/v1/user/login --- POST --- req.body { email, password }
 4) http://31.44.2.32:5001/api/v1/user/add/basket --- POST --- req.body { mealId, count, extra_meals: [{ name: , price: }], meal_sizes: : [{ size: , price: }] } --- req.header.Authorization: Bearer {token}
 // PUT
-5) http://31.44.2.32:5001/api/v1/user/update/basket --- PUT --- req.body { mealId, count, extra_meals: [{ name: , price: }], meal_sizes: : [{ size: , price: }] } --- req.header.Authorization: Bearer {token}
+5) http://31.44.2.32:5001/api/v1/user/update/profile --- PUT --- req.body { phone, email, img, birthday, username, fullname, password } --- req.header.Authorization: Bearer {token}
+6) http://31.44.2.32:5001/api/v1/user/update/basket --- PUT --- req.body { mealId, count, extra_meals: [{ name: , price: }], meal_sizes: : [{ size: , price: }] } --- req.header.Authorization: Bearer {token}
 // GET
-6) http://31.44.2.32:5001/api/v1/user/profile --- GET --- req.header.Authorization: Bearer {token}
-7) http://31.44.2.32:5001/api/v1/user/punchcards --- GET --- req.header.Authorization: Bearer {token}
-8) http://31.44.2.32:5001/api/v1/user/punchcard/:slug --- GET --- req.header.Authorization: Bearer {token}
-9) http://31.44.2.32:5001/api/v1/user/basket/:slug --- GET --- req.header.Authorization: Bearer {token}
-10) http://31.44.2.32:5001/api/v1/user/logout --- GET --- req.header.Authorization: Bearer {token}
+7) http://31.44.2.32:5001/api/v1/user/profile --- GET --- req.header.Authorization: Bearer {token}
+8) http://31.44.2.32:5001/api/v1/user/punchcards --- GET --- req.header.Authorization: Bearer {token}
+9) http://31.44.2.32:5001/api/v1/user/punchcard/:slug --- GET --- req.header.Authorization: Bearer {token}
+10) http://31.44.2.32:5001/api/v1/user/basket/:slug --- GET --- req.header.Authorization: Bearer {token}
+11) http://31.44.2.32:5001/api/v1/user/logout --- GET --- req.header.Authorization: Bearer {token}
 // DELETE
-11) http://31.44.2.32:5001/api/v1/user/basket/:id -- DELETE --- req.header.Authorization: Bearer {token}
+12) http://31.44.2.32:5001/api/v1/user/basket/:id -- DELETE --- req.header.Authorization: Bearer {token}
 
 #### PLACE ####
 // POST
