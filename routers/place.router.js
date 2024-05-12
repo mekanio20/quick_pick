@@ -78,6 +78,10 @@ router.get('/logout',
     rolesMiddleware(['place']),
     placeController.placeLogout)
 
+router.get('/albums/:slug',
+    validationMiddleware(baseSchema.slugControl, 'params'),
+    placeController.fetchPlaceAlbums)
+
 router.get('/:slug',
     validationMiddleware(baseSchema.slugControl, 'params'),
     placeController.fetchPlace)
@@ -94,5 +98,61 @@ router.put('/edit',
     validationMiddleware(placeSchema.placeEdit, 'body'),
     placeController.placeEdit)
 
+router.put('/edit/album/:id',
+    authMiddleware,
+    rolesMiddleware(['place']),
+    imageMiddleware(process.env.PLACES_PATH).single('img'),
+    validationMiddleware(baseSchema.idControl, 'params'),
+    placeController.placeEditAlbum)
+
+router.put('/edit/schedule',
+    authMiddleware,
+    rolesMiddleware(['place']),
+    validationMiddleware(placeSchema.placeEditSchedule, 'body'),
+    placeController.placeEditSchedule)
+
+router.put('/edit/category',
+    authMiddleware,
+    rolesMiddleware(['place']),
+    validationMiddleware(placeSchema.placeEditCategory, 'body'),
+    placeController.placeEditCategory)
+
+router.put('/edit/meal',
+    authMiddleware,
+    rolesMiddleware(['place']),
+    imageMiddleware(process.env.MEAL_PATH).single('img'),
+    validationMiddleware(placeSchema.placeEditMeal, 'body'),
+    placeController.placeEditMeal)
+
+router.put('/edit/punchcard',
+    authMiddleware,
+    rolesMiddleware(['place']),
+    validationMiddleware(placeSchema.placeEditPunchcard, 'body'),
+    placeController.placeEditPunchcard)
+
+// DELETE
+router.delete('/delete/album/:id',
+    authMiddleware,
+    rolesMiddleware(['place']),
+    validationMiddleware(baseSchema.idControl, 'params'),
+    placeController.deleteAlbum)
+
+router.delete('/delete/schedule/:id',
+    authMiddleware,
+    rolesMiddleware(['place']),
+    validationMiddleware(baseSchema.idControl, 'params'),
+    placeController.deleteSchedule)
+
+router.delete('/delete/meal/:id',
+    authMiddleware,
+    rolesMiddleware(['place']),
+    validationMiddleware(baseSchema.idControl, 'params'),
+    placeController.deleteMeal)
+
+router.delete('/delete/punchcard/:id',
+    authMiddleware,
+    rolesMiddleware(['place']),
+    validationMiddleware(baseSchema.idControl, 'params'),
+    placeController.deletePunchcard)
 
 module.exports = router

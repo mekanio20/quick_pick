@@ -12,25 +12,6 @@ class BaseService {
             throw { status: 500, type: 'error', msg: error, detail: [] }
         }
     }
-    async getService(query, whereState) {
-        try {
-            let page = query.page || 1
-            let limit = query.limit || 10
-            let offset = page * limit - limit
-            let sort = query.sort || 'id'
-            let order = query.order || 'asc'
-            const data = await this.Model.findAndCountAll({
-                where: whereState,
-                limit: Number(limit),
-                offset: Number(offset),
-                order: [[sort, order]]
-            }).catch((err) => { console.log(err) })
-            if (data.count == 0) { return Response.NotFound('No information found!', []) }
-            return Response.Success('Successful!', data)
-        } catch (error) {
-            throw { status: 500, type: 'error', msg: error, detail: [] }
-        }
-    }
     async updateService(body) {
         try {
             const obj = {}
@@ -40,16 +21,6 @@ class BaseService {
                 }
             }
             await this.Model.update(obj, { where: { id: Number(body.id) } })
-                .catch((err) => { console.log(err) })
-            return Response.Success('Successful!', [])
-        } catch (error) {
-            throw { status: 500, type: 'error', msg: error, detail: [] }
-        }
-    }
-    async deleteService(id) {
-        try {
-            await this.Model.destroy({ where: { id: Number(id) } })
-                .then(() => { console.log(true) })
                 .catch((err) => { console.log(err) })
             return Response.Success('Successful!', [])
         } catch (error) {
