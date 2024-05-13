@@ -14,7 +14,7 @@ const Users = database.define('users', {
     fullname: { type: DataTypes.STRING, allowNull: true },
     phone: { type: DataTypes.STRING, allowNull: true },
     img: { type: DataTypes.STRING, defaultValue: 'default_user.png' },
-    birthday: { type: DataTypes.DATEONLY, allowNull: true },
+    birthday: { type: DataTypes.STRING, allowNull: true },
     username: { type: DataTypes.STRING(50), allowNull: true },
     ip: { type: DataTypes.STRING(15), allowNull: true },
     os: { type: DataTypes.STRING(25), allowNull: true },
