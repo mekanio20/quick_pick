@@ -46,6 +46,35 @@ class PlaceService {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
   }
+  async placeAddPunchcardService(body, placeId) {
+    try {
+      const punchcard = await Models.Punchcards.count({ where: { placeId: placeId } })
+      if (punchcard >= 3) return Response.Forbidden('Adding more than 3 is not allowed', [])
+      const meal = await Models.Meals.findOne({
+        where: { id: body.mealId, isActive: true },
+        attributes: ['placeCategoryId'],
+        include: {
+          model: Models.PlaceCategories,
+          where: { isActive: true },
+          attributes: ['placeId'],
+          required: true,
+          include: {
+            model: Models.Places,
+            where: { id: placeId, isActive: true },
+            required: true,
+            attributes: ['name']
+          }
+        }
+      }).catch((err) => console.log(err))
+      if (!meal) { return Response.Forbidden('Not allowed', []) }
+      body.placeId = placeId
+      const [_, created] = await Models.Punchcards.findOrCreate({ where: body, defaults: body })
+      if (!created) { return Response.BadRequest('Already exists!', []) }
+      return Response.Created('Created successfully!', [])
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
   // GET
   async fetchPlaceCategoriesService(slug) {
     try {

@@ -26,6 +26,12 @@ router.post('/login',
     validationMiddleware(userSchema.userLogin, 'body'),
     userController.userLogin)
 
+router.post('/check',
+    limitterMiddleware(),
+    otpMiddleware,
+    validationMiddleware(baseSchema.checkControl, 'body'),
+    userController.userCheck)
+
 router.post('/add/basket',
     authMiddleware,
     rolesMiddleware(['user']),
