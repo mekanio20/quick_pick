@@ -11,4 +11,8 @@ router.get('/main',
 
 router.get('/categories', homeController.homeCategories)
 
+router.get('/search',
+    validationMiddleware(homeSchema.searchMain, 'query'),
+    homeController.searchMain)
+
 module.exports = router

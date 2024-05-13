@@ -1,6 +1,6 @@
 const Models = require('../config/models')
 const Response = require('../helpers/response.service')
-const { Op } = require('sequelize')
+const { Op, where } = require('sequelize')
 
 class HomeService {
     async homeMainService(query) {
@@ -51,6 +51,16 @@ class HomeService {
             }).catch((err) => console.log(err))
             if (categories.count === 0) { return Response.NotFound('No information found!', []) }
             return Response.Success('Successful!', categories)
+        } catch (error) {
+            throw { status: 500, type: "error", msg: error, detail: [] }
+        }
+    }
+    async searchMainService(search) {
+        try {
+            const result = await Models.Places.findAndCountAll({
+                where: { name: { [Op.like]: `%${search}%` } }
+            }).catch((err) => console.log(err))
+            return Response.Success('Successful!', result)
         } catch (error) {
             throw { status: 500, type: "error", msg: error, detail: [] }
         }
