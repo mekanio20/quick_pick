@@ -18,10 +18,8 @@ class UserService {
       const code = (100000 + Math.floor(Math.random() * 100000)).toString()
       await redis.set(body.email, code)
       await redis.expire(body.email, 300)
-      const hash = await bcrypt.hash(body.password, 5)
       let customer = {
         email: body.email,
-        password: hash,
         username: body.username || null,
         fullname: body.fullname || null,
         phone: body.phone || null,
