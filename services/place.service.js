@@ -71,7 +71,7 @@ class PlaceService {
       let offset = page * limit - limit
       const meals = await Models.PlaceCategories.findAll({
         attributes: ['id', 'name', 'slug'],
-        where: { slug: query.cat, isActive: true },
+        where: { isActive: true },
         include: [
           {
             model: Models.Meals,

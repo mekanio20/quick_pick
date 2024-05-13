@@ -63,7 +63,7 @@ const placeSchema = {
     }),
     placeMeals: Joi.object({
         caf: Joi.string().max(255).required(),
-        cat: Joi.string().max(255).required(),
+        cat: Joi.string().max(255).optional(),
         page: Joi.number().positive().optional(),
         limit: Joi.number().positive().optional()
     }),
