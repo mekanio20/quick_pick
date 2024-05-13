@@ -26,6 +26,10 @@ const userSchema = {
         extra_meals: Joi.array().items(Joi.object({ name: Joi.string().required(), price: Joi.number().positive().required() })).optional(),
         meal_sizes: Joi.array().items(Joi.object({ size: Joi.string().valid('Small', 'Medium', 'Large').required(), price: Joi.number().positive().required() })).optional()
     }),
+    userClaim: Joi.object({
+        punchcardId: Joi.number().positive().required(),
+        placeId: Joi.number().positive().required()
+    })
 }
 
 module.exports = userSchema
