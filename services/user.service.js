@@ -125,7 +125,7 @@ class UserService {
      }).catch((err) => console.log(err))
      if (isExist) {
       const obj = {}
-      for (const item in body) if (item) obj[item] = body[item] 
+      for (const item in body) if (item) obj[item] = body[item]
       await Models.Baskets.update(obj, { where: { id: isExist.id } })
         .catch((err) => console.log(err))
       return Response.Success('Successfully updated!', [])
@@ -179,7 +179,11 @@ class UserService {
             name: item.place.name,
             slug: item.place.slug,
             score: item.score,
+<<<<<<< HEAD
 	    color: item.place.color,
+=======
+            color: item.place.color,
+>>>>>>> 8f2a3ef363b58e2a203a710469419d935574db9f
             punchcards: [item.place.punchcard]
           })
         } else {
