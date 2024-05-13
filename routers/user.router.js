@@ -69,10 +69,16 @@ router.get('/basket/:slug',
     validationMiddleware(baseSchema.slugControl, 'params'),
     userController.fetchBasket)
 
-router.get('/logout',
+router.get('/claim',
     authMiddleware,
     rolesMiddleware(['user']),
-    userController.userLogout)
+    validationMiddleware(userSchema.userClaim, 'query'),
+    userController.userClaim)
+
+// router.get('/logout',
+//     authMiddleware,
+//     rolesMiddleware(['user']),
+//     userController.userLogout)
 
 // DELETE
 router.delete('/basket/:id',

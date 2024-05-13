@@ -159,7 +159,7 @@ class UserService {
         attributes: ['id', 'score'],
         include: {
           model: Models.Places,
-          attributes: ['id', 'name', 'slug'],
+          attributes: ['id', 'name', 'slug', 'color'],
           where: { isActive: true },
           include: {
             model: Models.Punchcards,
@@ -198,7 +198,7 @@ class UserService {
         attributes: ['id', 'score'],
         include: {
           model: Models.Places,
-          attributes: ['id', 'name', 'slug'],
+          attributes: ['id', 'name', 'slug', 'color'],
           where: { slug: slug, isActive: true }
         }
       }).catch((err) => console.log(err))
@@ -245,12 +245,37 @@ class UserService {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
   }
-  async userLogoutService(userId) {
+  // async userLogoutService(userId) {
+  //   try {
+  //     await Models.Users.update({ isActive: false }, { where: { id: userId } })
+  //       .catch((err) => console.log(err))
+  //     const token = jwt.sign({}, process.env.PRIVATE_KEY, { expiresIn: 0 })
+  //     return Response.Success('Successful!', { token })
+  //   } catch (error) {
+  //     throw { status: 500, type: "error", msg: error, detail: [] }
+  //   }
+  // }
+  async userClaimService(query, userId) {
     try {
-      await Models.Users.update({ isActive: false }, { where: { id: userId } })
-        .catch((err) => console.log(err))
-      const token = jwt.sign({}, process.env.PRIVATE_KEY, { expiresIn: 0 })
-      return Response.Success('Successful!', { token })
+      const punchcard = await Models.PunchCardSteps.findOne({
+        where: { userId: userId, isActive: true },
+        attributes: ['id', 'score'],
+        include: {
+          model: Models.Places,
+          where: { id: query.placeId, isActive: true },
+          attributes: ['id', 'name', 'slug'],
+          required: true,
+          include: {
+            model: Models.Punchcards,
+            where: { id: query.punchcardId, isActive: true },
+            attributes: { exclude: ['isActive', 'createdAt', 'updatedAt', 'placeId'] },
+            required: true
+          }
+        }
+      }).catch((err) => console.log(err))
+      if (punchcard?.score >= punchcard?.place?.punchcard?.point) {
+        
+      } else return Response.BadRequest('Insufficient points!', [])
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
