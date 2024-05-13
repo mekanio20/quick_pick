@@ -179,6 +179,7 @@ class UserService {
             name: item.place.name,
             slug: item.place.slug,
             score: item.score,
+	    color: item.place.color,
             punchcards: [item.place.punchcard]
           })
         } else {
