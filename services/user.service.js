@@ -71,12 +71,43 @@ class UserService {
     try {
       const user = await Models.Users.findOne({ where: { email: body.email } })
       if (!user) { return Response.Unauthorized('User not found!', []) }
-      const hash = await bcrypt.compare(body.password, user.password)
-      if (!hash) { return Response.Forbidden('Password is incorrect', []) }
-      user.isActive = true
-      await user.save()
-      const token = await Functions.generateJwt({ id: user.id, role: "user" })
-      return Response.Success('Login confirmed', { token })
+      const code = (100000 + Math.floor(Math.random() * 100000)).toString()
+      await redis.set(user.email, code)
+      await redis.expire(user.email, 300)
+      const otp_token = await Functions.generateJwt({email: user.email}, '3m')
+      let transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.EMAIL_ADDRESS,
+          pass: process.env.EMAIL_PASSWORD
+        }
+      })
+      let mailOptions = {
+        from: process.env.EMAIL_ADDRESS,
+        to: user.email,
+        subject: 'QuicikPick Verification',
+        html: `<h1>Your verification code: </h1> <h2>${code}</h2>`
+      }
+      transporter.sendMail(mailOptions, function (error, info) {
+        if (error) console.log('An error occurred while sending the email: ', error)
+        else { console.log('Email sent successfully: ', info.response) }
+      })
+      return Response.Success('Email sent successfully!', { token: otp_token })
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
+  async userCheckService(code, user) {
+    try {
+      const systemcode = await redis.get(user.email)
+      if (String(code) !== systemcode) { return Response.BadRequest('The verification code is invalid', []) }
+      const customer = await Models.Users.findOne({ where: { email: user.email } })
+      if (!customer) { return Response.BadRequest('An unknown error occurred!', []) }
+      customer.isActive = true
+      await customer.save()
+      const token = await Functions.generateJwt({ id: customer.id, role: "user" })
+        .catch((err) => { console.log(err) })
+      return Response.Success('User logged in!', { token })
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
@@ -182,10 +213,9 @@ class UserService {
             color: item.place.color,
             punchcards: [item.place.punchcard]
           })
-        } else {
-          existingPlace.punchcards.push(item.place.punchcard)
-        }
+        } else { existingPlace.punchcards.push(item.place.punchcard) }
       })
+      if (result.length === 0) { return Response.NotFound('No information found!', []) }
       return Response.Success('Successful!', result)
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
@@ -219,9 +249,9 @@ class UserService {
   }
   async fetchBasketService(slug, userId) {
     try {
-      const basket = await Models.Baskets.findAndCountAll({
-        where: { isActive: true, userId: userId },
-        attributes: ['id', 'count', 'extra_meals', 'meal_sizes'],
+      const basket_payment = await Models.Baskets.findAndCountAll({
+        where: { userId: userId, type: 'payment', isActive: true },
+        attributes: ['id', 'count', 'type', 'extra_meals', 'meal_sizes'],
         include: {
           model: Models.Meals,
           where: { isActive: true },
@@ -240,8 +270,32 @@ class UserService {
           }
         }
       }).catch((err) => console.log(err))
-      if (basket.count === 0) { return Response.NotFound('No information found!', []) }
-      return Response.Success('Successful!', basket)
+      const basket_punchcard = await Models.Baskets.findAndCountAll({
+        where: { userId: userId, type: 'punchcard', isActive: true },
+        attributes: ['id', 'count', 'type', 'extra_meals', 'meal_sizes'],
+        include: {
+          model: Models.Meals,
+          where: { isActive: true },
+          attributes: ['id', 'name', 'slug', 'price', 'point', 'img', 'time'],
+          include: {
+            model: Models.PlaceCategories,
+            where: { isActive: true },
+            attributes: [],
+            required: true,
+            include: {
+              model: Models.Places,
+              where: { slug: slug },
+              attributes: ['slug'],
+              required: true
+            }
+          }
+        }
+      }).catch((err) => console.log(err))
+      const result = {}
+      result.count = basket_payment.count + basket_punchcard.count
+      result.rows = [...basket_payment.rows, ...basket_punchcard.rows]
+      if (result.count === 0) { return Response.NotFound('No information found!', []) }
+      return Response.Success('Successful!', result)
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
@@ -275,7 +329,25 @@ class UserService {
         }
       }).catch((err) => console.log(err))
       if (punchcard?.score >= punchcard?.place?.punchcard?.point) {
-        
+        const meal = await Models.Meals.findOne({
+          where: { id: punchcard.place.punchcard.mealId },
+          attributes: ['id']
+        }).catch((err) => console.log(err))
+        if (!meal) { return Response.NotFound('Food not found!', []) }
+
+        const basket = await Models.Baskets.create({ count: 1, type: 'punchcard', mealId: meal.id })
+          .catch((err) => console.log(err))
+        if (!basket) { return Response.BadRequest('Could not add to cart!', []) }
+
+        const score = Number(punchcard.score) - Number(punchcard.place.punchcard.point)
+        await Models.PunchCardSteps.update({ score: score },
+          { where: { userId: userId, placeId: punchcard.place.id } })
+            .then(() => console.log(true))
+            .catch((err) => console.log(err))
+            
+        return Response.Success('Successful!', basket)
+      } else if (punchcard === null) {
+        return Response.BadRequest('No points!', [])
       } else return Response.BadRequest('Insufficient points!', [])
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }

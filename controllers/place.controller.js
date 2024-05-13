@@ -76,14 +76,7 @@ class PlaceController {
     }
     async placeAddPunchcard(req, res) {
         try {
-            const body = req.body
-            body.placeId = req.user.id
-            const punchcard = await Models.Punchcards.count({ where: { placeId: req.user.id } })
-            if (punchcard >= 3) {
-                const result = await Response.Forbidden('Adding more than 3 is not allowed', [])
-                return result
-            } 
-            const data = await new baseService(Models.Punchcards).addService(req.body, req.body)
+            const data = await placeService.placeAddPunchcardService(req.body, req.user.id)
             return res.status(data.status).json(data)
         } catch (error) {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })

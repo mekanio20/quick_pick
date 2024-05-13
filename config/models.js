@@ -10,7 +10,7 @@ const Roles = database.define('roles', {
 const Users = database.define('users', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false, unique: true },
     email: { type: DataTypes.STRING(50), allowNull: false, validate: { isEmail: true }, unique: true },
-    password: { type: DataTypes.STRING, allowNull: false },
+    // password: { type: DataTypes.STRING, allowNull: false },
     fullname: { type: DataTypes.STRING, allowNull: true },
     phone: { type: DataTypes.STRING, allowNull: true },
     img: { type: DataTypes.STRING, defaultValue: 'default_user.png' },
@@ -129,6 +129,7 @@ const Baskets = database.define('baskets', {
     count: { type: DataTypes.SMALLINT, defaultValue: 1 },
     extra_meals: { type: DataTypes.ARRAY(DataTypes.JSON(DataTypes.STRING)), allowNull: true },
     meal_sizes: { type: DataTypes.ARRAY(DataTypes.JSON(DataTypes.STRING)), allowNull: true },
+    type: { type: DataTypes.ENUM({ values: ['punchcard', 'payment'] }), defaultValue: 'payment' },
     isActive: { type: DataTypes.BOOLEAN, defaultValue: true },
     createdAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW },
     updatedAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW }
@@ -137,7 +138,7 @@ const Baskets = database.define('baskets', {
 const Orders = database.define('orders', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false, unique: true },
     status: { type: DataTypes.ENUM({ values: ['Order Placed', 'Preparation Started', 'Ready in 5 Minutes', 'Order Finished', 'Order Collected', 'Order Cancelled'] }), defaultValue: 'Order Placed' },
-    payment: { type: DataTypes.ENUM({ values: ['Cash', 'Card'] }), allowNull: false },
+    payment: { type: DataTypes.ENUM({ values: ['Cash', 'Card', 'Punchcard'] }), allowNull: false },
     type: { type: DataTypes.ENUM({ values: ['Pick-up', 'Dine-in'] }), allowNull: false },
     sum: { type: DataTypes.DOUBLE, allowNull: false },
     note: { type: DataTypes.STRING, allowNull: true },
