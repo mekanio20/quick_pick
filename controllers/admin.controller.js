@@ -48,8 +48,8 @@ class AdminController {
             ]).then(() => { console.log('Categories created') }).catch((err) => { console.log(err) })
 
             await Models.Users.bulkCreate([
-                { email: "quickpick.developer@gmail.com", username: "admin", password: admin_pass, uuid: uuid.v4(), roleId: 1 },
-                { email: "mekanbaylyyew@gmail.com", username: "mekan", password: user_pass, uuid: uuid.v4(), roleId: 2 },
+                { email: "quickpick.developer@gmail.com", username: "admin", uuid: uuid.v4(), roleId: 1 },
+                { email: "mekanbaylyyew5@gmail.com", username: "mekan", uuid: uuid.v4(), roleId: 2 },
             ]).then(() => { console.log('Users created') }).catch((err) => { console.log(err) })
 
             await Models.Places.bulkCreate([

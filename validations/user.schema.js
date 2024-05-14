@@ -14,7 +14,7 @@ const userSchema = {
     }),
     userUpdateProfile: Joi.object({
         email: Joi.string().max(100).email().optional(),
-        password: Joi.string().min(4).max(25).regex(/^[a-zA-Z0-9!?^.,_@#$%&*:;=+]{4,25}$/).optional(),
+        // password: Joi.string().min(4).max(25).regex(/^[a-zA-Z0-9!?^.,_@#$%&*:;=+]{4,25}$/).optional(),
         fullname: Joi.string().max(100).optional(),
         phone: Joi.string().max(50).optional(),
         birthday: Joi.string().max(50).optional(),
