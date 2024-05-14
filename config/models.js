@@ -130,6 +130,7 @@ const Baskets = database.define('baskets', {
     extra_meals: { type: DataTypes.ARRAY(DataTypes.JSON(DataTypes.STRING)), allowNull: true },
     meal_sizes: { type: DataTypes.ARRAY(DataTypes.JSON(DataTypes.STRING)), allowNull: true },
     type: { type: DataTypes.ENUM({ values: ['punchcard', 'payment'] }), defaultValue: 'payment' },
+    score: { type: DataTypes.INTEGER, defaultValue: 0 },
     isActive: { type: DataTypes.BOOLEAN, defaultValue: true },
     createdAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW },
     updatedAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW }

@@ -2,11 +2,9 @@ const Verification = require('../helpers/verification.service')
 const Functions = require('../helpers/functions.service')
 const Response = require('../helpers/response.service')
 const nodemailer = require('nodemailer')
-const bcrypt = require('bcrypt')
 const uuid = require('uuid')
 const redis = require('../ioredis')
 const Models = require('../config/models')
-const jwt = require('jsonwebtoken')
 const { Op } = require('sequelize')
 
 class UserService {
@@ -68,7 +66,7 @@ class UserService {
   async userLoginService(body) {
     try {
       const user = await Models.Users.findOne({ where: { email: body.email } })
-      if (!user) { return Response.Unauthorized('User not found!', []) }
+      if (!user) { return Response.NotFound('User not found!', []) }
       const code = (100000 + Math.floor(Math.random() * 100000)).toString()
       await redis.set(user.email, code)
       await redis.expire(user.email, 300)
@@ -125,17 +123,13 @@ class UserService {
     try {
       const obj = {}
       if (img?.filename) obj.img = img.filename
-      if (body?.password) {
-        const hash = await bcrypt.hash(body.password, 5)
-        obj.password = hash
-      }
       if (body?.email) {
         const isExist = await Models.Users.findOne({ where: { email: body.email } })
         if (isExist) return Response.BadRequest('The user for this email already exists!', [])
         obj.email = body.email
       }
       for (const item in body) {
-        if (item && item !== 'password' && item !== 'email')
+        if (item && item !== 'email')
           obj[item] = body[item]
       }
       const user = await Models.Users.update(obj, { where: { id: userId } })
@@ -223,7 +217,7 @@ class UserService {
     try {
       const result = []
       const punchcard_steps = await Models.PunchCardSteps.findOne({
-        where: { userId: userId, isActive: true },
+        where: { userId: userId, isActive: true, score: { [Op.gt]: 0 } },
         attributes: ['id', 'score'],
         include: {
           model: Models.Places,
@@ -232,7 +226,7 @@ class UserService {
         }
       }).catch((err) => console.log(err))
       if (!punchcard_steps) { return Response.NotFound('No information found!', []) }
-      result.push({ user: punchcard_steps})
+      result.push({ user: punchcard_steps })
 
       const punchcards = await Models.Punchcards.findAll({
         attributes: ['id', 'name', 'point', 'mealId'],
@@ -289,9 +283,15 @@ class UserService {
           }
         }
       }).catch((err) => console.log(err))
+      basket_punchcard.rows.forEach((item) => {
+        if (item.meal) {
+          item.meal.price = 0
+          item.meal.point = 0
+        }
+      })
       const result = {}
       result.count = basket_payment.count + basket_punchcard.count
-      result.rows = [...basket_payment.rows, ...basket_punchcard.rows]
+      result.rows = [...basket_punchcard.rows, ...basket_payment.rows]
       if (result.count === 0) { return Response.NotFound('No information found!', []) }
       return Response.Success('Successful!', result)
     } catch (error) {
@@ -333,7 +333,12 @@ class UserService {
         }).catch((err) => console.log(err))
         if (!meal) { return Response.NotFound('Food not found!', []) }
 
-        const basket = await Models.Baskets.create({ count: 1, type: 'punchcard', mealId: meal.id })
+        const basket = await Models.Baskets.create({
+          count: 1,
+          score: punchcard.place.punchcard.point,
+          type: 'punchcard',
+          mealId: meal.id,
+          userId: userId })
           .catch((err) => console.log(err))
         if (!basket) { return Response.BadRequest('Could not add to cart!', []) }
 
@@ -343,7 +348,7 @@ class UserService {
             .then(() => console.log(true))
             .catch((err) => console.log(err))
             
-        return Response.Success('Successful!', basket)
+        return Response.Success('Successful!', [])
       } else if (punchcard === null) {
         return Response.BadRequest('No points!', [])
       } else return Response.BadRequest('Insufficient points!', [])
@@ -354,10 +359,29 @@ class UserService {
   // DELETE
   async userDeleteBasketService(id, userId) {
     try {
-      const basket = await Models.Baskets.destroy({
-        where: { id: id, userId: userId, isActive: true }
+      const basket = await Models.Baskets.findOne({
+        where: { id: id, userId: userId, isActive: true },
+        attributes: { exclude: ['createdAt', 'updatedAt'] },
+        include: {
+          model: Models.Meals,
+          attributes: ['placeCategoryId'],
+          include: {
+            model: Models.PlaceCategories,
+            attributes: ['placeId']
+          }
+        }
       }).catch((err) => console.log(err))
       if (!basket) { return Response.Forbidden('Not allowed!', []) }
+      if (basket.type === 'punchcard') {
+        const step = await Models.PunchCardSteps.findOne({
+          where: { userId: userId, placeId: basket.meal.place_category.placeId }
+        }).catch((err) => console.log(err))
+        step.score += basket.score
+        await step.save()
+      }
+      await Models.Baskets.destroy({
+        where: { id: id, userId: userId, isActive: true },
+      }).catch((err) => console.log(err))
       return Response.Success('Successfully deleted!', [])
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
