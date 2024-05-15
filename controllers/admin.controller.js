@@ -48,7 +48,7 @@ class AdminController {
             await Models.Users.bulkCreate([
                 { email: "quickpick.developer@gmail.com", username: "admin", uuid: uuid.v4(), roleId: 1 },
                 { email: "mekanbaylyyew5@gmail.com", username: "mekan", uuid: uuid.v4(), roleId: 2 },
-                { email: "sumbar.babayew.2003@gmail.com", username: "sumbar", uuid: uuid.v4(), roleId: 2 },
+                { email: "sumbar.babayew.2003@gmail.com", username: "sumbar", fullname: "sumbar babayew", uuid: uuid.v4(), roleId: 2 },
             ]).then(() => { console.log('Users created') }).catch((err) => { console.log(err) })
 
             await Models.Places.bulkCreate([
@@ -93,6 +93,7 @@ class AdminController {
                 { name: 'Free pizza', point: 25, placeId: 2, mealId: 5 },
                 { name: 'Free pizza 2', point: 50, placeId: 2, mealId: 5 },
                 { name: 'Free pizza 3', point: 75, placeId: 2, mealId: 6 },
+                { name: 'Free pizza 4', point: 100, placeId: 2, mealId: 6 },
             ]).then(() => { console.log('Punchcards created') }).catch((err) => { console.log(err) })
 
             await Models.PunchCardSteps.bulkCreate([
