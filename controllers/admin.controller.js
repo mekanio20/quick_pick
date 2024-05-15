@@ -48,7 +48,7 @@ class AdminController {
             await Models.Users.bulkCreate([
                 { email: "quickpick.developer@gmail.com", username: "admin", uuid: uuid.v4(), roleId: 1 },
                 { email: "mekanbaylyyew5@gmail.com", username: "mekan", uuid: uuid.v4(), roleId: 2 },
-                { email: "sumbar.babayew.2003@gmail.com", username: "sumbar", uuid: uuid.v4(), roleId: 2 },
+                { email: "sumbar.babayew.2003@gmail.com", username: "sumbar", fullname: "sumbar babayew", uuid: uuid.v4(), roleId: 2 },
             ]).then(() => { console.log('Users created') }).catch((err) => { console.log(err) })
 
             await Models.Places.bulkCreate([
