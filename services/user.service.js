@@ -166,7 +166,7 @@ class UserService {
         attributes: { exclude: ['ip', 'os', 'uuid', 'roleId', 'isActive', 'createdAt', 'updatedAt'] }
       }).catch((err) => { console.log(err) })
       if (!customer) { return Response.Unauthorized('User not found!', []) }
-      return Response.Success('Successful!', customer)
+      return Response.Success('Successful!', [customer])
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
