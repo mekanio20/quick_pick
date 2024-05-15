@@ -25,8 +25,6 @@ class AdminController {
     // DEFAULT
     async Default(req, res) {
         try {
-            const admin_pass = await bcrypt.hash('admin', 5)
-            const user_pass = await bcrypt.hash('user', 5)
             const place_pass = await bcrypt.hash('seller', 5)
 
             await Models.Roles.bulkCreate([
@@ -50,6 +48,7 @@ class AdminController {
             await Models.Users.bulkCreate([
                 { email: "quickpick.developer@gmail.com", username: "admin", uuid: uuid.v4(), roleId: 1 },
                 { email: "mekanbaylyyew5@gmail.com", username: "mekan", uuid: uuid.v4(), roleId: 2 },
+                { email: "sumbar.babayew.2003@gmail.com", username: "sumbar", uuid: uuid.v4(), roleId: 2 },
             ]).then(() => { console.log('Users created') }).catch((err) => { console.log(err) })
 
             await Models.Places.bulkCreate([
@@ -98,7 +97,9 @@ class AdminController {
 
             await Models.PunchCardSteps.bulkCreate([
                 { score: 26, placeId: 1, userId: 2 },
-                { score: 50, placeId: 2, userId: 2 }
+                { score: 50, placeId: 2, userId: 2 },
+                { score: 50, placeId: 1, userId: 3 },
+                { score: 75, placeId: 2, userId: 3 },
             ]).then(() => { console.log('PunchCardSteps created') }).catch((err) => { console.log(err) })
 
             await Models.Baskets.bulkCreate([
