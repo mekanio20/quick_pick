@@ -46,7 +46,7 @@ class ResponseService {
     }
     async NotFound (msg, detail) {
         return {
-            status: 404,
+            status: 200,
             type: 'error',
             msg: msg,
             msg_key: 'not found',

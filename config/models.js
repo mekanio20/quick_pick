@@ -139,7 +139,7 @@ const Baskets = database.define('baskets', {
 const Orders = database.define('orders', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false, unique: true },
     status: { type: DataTypes.ENUM({ values: ['Order Placed', 'Preparation Started', 'Ready in 5 Minutes', 'Order Finished', 'Order Collected', 'Order Cancelled'] }), defaultValue: 'Order Placed' },
-    payment: { type: DataTypes.ENUM({ values: ['Cash', 'Card', 'Punchcard'] }), allowNull: false },
+    payment: { type: DataTypes.ENUM({ values: ['Cash', 'Card'] }), allowNull: false },
     type: { type: DataTypes.ENUM({ values: ['Pick-up', 'Dine-in'] }), allowNull: false },
     sum: { type: DataTypes.DOUBLE, allowNull: false },
     note: { type: DataTypes.STRING, allowNull: true },
