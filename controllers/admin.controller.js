@@ -93,6 +93,7 @@ class AdminController {
                 { name: 'Free pizza', point: 25, placeId: 2, mealId: 5 },
                 { name: 'Free pizza 2', point: 50, placeId: 2, mealId: 5 },
                 { name: 'Free pizza 3', point: 75, placeId: 2, mealId: 6 },
+                { name: 'Free pizza 4', point: 100, placeId: 2, mealId: 6 },
             ]).then(() => { console.log('Punchcards created') }).catch((err) => { console.log(err) })
 
             await Models.PunchCardSteps.bulkCreate([
