@@ -19,7 +19,7 @@ class ResponseService {
     }    
     async BadRequest (msg, detail) {
         return {
-            status: 400,
+            status: 200, // 400
             type: 'error',
             msg: msg,
             msg_key: 'bad request',
@@ -28,7 +28,7 @@ class ResponseService {
     }
     async Unauthorized (msg, detail) {
         return {
-            status: 401,
+            status: 200, // 401
             type: 'error',
             msg: msg,
             msg_key: 'unauthorized',
@@ -37,7 +37,7 @@ class ResponseService {
     }
     async Forbidden (msg, detail) {
         return {
-            status: 403,
+            status: 200, // 403
             type: 'error',
             msg: msg,
             msg_key: 'forbidden',
@@ -46,7 +46,7 @@ class ResponseService {
     }
     async NotFound (msg, detail) {
         return {
-            status: 200,
+            status: 200, // 404
             type: 'error',
             msg: msg,
             msg_key: 'not found',
