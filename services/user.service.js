@@ -163,7 +163,7 @@ class UserService {
     try {
       const customer = await Models.Users.findOne({
         where: { id: user.id, isActive: true },
-        attributes: { exclude: ['password', 'ip', 'os', 'uuid', 'roleId', 'isActive', 'createdAt', 'updatedAt'] }
+        attributes: { exclude: ['ip', 'os', 'uuid', 'roleId', 'isActive', 'createdAt', 'updatedAt'] }
       }).catch((err) => { console.log(err) })
       if (!customer) { return Response.Unauthorized('User not found!', []) }
       return Response.Success('Successful!', customer)
