@@ -48,8 +48,6 @@ class PlaceService {
   }
   async placeAddPunchcardService(body, placeId) {
     try {
-      const punchcard = await Models.Punchcards.count({ where: { placeId: placeId } })
-      if (punchcard >= 3) return Response.Forbidden('Adding more than 3 is not allowed', [])
       const meal = await Models.Meals.findOne({
         where: { id: body.mealId, isActive: true },
         attributes: ['placeCategoryId'],
