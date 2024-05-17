@@ -82,6 +82,16 @@ class PlaceController {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
         }
     }
+    async placeAddAccount(req, res) {
+        try {
+            let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress
+            ip = ip.substr(7)
+            const data = await placeService.placeAddAccountService(req.body, req.user.id, ip)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
     // GET
     async fetchPlaceCategories(req, res) {
         try {

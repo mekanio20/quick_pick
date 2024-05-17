@@ -61,6 +61,12 @@ const placeSchema = {
         point: Joi.number().positive().required(),
         mealId: Joi.number().positive().required()
     }),
+    placeAddAccount: Joi.object({
+        country: Joi.string().required(),
+        name: Joi.string().required(),
+        routing_number: Joi.number().positive().required(),
+        account_number: Joi.number().positive().required()
+    }),
     placeMeals: Joi.object({
         caf: Joi.string().max(255).required(),
         cat: Joi.string().max(255).optional(),
