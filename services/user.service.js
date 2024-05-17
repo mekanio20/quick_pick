@@ -44,7 +44,7 @@ class UserService {
         if (error) console.log('An error occurred while sending the email: ', error)
         else { console.log('Email sent successfully: ', info.response) }
       })
-      return Response.Success('Email sent successfully!', { token })
+      return Response.Success('Email sent successfully!', [{ token }])
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
@@ -58,7 +58,7 @@ class UserService {
       if (!customer) { return Response.BadRequest('An unknown error occurred!', []) }
       const token = await Functions.generateJwt({ id: customer.id, role: "user" })
         .catch((err) => { console.log(err) })
-      return Response.Created('User is registered!', { token })
+      return Response.Created('User is registered!', [{ token }])
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
@@ -88,7 +88,7 @@ class UserService {
         if (error) console.log('An error occurred while sending the email: ', error)
         else { console.log('Email sent successfully: ', info.response) }
       })
-      return Response.Success('Email sent successfully!', { token: otp_token })
+      return Response.Success('Email sent successfully!', [{ token: otp_token }])
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
@@ -103,7 +103,7 @@ class UserService {
       await customer.save()
       const token = await Functions.generateJwt({ id: customer.id, role: "user" })
         .catch((err) => { console.log(err) })
-      return Response.Success('User logged in!', { token })
+      return Response.Success('User logged in!', [{ token }])
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
