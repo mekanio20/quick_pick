@@ -52,10 +52,9 @@ class AdminController {
             ]).then(() => { console.log('Users created') }).catch((err) => { console.log(err) })
 
             await Models.Places.bulkCreate([
-                { name: 'mekan dukan', slug: 'mekan-dukan', type: 'Cafe', email: 'mrxyok138@gmail.com', password: place_pass, phone_primary: '987654321', address: 'Anew, 27', rating: 4.3, latitude: '283.1231.4122.213', longitude: '24.42.13.213', color: '#FFE0B0', categoryId: 1, isActive: true },
-                { name: 'sumbar dukan', slug: 'sumbar-dukan', type: 'Cafe', email: 'mrxyok139@gmail.com', password: place_pass, phone_primary: '987654322', address: 'Anew, 27', rating: 5.0, latitude: '283.1231.4122.213', longitude: '24.42.13.213', color: '#E0FBFC', categoryId: 2, isActive: true },
-                { name: 'test1 dukan', slug: 'test1-dukan', type: 'Restaurant', email: 'mrxyok140@gmail.com', password: place_pass, phone_primary: '987654323', address: 'Anew, 27', rating: 3.0, latitude: '283.1231.4122.213', longitude: '24.42.13.213', color: '#E0FBFC', categoryId: 3, isActive: true },
-                { name: 'test2 dukan', slug: 'test2-dukan', type: 'Restaurant', email: 'mrxyok141@gmail.com', password: place_pass, phone_primary: '987654324', address: 'Anew, 27', rating: 2.0, latitude: '283.1231.4122.213', longitude: '24.42.13.213', color: '#E0FBFC', categoryId: 4, isActive: true },
+                { name: 'mekan dukan', slug: 'mekan-dukan', type: 'Cafe', email: 'mrxyok138@gmail.com', password: place_pass, phone_primary: '987654321', address: 'Anew, 27', rating: 4.3, latitude: 47.56670524318587, longitude: 14.24390891117955, color: '#FFE0B0', categoryId: 1, isActive: true },
+                { name: 'sumbar dukan', slug: 'sumbar-dukan', type: 'Cafe', email: 'mrxyok139@gmail.com', password: place_pass, phone_primary: '987654322', address: 'Anew, 27', rating: 5.0, latitude: 47.567424, longitude: 14.243638, color: '#E0FBFC', categoryId: 2, isActive: true },
+                { name: 'test dukan', slug: 'test-dukan', type: 'Restaurant', email: 'mrxyok140@gmail.com', password: place_pass, phone_primary: '987654323', address: 'Anew, 27', rating: 3.0, latitude: 47.566727, longitude: 14.242234, color: '#E0FBFC', categoryId: 3, isActive: true }
             ]).then(() => { console.log('Places created') }).catch((err) => { console.log(err) })
 
             await Models.PlaceSchedules.bulkCreate([
