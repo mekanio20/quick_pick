@@ -77,12 +77,12 @@ class AdminController {
             ]).then(() => { console.log('PlaceCategories created') }).catch((err) => { console.log(err) })
 
             await Models.Meals.bulkCreate([
-                { name: 'Pepperoni Pizza', slug: 'pepperoni-pizza', img: 'test.jpg', price: 25.15, point: 3, time: '14 min', type: 'Meat', extra_meals: [{ name: "sosis", price: "0.25" }], meal_sizes: [{ size: "Small", price: "0.30" }, { size: "Medium", price: "0.50" }], allergens: [{ test: "test1" }], placeCategoryId: 1 },
-                { name: 'Pepperoni Pizza 2', slug: 'pepperoni-pizza-2', img: 'test2.jpg', price: 54.15, point: 6, time: '28 min', type: 'Meat', extra_meals: [{ name: "sosis", price: "0.25" }], meal_sizes: [{ size: "Small", price: "0.30" }, { size: "Medium", price: "0.50" }], placeCategoryId: 2 },
-                { name: 'Pepperoni Pizza 3', slug: 'pepperoni-pizza-3', img: 'test2.jpg', price: 23.15, point: 6, time: '28 min', type: 'Meat', extra_meals: [{ name: "sosis", price: "0.25" }], meal_sizes: [{ size: "Small", price: "0.30" }, { size: "Medium", price: "0.50" }], placeCategoryId: 1 },
-                { name: 'Soups', slug: 'soups', img: 'test2.jpg', price: 23.15, point: 6, time: '28 min', type: 'Halal', meal_sizes: [{ size: "Small", price: "0.30" }], placeCategoryId: 2 },
-                { name: 'Soups-1', slug: 'soups-1', img: 'test2.jpg', price: 23.15, point: 6, time: '28 min', type: 'Halal', meal_sizes: [{ size: "Small", price: "0.30" }], placeCategoryId: 5 },
-                { name: 'Pizza-1', slug: 'pizza-1', img: 'test2.jpg', price: 23.15, point: 6, time: '28 min', type: 'Halal', meal_sizes: [{ size: "Small", price: "0.30" }], placeCategoryId: 4 },
+                { name: 'Pepperoni Pizza', slug: 'pepperoni-pizza', img: 'test.jpg', price: 25.15, point: 3, time: 14, type: 'Meat', extra_meals: [{ name: "sosis", price: "0.25" }], meal_sizes: [{ size: "Small", price: "0.30" }, { size: "Medium", price: "0.50" }], allergens: [{ test: "test1" }], placeCategoryId: 1 },
+                { name: 'Pepperoni Pizza 2', slug: 'pepperoni-pizza-2', img: 'test2.jpg', price: 54.15, point: 6, time: 28, type: 'Meat', extra_meals: [{ name: "sosis", price: "0.25" }], meal_sizes: [{ size: "Small", price: "0.30" }, { size: "Medium", price: "0.50" }], placeCategoryId: 2 },
+                { name: 'Pepperoni Pizza 3', slug: 'pepperoni-pizza-3', img: 'test2.jpg', price: 23.15, point: 6, time: 13, type: 'Meat', extra_meals: [{ name: "sosis", price: "0.25" }], meal_sizes: [{ size: "Small", price: "0.30" }, { size: "Medium", price: "0.50" }], placeCategoryId: 1 },
+                { name: 'Soups', slug: 'soups', img: 'test2.jpg', price: 23.15, point: 6, time: 14, type: 'Halal', meal_sizes: [{ size: "Small", price: "0.30" }], placeCategoryId: 2 },
+                { name: 'Soups-1', slug: 'soups-1', img: 'test2.jpg', price: 23.15, point: 6, time: 23, type: 'Halal', meal_sizes: [{ size: "Small", price: "0.30" }], placeCategoryId: 5 },
+                { name: 'Pizza-1', slug: 'pizza-1', img: 'test2.jpg', price: 23.15, point: 6, time: 25, type: 'Halal', meal_sizes: [{ size: "Small", price: "0.30" }], placeCategoryId: 4 },
             ]).then(() => { console.log('Meals created') }).catch((err) => { console.log(err) })
 
             await Models.Punchcards.bulkCreate([

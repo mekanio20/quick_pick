@@ -20,10 +20,15 @@ class PlaceService {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
   }
-  async placeAddMealService(body) {
+  async placeAddMealService(body, placeId) {
     try {
       const isExist = await Models.Meals.findOne({ where: { slug: body.slug } })
       if (isExist) { return Response.BadRequest('Give another name value!', []) }
+      const placeCategory = await Models.PlaceCategories.findOne({
+        attributes: ['id'],
+        where: { id: body.placeCategoryId, placeId: placeId }
+      }).catch((err) => console.log(err))
+      if (!placeCategory) { return Response.BadRequest('Invalid category!', []) }
       const meal = await Models.Meals.create(body)
         .catch((err) => console.log(err))
       return Response.Created('Created successfully!', meal)
@@ -208,7 +213,7 @@ class PlaceService {
         attributes: ['id', 'img']
       }).catch((err) => console.log(err))
       if (images.count > 0) result.push({ album: images })
-      else result.push({ album: [] })
+      else result.push({ album: {} })
       
       const schedule = await Models.PlaceSchedules.findAll({
         where: { placeId: place.id },
