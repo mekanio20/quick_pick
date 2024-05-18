@@ -62,10 +62,7 @@ const placeSchema = {
         mealId: Joi.number().positive().required()
     }),
     placeAddAccount: Joi.object({
-        country: Joi.string().required(),
-        name: Joi.string().required(),
-        routing_number: Joi.number().positive().required(),
-        account_number: Joi.number().positive().required()
+        country: Joi.string().required()
     }),
     placeMeals: Joi.object({
         caf: Joi.string().max(255).required(),

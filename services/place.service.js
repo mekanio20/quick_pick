@@ -1,4 +1,4 @@
-const stripe = require('stripe')('sk_test_51OwnJm067vf7BB5cuimtutwZv3KJEi97lScgnwuPjiLT12Osvc5qx26DgnMCCHfvG5KPgrbgIlSHmF6DSpLLJXy700beYDSuOw')
+const stripe = require('stripe')(process.env.STRIPE_SECRET)
 const Models = require('../config/models')
 const Functions = require('../helpers/functions.service')
 const Response = require('../helpers/response.service')
@@ -74,27 +74,49 @@ class PlaceService {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
   }
-  async placeAddAccountService(body, placeId, ip) {
+  async placeAddAccountService(body, placeId) {
     try {
       const place = await Models.Places.findOne({ where: { id: placeId } })
       if (!place) { return Response.NotFound('Place not found!', []) }
       const account = await stripe.accounts.create({
-        type: 'standard',
         country: body.country,
         email: place.email,
-        business_type: 'individual',
-        business_profile: {
-          mcc: '5814',
-          name: place.name,
-          product_description: place.desc || 'food',
-          support_email: place.email,
+        controller: {
+          fees: { payer: 'application' },
+          losses: { payments: 'application' },
+          stripe_dashboard: {
+            type: 'express'
+          },
         },
-        tos_acceptance: {
-          date: Math.floor(Date.now() / 1000),
-          ip: ip
-        }
       })
+      if (!account.id) { return Response.BadRequest('An unknown error occurred!', []) }
       return Response.Created('Account created!', account)
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
+  async placeAddAcceptanceService(placeId, ip) {
+    try {
+      const place = await Models.Places.findOne({ where: { id: placeId }, attributes: ['email'] })
+      if (!place) { return Response.NotFound('Place nod found!', []) }
+      const accounts = await stripe.accounts.list({ limit: 100 })
+      let accountId = null
+      for (const account of accounts.data) {
+        if (account.email === place.email) {
+          accountId = account.id
+        }
+      }
+      console.log(ip);
+      const account = await stripe.accounts.update(
+        accountId,
+        {
+          tos_acceptance: {
+            date: Math.floor(Date.now() / 1000),
+            ip: ip
+          }
+        }
+      )
+      return Response.Success('Successful!', account)
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }

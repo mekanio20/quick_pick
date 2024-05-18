@@ -57,6 +57,11 @@ router.post('/add/account',
     validationMiddleware(placeSchema.placeAddAccount, 'body'),
     placeController.placeAddAccount)
 
+router.post('/add/accaptence',
+    authMiddleware,
+    rolesMiddleware(['place']),
+    placeController.placeAddAcceptance)
+
 // GET
 router.get('/categories/:slug',
     validationMiddleware(baseSchema.slugControl, 'params'),
