@@ -36,7 +36,7 @@ class PlaceService {
       if (files?.photo?.length > 0) {
         for (let file of files.photo) {
           await Models.PlaceImages.create({
-            id: Number(placeId),
+            placeId: Number(placeId),
             img: file.filename
           }).catch((err) => console.log(err))
         }
