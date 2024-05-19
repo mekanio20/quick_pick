@@ -1,5 +1,3 @@
-const Models = require('../config/models')
-const baseService = require('../services/base.service')
 const homeService = require('../services/home.service')
 
 class HomeController {

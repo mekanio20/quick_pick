@@ -40,6 +40,8 @@ class PlaceService {
     try {
       if (files?.photo?.length > 0) {
         for (let file of files.photo) {
+          const count = await Models.PlaceImages.count({ where: { placeId: placeId } })
+          if (count >= 6) { return Response.BadRequest('Your image limit is up!', []) }
           await Models.PlaceImages.create({
             placeId: Number(placeId),
             img: file.filename
@@ -99,11 +101,13 @@ class PlaceService {
   async fetchPlaceMealsService(query) {
     try {
       let page = query.page || 1
-      let limit = query.limit || 10
+      let limit = query.limit || 4
       let offset = page * limit - limit
+      let whereState = { isActive: true }
+      if (query.cat) whereState.id = query.cat
       const meals = await Models.PlaceCategories.findAll({
         attributes: ['id', 'name', 'slug'],
-        where: { isActive: true },
+        where: whereState,
         include: [
           {
             model: Models.Meals,

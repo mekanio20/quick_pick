@@ -1,6 +1,4 @@
-const baseService = require('../services/base.service')
 const userService = require('../services/user.service')
-const Models = require('../config/models')
 
 class UserController {
     // POST
@@ -50,6 +48,14 @@ class UserController {
     async userAddBasket(req, res) {
         try {
             const data = await userService.userAddBasketService(req.body, req.user.id)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
+    async userOrderCash(req, res) {
+        try {
+            const data = await userService.userOrderCashService(req.body, req.user.id, req.params.slug)
             return res.status(data.status).json(data)
         } catch (error) {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
