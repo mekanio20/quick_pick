@@ -118,6 +118,77 @@ class UserService {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
   }
+  async userOrderCashService(body, userId, slug) {
+    try {
+      const baskets = await Models.Baskets.findAll({
+        where: { isActive: true, userId: userId },
+        attributes: { exclude: ['score', 'userId', 'mealId', 'createdAt', 'updatedAt'] },
+        include: {
+          model: Models.Meals,
+          where: { isActive: true },
+          attributes: { exclude: ['desc', 'isActive', 'recomendo', 'placeCategoryId', 'allergens', 'createdAt', 'updatedAt'] },
+          required: true,
+          include: {
+            model: Models.PlaceCategories,
+            attributes: [],
+            required: true,
+            include: {
+              model: Models.Places,
+              attributes: ['slug'],
+              where: { slug: slug }
+            }
+          }
+        }
+     }).catch((err) => console.log(err))
+     if (baskets.length == 0) return Response.BadRequest('There are no items in your cart!', [])
+
+     let sum = 0
+     let order_info = []
+     baskets.forEach((item) => {
+      let totalPrice = 0
+      let totalSizePrice = 0
+      let totalExtraPrice = 0
+      if (item.meal_sizes) totalSizePrice = item.meal_sizes.reduce((acc, meal) => acc + meal.price, 0)
+      if (item.extra_meals) totalExtraPrice = item.extra_meals.reduce((acc, meal) => acc + meal.price, 0)
+      if (item.meal.price) {
+        totalPrice = (totalExtraPrice + totalSizePrice + Number(item.meal.price))
+        sum += Number(totalPrice.toFixed(2)) * Number(item.count)
+        order_info.push({
+          quantity: item.count,
+          total_price: Number(totalPrice.toFixed(2)),
+          extra_meals: item.extra_meals,
+          meal_sizes: item.meal_sizes,
+          mealId: item.meal.id,
+          userId: userId
+        })
+      }
+    })
+    
+    const order = await Models.Orders.create({
+      payment: 'Cash',
+      type: body.type,
+      tip: body.tip || 0,
+      sum: sum.toFixed(2),
+      note: body.note || null, 
+      schedule: body.schedule || new Date()
+    }).catch((err) => console.log(err))
+
+    order_info.forEach(async (item) => {
+      item.orderId = await order.id
+      await Models.OrderItems.create(item)
+        .then(() => console.log(true))
+        .catch((err) => console.log(err))
+    })
+
+    for (const item of baskets) {
+      item.isActive = false
+      await item.save()
+    }
+    return Response.Success('Successfull!', order)
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
   // PUT
   async userUpdateProfileService(body, img, userId) {
     try {
@@ -338,8 +409,8 @@ class UserService {
           score: punchcard.place.punchcard.point,
           type: 'punchcard',
           mealId: meal.id,
-          userId: userId })
-          .catch((err) => console.log(err))
+          userId: userId
+        }).catch((err) => console.log(err))
         if (!basket) { return Response.BadRequest('Could not add to cart!', []) }
 
         const score = Number(punchcard.score) - Number(punchcard.place.punchcard.point)

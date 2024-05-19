@@ -26,6 +26,12 @@ const userSchema = {
     userClaim: Joi.object({
         punchcardId: Joi.number().positive().required(),
         placeId: Joi.number().positive().required()
+    }),
+    userOrderCash: Joi.object({
+        type: Joi.string().valid('Dine-in', 'Pick-up').required(),
+        tip: Joi.number().positive().optional(),
+        note: Joi.string().max(255).optional(),
+        schedule: Joi.date().optional()
     })
 }
 
