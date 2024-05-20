@@ -14,8 +14,9 @@
 10) http://31.44.2.32:5001/api/v1/user/punchcard/:slug --- GET --- req.header.Authorization: Bearer {token}
 11) http://31.44.2.32:5001/api/v1/user/basket/:slug --- GET --- req.header.Authorization: Bearer {token}
 12) http://localhost:5001/api/v1/user/claim?punchcardId=1&placeId=1 --- GET --- req.header.Authorization: Bearer {token}
+13) http://localhost:5001/api/v1/user/add/order/cash/:slug --- GET ---  req.body { type, tip, note, schedule } --- req.header.Authorization: Bearer {token}
 // DELETE
-13) http://31.44.2.32:5001/api/v1/user/basket/:id -- DELETE --- req.header.Authorization: Bearer {token}
+14) http://31.44.2.32:5001/api/v1/user/basket/:id -- DELETE --- req.header.Authorization: Bearer {token}
 
 #### PLACE ####
 // POST
