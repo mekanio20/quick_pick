@@ -298,9 +298,13 @@ class PlaceService {
       const obj = {}
       if (img) { obj.img = img }
       for (const item in body) if (item && item !== 'id') obj[item] = body[item]
-      const meal = await Models.Meals.update(obj,
-        { where: { id: body.id, placeId: placeId } })
-        .catch((err) => console.log(err))
+      const meal = await Models.Meals.update(obj, {
+          where: { id: body.id },
+          include: {
+            model: Models.PlaceCategories,
+            where: { placeId: placeId }
+          }
+      }).catch((err) => console.log(err))
       if (!meal) { return Response.Forbidden('Not allowed!', []) }
       return Response.Success('Successfully updated!', [])
     } catch (error) {
