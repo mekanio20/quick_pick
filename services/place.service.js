@@ -15,7 +15,7 @@ class PlaceService {
       place.isActive = true
       await place.save()
       const token = await Functions.generateJwt({ id: place.id, role: "place" })
-      return Response.Success('Login confirmed', { token })
+      return Response.Success('Login confirmed', { slug: place.slug, token })
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
