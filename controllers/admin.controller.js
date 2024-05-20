@@ -54,7 +54,6 @@ class AdminController {
             await Models.Places.bulkCreate([
                 { name: 'mekan dukan', slug: 'mekan-dukan', type: 'Cafe', email: 'mrxyok138@gmail.com', password: place_pass, phone_primary: '987654321', address: 'Anew, 27', rating: 4.3, latitude: 47.56670524318587, longitude: 14.24390891117955, color: '#FFE0B0', categoryId: 1, isActive: true },
                 { name: 'sumbar dukan', slug: 'sumbar-dukan', type: 'Cafe', email: 'mrxyok139@gmail.com', password: place_pass, phone_primary: '987654322', address: 'Anew, 27', rating: 5.0, latitude: 47.567424, longitude: 14.243638, color: '#E0FBFC', categoryId: 2, isActive: true },
-                { name: 'test dukan', slug: 'test-dukan', type: 'Restaurant', email: 'mrxyok140@gmail.com', password: place_pass, phone_primary: '987654323', address: 'Anew, 27', rating: 3.0, latitude: 47.566727, longitude: 14.242234, color: '#E0FBFC', categoryId: 3, isActive: true }
             ]).then(() => { console.log('Places created') }).catch((err) => { console.log(err) })
 
             await Models.PlaceSchedules.bulkCreate([
@@ -65,7 +64,15 @@ class AdminController {
                 { day: 'Friday', open_time: '10:00', close_time: '19:00', placeId: 1 },
                 { day: 'Friday', open_time: '10:00', close_time: '19:00', placeId: 1 },
                 { day: 'Saturday', open_time: '10:00', close_time: '19:00', placeId: 1 },
-                { day: 'Sunday', open_time: '10:00', close_time: '18:00', placeId: 1 }
+                { day: 'Sunday', open_time: '10:00', close_time: '18:00', placeId: 1 },
+                { day: 'Monday', open_time: '11:00', close_time: '20:00', placeId: 2 },
+                { day: 'Tuesday', open_time: '10:00', close_time: '20:00', placeId: 2 },
+                { day: 'Wednesday', open_time: '10:00', close_time: '20:00', placeId: 2 },
+                { day: 'Thursday', open_time: '10:00', close_time: '19:00', placeId: 2 },
+                { day: 'Friday', open_time: '10:00', close_time: '19:00', placeId: 2 },
+                { day: 'Friday', open_time: '10:00', close_time: '19:00', placeId: 2 },
+                { day: 'Saturday', open_time: '10:00', close_time: '19:00', placeId: 2 },
+                { day: 'Sunday', open_time: '10:00', close_time: '18:00', placeId: 2 }
             ]).then(() => { console.log('Place Schedules created') }).catch((err) => { console.log(err) })
 
             await Models.PlaceCategories.bulkCreate([
