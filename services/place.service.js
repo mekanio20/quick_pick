@@ -298,14 +298,19 @@ class PlaceService {
       const obj = {}
       if (img) { obj.img = img }
       for (const item in body) if (item && item !== 'id') obj[item] = body[item]
-      const meal = await Models.Meals.update(obj, {
-          where: { id: body.id },
-          include: {
-            model: Models.PlaceCategories,
-            where: { placeId: placeId }
-          }
-      }).catch((err) => console.log(err))
-      if (!meal) { return Response.Forbidden('Not allowed!', []) }
+      const verif = await Models.Meals.findOne({
+        where: { id: body.id },
+        include: {
+          model: Models.PlaceCategories,
+          where: { placeId: placeId },
+          required: true
+        }
+      })
+      if (!verif) { return Response.Forbidden('Not allowed!', []) }
+      await Models.Meals.update(obj, {
+          where: { id: body.id }
+      }).then(() => console.log(true))
+      .catch((err) => console.log(err))
       return Response.Success('Successfully updated!', [])
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
