@@ -82,6 +82,14 @@ class PlaceController {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
         }
     }
+    async placeAddAccount(req, res) {
+        try {
+            const data = await placeService.placeAddAccountService(req.user.id)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
     // GET
     async fetchPlaceCategories(req, res) {
         try {
