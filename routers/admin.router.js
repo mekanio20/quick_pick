@@ -8,7 +8,7 @@ const adminSchema = require('../validations/admin.schema')
 router.get('/test', adminController.Test)
 
 router.get('/default',
-    // rolesMiddleware(['admin']),
+    rolesMiddleware(['admin']),
     adminController.Default)
 
 // PUT
@@ -18,6 +18,6 @@ router.put('/edit/status',
     adminController.editStatus)
 
 // DELETE
-router.delete('/user/:email', adminController.deleteUser)
+// router.delete('/user/:email', adminController.deleteUser)
 
 module.exports = router

@@ -42,12 +42,12 @@ class AdminController {
                 { name: 'Salad', slug: 'salad' },
                 { name: 'Italian', slug: 'italian' },
                 { name: 'Falafel', slug: 'falafel' },
-                { name: 'Bakery', slug: 'bakery' },
+                { name: 'Bakery', slug: 'bakery' }
             ]).then(() => { console.log('Categories created') }).catch((err) => { console.log(err) })
 
             await Models.Users.bulkCreate([
                 { email: "quickpick.developer@gmail.com", username: "admin", uuid: uuid.v4(), roleId: 1 },
-                { email: "mekanbaylyyew5@gmail.com", username: "mekan", uuid: uuid.v4(), roleId: 2 },
+                { email: "mekanbaylyyew5@gmail.com", username: "mekan", fullname: "mekan baylyyew", uuid: uuid.v4(), roleId: 2 },
                 { email: "sumbar.babayew.2003@gmail.com", username: "sumbar", fullname: "sumbar babayew", uuid: uuid.v4(), roleId: 2 },
             ]).then(() => { console.log('Users created') }).catch((err) => { console.log(err) })
 
@@ -70,7 +70,6 @@ class AdminController {
                 { day: 'Wednesday', open_time: '10:00', close_time: '20:00', placeId: 2 },
                 { day: 'Thursday', open_time: '10:00', close_time: '19:00', placeId: 2 },
                 { day: 'Friday', open_time: '10:00', close_time: '19:00', placeId: 2 },
-                { day: 'Friday', open_time: '10:00', close_time: '19:00', placeId: 2 },
                 { day: 'Saturday', open_time: '10:00', close_time: '19:00', placeId: 2 },
                 { day: 'Sunday', open_time: '10:00', close_time: '18:00', placeId: 2 }
             ]).then(() => { console.log('Place Schedules created') }).catch((err) => { console.log(err) })
@@ -84,12 +83,12 @@ class AdminController {
             ]).then(() => { console.log('PlaceCategories created') }).catch((err) => { console.log(err) })
 
             await Models.Meals.bulkCreate([
-                { name: 'Pepperoni Pizza', slug: 'pepperoni-pizza', img: 'test.jpg', price: 25.15, point: 3, time: 14, type: 'Meat', extra_meals: [{ name: "sosis", price: 0.25 }], meal_sizes: [{ size: "Small", price: 0.30 }, { size: "Medium", price: 0.50 }], allergens: [{ name: "test1" }], placeCategoryId: 1 },
-                { name: 'Pepperoni Pizza 2', slug: 'pepperoni-pizza-2', img: 'test2.jpg', price: 54.15, point: 6, time: 28, type: 'Meat', extra_meals: [{ name: "sosis", price: 0.25 }], meal_sizes: [{ size: "Small", price: 0.30 }, { size: "Medium", price: 0.50 }], placeCategoryId: 2 },
-                { name: 'Pepperoni Pizza 3', slug: 'pepperoni-pizza-3', img: 'test2.jpg', price: 23.15, point: 6, time: 13, type: 'Meat', extra_meals: [{ name: "sosis", price: 0.25 }], meal_sizes: [{ size: "Small", price: 0.30 }, { size: "Medium", price: 0.50 }], placeCategoryId: 1 },
-                { name: 'Soups', slug: 'soups', img: 'test2.jpg', price: 23.15, point: 6, time: 14, type: 'Halal', meal_sizes: [{ size: "Small", price: 0.30 }], placeCategoryId: 2 },
-                { name: 'Soups-1', slug: 'soups-1', img: 'test2.jpg', price: 23.15, point: 6, time: 23, type: 'Halal', meal_sizes: [{ size: "Small", price: 0.30 }], placeCategoryId: 5 },
-                { name: 'Pizza-1', slug: 'pizza-1', img: 'test2.jpg', price: 23.15, point: 6, time: 25, type: 'Halal', meal_sizes: [{ size: "Small", price: 0.30 }], placeCategoryId: 4 },
+                { name: 'Pepperoni Pizza', ingredients: 'Tomato Sauce, Parmesan cheese, Dried oregano, Mozzarella cheese, Pepperoni', slug: 'pepperoni-pizza', img: 'test.jpg', price: 25.15, point: 3, time: 14, type: 'Meat', extra_meals: [{ name: "sosis", price: 0.25, allergens: ["milk", "sugar"] }], meal_sizes: [{ size: "Small", price: 0.30 }, { size: "Medium", price: 0.50 }], allergens: [{ name: "milk" }], placeCategoryId: 1 },
+                { name: 'Pepperoni Pizza 2', ingredients: 'Tomato Sauce, Parmesan cheese, Dried oregano, Mozzarella cheese, Pepperoni', slug: 'pepperoni-pizza-2', img: 'test.jpg', price: 54.15, point: 6, time: 28, type: 'Meat', extra_meals: [{ name: "sosis", price: 0.25, allergens: ["milk"] }], meal_sizes: [{ size: "Small", price: 0.30 }, { size: "Medium", price: 0.50 }], placeCategoryId: 2 },
+                { name: 'Pepperoni Pizza 3', ingredients: 'Tomato Sauce, Parmesan cheese, Dried oregano, Mozzarella cheese, Pepperoni', slug: 'pepperoni-pizza-3', img: 'test.jpg', price: 23.15, point: 6, time: 13, type: 'Meat', extra_meals: [{ name: "sosis", price: 0.25 }], meal_sizes: [{ size: "Small", price: 0.30 }, { size: "Medium", price: 0.50 }], placeCategoryId: 1 },
+                { name: 'Soups', ingredients: 'Tomato Sauce, Parmesan cheese, Dried oregano, Mozzarella cheese, Pepperoni', slug: 'soups', img: 'test.jpg', price: 23.15, point: 6, time: 14, type: 'Halal', meal_sizes: [{ size: "Small", price: 0.30 }], placeCategoryId: 2 },
+                { name: 'Soups-1', ingredients: 'Tomato Sauce, Parmesan cheese, Dried oregano, Mozzarella cheese, Pepperoni', slug: 'soups-1', img: 'test.jpg', price: 23.15, point: 6, time: 23, type: 'Halal', meal_sizes: [{ size: "Small", price: 0.30 }], placeCategoryId: 5 },
+                { name: 'Pizza-1', ingredients: 'Tomato Sauce, Parmesan cheese, Dried oregano, Mozzarella cheese, Pepperoni', slug: 'pizza-1', img: 'test.jpg', price: 23.15, point: 6, time: 25, type: 'Halal', meal_sizes: [{ size: "Small", price: 0.30 }], placeCategoryId: 4 },
             ]).then(() => { console.log('Meals created') }).catch((err) => { console.log(err) })
 
             await Models.Punchcards.bulkCreate([
@@ -109,8 +108,8 @@ class AdminController {
             ]).then(() => { console.log('PunchCardSteps created') }).catch((err) => { console.log(err) })
 
             await Models.Baskets.bulkCreate([
-                { count: 2, extra_meals: [{ name: "sosis", price: 0.25 }], meal_sizes: [{ size: "Small", price: 0.30 }], mealId: 1, userId: 2 },
-                { count: 3, extra_meals: [{ name: "sosis", price: 0.25 }], meal_sizes: [{ size: "Small", price: 0.30 }], mealId: 2, userId: 2 },
+                { count: 2, extra_meals: [{ name: "sosis", price: 0.25, allergens: ["milk", "sugar"] }], meal_sizes: [{ size: "Small", price: 0.30 }], mealId: 1, userId: 2 },
+                { count: 3, extra_meals: [{ name: "sosis", price: 0.25, allergens: ["milk"] }], meal_sizes: [{ size: "Small", price: 0.30 }], mealId: 2, userId: 2 },
             ]).then(() => { console.log('Baskets created') }).catch((err) => { console.log(err) })
             
             return res.json({ message: "Completed"})
@@ -118,17 +117,17 @@ class AdminController {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
         }
     }
-    // DELETE
-    async deleteUser(req, res) {
-        try {
-            const user = await Models.Users.destroy({ where: { email: req.params.email } })
-                .catch((err) => console.log(err))
-            if (user) { return res.status(200).json({ message: "Completed!" }) }
-            return res.status(400).json({ message: "Error occurred!" })
-        } catch (error) {
-            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
-        }
-    }
+    // // DELETE
+    // async deleteUser(req, res) {
+    //     try {
+    //         const user = await Models.Users.destroy({ where: { email: req.params.email } })
+    //             .catch((err) => console.log(err))
+    //         if (user) { return res.status(200).json({ message: "Completed!" }) }
+    //         return res.status(400).json({ message: "Error occurred!" })
+    //     } catch (error) {
+    //         return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+    //     }
+    // }
 }
 
 module.exports = new AdminController()
