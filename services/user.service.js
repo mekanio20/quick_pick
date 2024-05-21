@@ -126,7 +126,7 @@ class UserService {
         include: {
           model: Models.Meals,
           where: { isActive: true },
-          attributes: { exclude: ['desc', 'isActive', 'recomendo', 'placeCategoryId', 'allergens', 'createdAt', 'updatedAt'] },
+          attributes: { exclude: ['isActive', 'recomendo', 'placeCategoryId', 'allergens', 'createdAt', 'updatedAt'] },
           required: true,
           include: {
             model: Models.PlaceCategories,
