@@ -92,7 +92,7 @@ const Meals = database.define('meals', {
     name: { type: DataTypes.STRING, allowNull: false },
     slug: { type: DataTypes.STRING, allowNull: false, unique: true },
     desc: { type: DataTypes.STRING, allowNull: true },
-    img: { type: DataTypes.STRING, allowNull: false },
+    img: { type: DataTypes.STRING, allowNull: true },
     price: { type: DataTypes.DOUBLE, allowNull: false },
     point: { type: DataTypes.SMALLINT, defaultValue: 0 },
     time: { type: DataTypes.SMALLINT, allowNull: false },
@@ -175,6 +175,20 @@ const PunchCardSteps = database.define('punchcard_steps', {
     createdAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW },
     updatedAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW }
 })
+
+const StripeAccounts = database.define('stripe_accounts', {
+    id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false, unique: true },
+    stripe: { type: DataTypes.STRING, allowNull: false },
+    createdAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW },
+    updatedAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW }
+})
+
+// StripeAccounts -> PlaceId
+
+Places.hasOne(StripeAccounts)
+StripeAccounts.belongsTo(Places)
+
+// ---------
 
 // Users -> RoleId
 
@@ -269,5 +283,5 @@ Baskets.belongsTo(Meals)
 module.exports = {
     Roles, Users, Places, Categories, PlaceImages, PlaceSchedules, 
     Meals, PlaceCategories, Promotions, PromotionUses, Orders, OrderItems, 
-    Punchcards, PunchCardSteps, Baskets
+    Punchcards, PunchCardSteps, Baskets, StripeAccounts
 }

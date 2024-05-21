@@ -3,6 +3,7 @@ const Functions = require('../helpers/functions.service')
 const Response = require('../helpers/response.service')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
+const stripe = require('stripe')(process.env.STRIPE_SECRET)
 
 class PlaceService {
   // POST
@@ -76,6 +77,34 @@ class PlaceService {
       const [_, created] = await Models.Punchcards.findOrCreate({ where: body, defaults: body })
       if (!created) { return Response.BadRequest('Already exists!', []) }
       return Response.Created('Created successfully!', [])
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
+  async placeAddAccountService(placeId) {
+    try {
+      const placeEmail = await Models.Places.findOne({ where: { id: placeId }, attributes: ['email'] })
+      if (!placeEmail) { return Response.BadRequest('Email is not defined!', []) }
+      // Account create
+      const account = await stripe.accounts.create({
+        type: 'custom',
+        business_type: 'individual',
+        requested_capabilities: ['card_payments', 'transfers']
+      })
+      const stripe = await Models.StripeAccounts.create({
+        stripe: account.id,
+        placeId: placeId
+      }).catch((err) => console.log(err))
+      if (!stripe) { return Response.BadRequest('An unknown error occurred!', []) }
+      // Accoutn Link
+      const accountLink = await stripe.accountLinks.create({
+        account: account.id,
+        success_url: 'http://localhost:5001/success',
+        failure_url: 'http://localhost:5001/failure',
+        type: 'custom_account_verification',
+        collect: 'eventually_due'
+      })
+      return Response.Created('Created successfully!', accountLink)
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
@@ -355,7 +384,7 @@ class PlaceService {
   async deleteMealService(id, placeId) {
     try {
       const meal = await Models.Meals.destroy({
-        where: { id: id, placeId: placeId }
+        where: { id: id, placeId: placeId } // error
       }).catch((err) => console.log(err))
       if (!meal) { return Response.Forbidden('Not allowed!', []) }
       return Response.Success('Successfully deleted!', [])
