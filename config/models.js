@@ -95,7 +95,7 @@ const Meals = database.define('meals', {
     price: { type: DataTypes.DOUBLE, allowNull: false },
     point: { type: DataTypes.SMALLINT, defaultValue: 0 },
     time: { type: DataTypes.SMALLINT, allowNull: false },
-    ingredients: { type: DataTypes.TEXT(500), allowNull: false },
+    ingredients: { type: DataTypes.TEXT, allowNull: false },
     type: { type: DataTypes.ENUM({ values: ['Meat', 'Vegan', 'Kosher', 'Vegetarian', 'Halal', 'Gluten Free'] }) },
     extra_meals: { type: DataTypes.ARRAY(DataTypes.JSON(DataTypes.STRING)), allowNull: true },
     meal_sizes: { type: DataTypes.ARRAY(DataTypes.JSON(DataTypes.STRING)), allowNull: true },
