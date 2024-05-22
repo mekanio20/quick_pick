@@ -110,6 +110,8 @@ class UserService {
   }
   async userAddBasketService(body, userId) {
     try {
+      const isExist = await Models.Baskets.findAll({ where: { userId: userId } })
+      if (isExist.length > 0) { return Response.BadRequest('Please empty your cart first!', []) }
       body.userId = userId
       const basket = await Models.Baskets.create(body)
       if (!basket) { return Response.BadRequest('Error occurred!', []) }
