@@ -6,6 +6,7 @@ const uuid = require('uuid')
 const redis = require('../ioredis')
 const Models = require('../config/models')
 const { Op } = require('sequelize')
+const stripe = require('stripe')(process.env.STRIPE_SECRET)
 
 class UserService {
   // POST
@@ -120,7 +121,7 @@ class UserService {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
   }
-  async userOrderCashService(body, userId, slug) {
+  async userAddPaymentService(body, userId, slug) {
     try {
       const baskets = await Models.Baskets.findAll({
         where: { isActive: true, userId: userId },
@@ -132,7 +133,7 @@ class UserService {
           required: true,
           include: {
             model: Models.PlaceCategories,
-            attributes: [],
+            attributes: ['placeId'],
             required: true,
             include: {
               model: Models.Places,
@@ -165,9 +166,33 @@ class UserService {
         })
       }
     })
+    const stripe_account = await Models.StripeAccounts.findOne({
+      where: { placeId: baskets[0].meal.place_category.placeId }
+    }).catch((err) => console.log(err))
+    console.log(stripe_account);
+    if (!stripe_account) { return Response.BadRequest('Payment transaction failed!', stripe_account) }
+    for (let i = 0; i < order_info.length; i++) {
+      await stripe.checkout.sessions.create({
+        line_items: [
+          {
+            price_data: {
+              currency: 'eur',
+              product_data: {
+                name: order_info[i].mealId,
+              },
+              unit_amount: Number(order_info[i].total_price) * 1000,
+            },
+            quantity: order_info[i].quantity,
+          },
+        ],
+        mode: 'payment',
+        success_url: 'https://example.com/success?session_id={CHECKOUT_SESSION_ID}',
+        }, {
+          stripeAccount: stripe_account.stripe
+        })
+    }
     
     const order = await Models.Orders.create({
-      payment: 'Cash',
       type: body.type,
       tip: body.tip || 0,
       sum: sum.toFixed(2),

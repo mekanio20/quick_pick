@@ -50,6 +50,7 @@ const placeSchema = {
         point: Joi.number().positive().optional(),
         time: Joi.number().positive().required(),
         recomendo: Joi.boolean().optional(),
+        ingredients: Joi.string().optional(),
         type: Joi.string().valid('Meat', 'Vegan', 'Kosher', 'Vegetarian', 'Halal', 'Gluten Free').required(),
         extra_meals: Joi.array().items(Joi.object({ name: Joi.string().required(), price: Joi.number().positive().required(), allergens: Joi.array().items(Joi.string()).required() })).optional(),
         meal_sizes: Joi.array().items(Joi.object({ size: Joi.string().valid('Small', 'Medium', 'Large').required(), price: Joi.number().positive().required() })).optional(),        

@@ -38,12 +38,12 @@ router.post('/add/basket',
     validationMiddleware(userSchema.userBasket, 'body'),
     userController.userAddBasket)
 
-router.post('/add/order/cash/:slug',
+router.post('/add/payment/:slug',
     authMiddleware,
     rolesMiddleware(['user']),
     validationMiddleware(baseSchema.slugControl, 'params'),
-    validationMiddleware(userSchema.userOrderCash, 'body'),
-    userController.userOrderCash)
+    validationMiddleware(userSchema.userAddPayment, 'body'),
+    userController.userAddPayment)
 
 // PUT
 router.put('/update/profile',
