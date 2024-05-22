@@ -383,10 +383,17 @@ class PlaceService {
   }
   async deleteMealService(id, placeId) {
     try {
-      const meal = await Models.Meals.destroy({
-        where: { id: id, placeId: placeId } // error
+      const isExist = await Models.Meals.findOne({
+        where: { id: id },
+        include: {
+          model: Models.PlaceCategories,
+          where: { placeId: placeId }
+        }
       }).catch((err) => console.log(err))
-      if (!meal) { return Response.Forbidden('Not allowed!', []) }
+      if (!isExist) { return Response.NotFound('Not found!', []) }
+      await Models.Meals.destroy({
+        where: { id: isExist.id }
+      }).catch((err) => console.log(err))
       return Response.Success('Successfully deleted!', [])
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
