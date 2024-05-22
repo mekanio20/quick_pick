@@ -23,6 +23,7 @@ class PlaceService {
   }
   async placeAddMealService(body, placeId) {
     try {
+	console.log(body)
       const isExist = await Models.Meals.findOne({ where: { slug: body.slug } })
       if (isExist) { return Response.BadRequest('Give another name value!', []) }
       const placeCategory = await Models.PlaceCategories.findOne({
