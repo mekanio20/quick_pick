@@ -138,13 +138,13 @@ const Baskets = database.define('baskets', {
 const Orders = database.define('orders', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false, unique: true },
     status: { type: DataTypes.ENUM({ values: ['Order Placed', 'Preparation Started', 'Ready in 5 Minutes', 'Order Finished', 'Order Collected'] }), defaultValue: 'Order Placed' },
-    payment: { type: DataTypes.ENUM({ values: ['Cash', 'Card'] }), allowNull: false },
+    // payment: { type: DataTypes.ENUM({ values: ['Cash', 'Card'] }), allowNull: false },
     type: { type: DataTypes.ENUM({ values: ['Pick-up', 'Dine-in'] }), allowNull: false },
     sum: { type: DataTypes.DOUBLE, allowNull: false },
     note: { type: DataTypes.STRING, allowNull: true },
     tip: { type: DataTypes.DOUBLE, defaultValue: 0 }, // cay pul bermek ucin
+    payment: { type: DataTypes.BOOLEAN, defaultValue: false },
     schedule: { type: DataTypes.DATE, defaultValue: Sequelize.NOW },
-    payment_status: { type: DataTypes.BOOLEAN, defaultValue: false },
     createdAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW },
     updatedAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW }
 })

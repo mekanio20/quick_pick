@@ -27,7 +27,7 @@ const userSchema = {
         punchcardId: Joi.number().positive().required(),
         placeId: Joi.number().positive().required()
     }),
-    userOrderCash: Joi.object({
+    userAddPayment: Joi.object({
         type: Joi.string().valid('Dine-in', 'Pick-up').required(),
         tip: Joi.number().positive().optional(),
         note: Joi.string().max(255).optional(),
