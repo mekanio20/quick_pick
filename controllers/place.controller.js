@@ -67,7 +67,7 @@ class PlaceController {
             const slug = await Functions.generateSlug(req.body.name)
             const body = req.body
             body.slug = slug
-            body.img = req.file.filename
+            body.img = req.file?.filename
             const data = await placeService.placeAddMealService(body, req.user.id)
             return res.status(data.status).json(data)
         } catch (error) {
