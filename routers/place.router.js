@@ -87,6 +87,11 @@ router.get('/albums/:slug',
     validationMiddleware(baseSchema.slugControl, 'params'),
     placeController.fetchPlaceAlbums)
 
+router.get('/schedules',
+    authMiddleware,
+    rolesMiddleware(['place']),
+    placeController.fetchPlaceSchedule)
+
 router.get('/:slug',
     validationMiddleware(baseSchema.slugControl, 'params'),
     placeController.fetchPlace)
