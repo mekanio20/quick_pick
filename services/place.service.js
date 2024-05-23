@@ -220,6 +220,22 @@ class PlaceService {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
   }
+  async fetchPlaceScheduleService(placeId) {
+    try {
+      const schedule = await Models.PlaceSchedules.findAndCountAll({
+        attributes: { exclude: ['placeId', 'createdAt', 'updatedAt'] },
+        include: {
+          model: Models.Places,
+          where: { id: placeId, isActive: true },
+          attributes: []
+        }
+      }).catch((err) => console.log(err))
+      if (schedule.count === 0) { return Response.NotFound('No information found!', []) }
+      return Response.Success('Successful!', schedule)
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
   async placeLogoutService(placeId) {
     try {
       await Models.Places.update({ isActive: false }, { where: { id: placeId } })

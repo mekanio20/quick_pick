@@ -169,28 +169,30 @@ class UserService {
     const stripe_account = await Models.StripeAccounts.findOne({
       where: { placeId: baskets[0].meal.place_category.placeId }
     }).catch((err) => console.log(err))
-    console.log(stripe_account);
-    if (!stripe_account) { return Response.BadRequest('Payment transaction failed!', stripe_account) }
-    for (let i = 0; i < order_info.length; i++) {
+
+    if (!stripe_account) { return Response.BadRequest('Payment transaction failed!', []) }
+
+    console.log(order_info);
+    // for (let i = 0; i < order_info.length; i++) {
       await stripe.checkout.sessions.create({
         line_items: [
           {
             price_data: {
               currency: 'eur',
               product_data: {
-                name: order_info[i].mealId,
+                name: 'pizza',
               },
-              unit_amount: Number(order_info[i].total_price) * 1000,
+              unit_amount: 14 * 1000,
             },
-            quantity: order_info[i].quantity,
+            quantity: 2,
           },
         ],
         mode: 'payment',
-        success_url: 'https://example.com/success?session_id={CHECKOUT_SESSION_ID}',
+        success_url: 'http://31.44.2.32/success?',
         }, {
           stripeAccount: stripe_account.stripe
         })
-    }
+    // }
     
     const order = await Models.Orders.create({
       type: body.type,
