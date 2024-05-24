@@ -123,97 +123,95 @@ class UserService {
   }
   async userAddPaymentService(body, userId, slug) {
     try {
-      const baskets = await Models.Baskets.findAll({
-        where: { isActive: true, userId: userId },
-        attributes: { exclude: ['score', 'userId', 'mealId', 'createdAt', 'updatedAt'] },
-        include: {
-          model: Models.Meals,
-          where: { isActive: true },
-          attributes: { exclude: ['isActive', 'recomendo', 'placeCategoryId', 'allergens', 'createdAt', 'updatedAt'] },
-          required: true,
-          include: {
-            model: Models.PlaceCategories,
-            attributes: ['placeId'],
-            required: true,
-            include: {
-              model: Models.Places,
-              attributes: ['slug'],
-              where: { slug: slug }
-            }
-          }
-        }
-     }).catch((err) => console.log(err))
-     if (baskets.length == 0) return Response.BadRequest('There are no items in your cart!', [])
+    //   const baskets = await Models.Baskets.findAll({
+    //     where: { isActive: true, userId: userId },
+    //     attributes: { exclude: ['score', 'userId', 'mealId', 'createdAt', 'updatedAt'] },
+    //     include: {
+    //       model: Models.Meals,
+    //       where: { isActive: true },
+    //       attributes: { exclude: ['isActive', 'recomendo', 'placeCategoryId', 'allergens', 'createdAt', 'updatedAt'] },
+    //       required: true,
+    //       include: {
+    //         model: Models.PlaceCategories,
+    //         attributes: ['placeId'],
+    //         required: true,
+    //         include: {
+    //           model: Models.Places,
+    //           attributes: ['slug'],
+    //           where: { slug: slug }
+    //         }
+    //       }
+    //     }
+    //  }).catch((err) => console.log(err))
+    //  if (baskets.length == 0) return Response.BadRequest('There are no items in your cart!', [])
 
-     let sum = 0
-     let order_info = []
-     baskets.forEach((item) => {
-      let totalPrice = 0
-      let totalSizePrice = 0
-      let totalExtraPrice = 0
-      if (item.meal_sizes) totalSizePrice = item.meal_sizes.reduce((acc, meal) => acc + meal.price, 0)
-      if (item.extra_meals) totalExtraPrice = item.extra_meals.reduce((acc, meal) => acc + meal.price, 0)
-      if (item.meal.price) {
-        totalPrice = (totalExtraPrice + totalSizePrice + Number(item.meal.price))
-        sum += Number(totalPrice.toFixed(2)) * Number(item.count)
-        order_info.push({
-          quantity: item.count,
-          total_price: Number(totalPrice.toFixed(2)),
-          extra_meals: item.extra_meals,
-          meal_sizes: item.meal_sizes,
-          mealId: item.meal.id,
-          userId: userId
-        })
-      }
-    })
-    const stripe_account = await Models.StripeAccounts.findOne({
-      where: { placeId: baskets[0].meal.place_category.placeId }
-    }).catch((err) => console.log(err))
+    //  let sum = 0
+    //  let order_info = []
+    //  baskets.forEach((item) => {
+    //   let totalPrice = 0
+    //   let totalSizePrice = 0
+    //   let totalExtraPrice = 0
+    //   if (item.meal_sizes) totalSizePrice = item.meal_sizes.reduce((acc, meal) => acc + meal.price, 0)
+    //   if (item.extra_meals) totalExtraPrice = item.extra_meals.reduce((acc, meal) => acc + meal.price, 0)
+    //   if (item.meal.price) {
+    //     totalPrice = (totalExtraPrice + totalSizePrice + Number(item.meal.price))
+    //     sum += Number(totalPrice.toFixed(2)) * Number(item.count)
+    //     order_info.push({
+    //       quantity: item.count,
+    //       total_price: Number(totalPrice.toFixed(2)),
+    //       extra_meals: item.extra_meals,
+    //       meal_sizes: item.meal_sizes,
+    //       mealId: item.meal.id,
+    //       userId: userId
+    //     })
+    //   }
+    // })
+    // sum = Number(sum.toFixed(2)) + Number(body.tip) || 0
+    // const stripe_account = await Models.StripeAccounts.findOne({
+    //   where: { placeId: baskets[0].meal.place_category.placeId }
+    // }).catch((err) => console.log(err))
 
-    if (!stripe_account) { return Response.BadRequest('Payment transaction failed!', []) }
+    // if (!stripe_account) { return Response.BadRequest('Payment transaction failed!', []) }
 
-    console.log(order_info);
-    // for (let i = 0; i < order_info.length; i++) {
-      await stripe.checkout.sessions.create({
-        line_items: [
-          {
-            price_data: {
-              currency: 'eur',
-              product_data: {
-                name: 'pizza',
-              },
-              unit_amount: 14 * 1000,
-            },
-            quantity: 2,
-          },
-        ],
-        mode: 'payment',
-        success_url: 'http://31.44.2.32/success?',
-        }, {
-          stripeAccount: stripe_account.stripe
-        })
+    // const order = await Models.Orders.create({
+    //   type: body.type,
+    //   tip: body.tip || 0,
+    //   sum: sum,
+    //   note: body.note || null, 
+    //   schedule: body.schedule || new Date()
+    // }).catch((err) => console.log(err))
+
+    // order_info.forEach(async (item) => {
+    //   item.orderId = await order.id
+    //   await Models.OrderItems.create(item)
+    //     .then(() => console.log(true))
+    //     .catch((err) => console.log(err))
+    // })
+    // console.log(stripe_account.stripe);
+    // const names = baskets.map((item) => item.meal.name).toString()
+    // console.log(sum, names);
+    // const session = await stripe.checkout.sessions.create({
+    //   payment_method_types: ['card'],
+    //   line_items: [{
+    //       price_data: {
+    //           currency: 'eur',
+    //           product_data: {
+    //               name: names
+    //           },
+    //           unit_amount: Number(sum) * 100,
+    //       },
+    //       quantity: 1,
+    //   }],
+    //   mode: 'payment',
+    //   success_url: 'http://31.44.2.32/success',
+    //   cancel_url: 'http://31.44.2.32/cancel',
+    // })
+
+    // for (const item of baskets) {
+    //   item.isActive = false
+    //   await item.save()
     // }
-    
-    const order = await Models.Orders.create({
-      type: body.type,
-      tip: body.tip || 0,
-      sum: sum.toFixed(2),
-      note: body.note || null, 
-      schedule: body.schedule || new Date()
-    }).catch((err) => console.log(err))
-
-    order_info.forEach(async (item) => {
-      item.orderId = await order.id
-      await Models.OrderItems.create(item)
-        .then(() => console.log(true))
-        .catch((err) => console.log(err))
-    })
-
-    for (const item of baskets) {
-      item.isActive = false
-      await item.save()
-    }
-    return Response.Success('Successfull!', order)
+    return Response.Success('Successfull!', 'session')
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }

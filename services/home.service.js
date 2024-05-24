@@ -1,6 +1,6 @@
 const Models = require('../config/models')
 const Response = require('../helpers/response.service')
-const { Op, where } = require('sequelize')
+const { Op } = require('sequelize')
 
 class HomeService {
     async homeMainService(query) {
@@ -15,29 +15,24 @@ class HomeService {
             let cats = [1,2,3,4,5,6,7,8,9,10]
             if (query.cat) cats = [Number(query.cat)]
             if (query.type) whereState.type = query.type
-            const places = await Models.Meals.findAll({
-                where: whereState,
-                attributes: [],
+            const places = await Models.Places.findAll({
+                attributes: [
+                    'name', 'slug', 'type', 'rating',
+                    'latitude', 'longitude', 'logo', 'copacity'
+                ],
+                where: { isActive: true, categoryId: cats },
                 include: {
                     model: Models.PlaceCategories,
                     where: { isActive: true },
-                    attributes: ['placeId'],
-                    required: true,
+                    attributes: [],
                     include: {
-                        model: Models.Places,
-                        required: true,
-                        attributes: [
-                            'name', 'slug', 'type', 'rating',
-                            'latitude', 'longitude', 'logo', 'copacity'
-                        ],
-                        where: {
-                            isActive: true,
-                            categoryId: cats
-                        },
+                        model: Models.Meals,
+                        where: whereState,
+                        attributes: []
                     }
                 }
-            }).catch((err) => console.log(err))
-            if (places.length === 0 || places[0]?.place_category === null) { return Response.NotFound('No information found!', []) }
+            })
+            if (places.length === 0) { return Response.NotFound('No information found!', []) }
             return Response.Success('Successful!', places)
         } catch (error) {
             throw { status: 500, type: "error", msg: error, detail: [] }
