@@ -338,10 +338,9 @@ class PlaceService {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
   }
-  async placeEditMealService(body, img, placeId) {
+  async placeEditMealService(body, placeId) {
     try {
       const obj = {}
-      if (img) { obj.img = img }
       for (const item in body) if (item && item !== 'id') obj[item] = body[item]
       const verif = await Models.Meals.findOne({
         where: { id: body.id },
@@ -354,6 +353,26 @@ class PlaceService {
       if (!verif) { return Response.Forbidden('Not allowed!', []) }
       await Models.Meals.update(obj, {
           where: { id: body.id }
+      }).then(() => console.log(true))
+      .catch((err) => console.log(err))
+      return Response.Success('Successfully updated!', [])
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
+  async placeEditMealImageService(img, mealId, placeId) {
+    try {
+      const verif = await Models.Meals.findOne({
+        where: { id: mealId },
+        include: {
+          model: Models.PlaceCategories,
+          where: { placeId: placeId },
+          required: true
+        }
+      })
+      if (!verif) { return Response.Forbidden('Not allowed!', []) }
+      await Models.Meals.update({ img: img }, {
+          where: { id: verif.id }
       }).then(() => console.log(true))
       .catch((err) => console.log(err))
       return Response.Success('Successfully updated!', [])

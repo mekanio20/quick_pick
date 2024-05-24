@@ -221,7 +221,15 @@ class PlaceController {
     }
     async placeEditMeal(req, res) {
         try {
-            const data = await placeService.placeEditMealService(req.body, req.file.filename, req.user.id)
+            const data = await placeService.placeEditMealService(req.body, req.user.id)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
+    async placeEditMealImage(req, res) {
+        try {
+            const data = await placeService.placeEditMealImageService(req.file.filename, req.params.id, req.user.id)
             return res.status(data.status).json(data)
         } catch (error) {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
