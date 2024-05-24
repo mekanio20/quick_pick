@@ -56,7 +56,8 @@ class PlaceController {
         try {
             const body = req.body
             body.placeId = req.user.id
-            const data = await new baseService(Models.PlaceSchedules).addService(body, body)
+            const isExist = { day: body.day, placeId: body.placeId }
+            const data = await new baseService(Models.PlaceSchedules).addService(isExist, body)
             return res.status(data.status).json(data)
         } catch (error) {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
