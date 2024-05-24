@@ -130,9 +130,15 @@ router.put('/edit/category',
 router.put('/edit/meal',
     authMiddleware,
     rolesMiddleware(['place']),
-    imageMiddleware(process.env.MEAL_PATH).single('img'),
     validationMiddleware(placeSchema.placeEditMeal, 'body'),
     placeController.placeEditMeal)
+
+router.put('/edit/meal/image/:id',
+    authMiddleware,
+    rolesMiddleware(['place']),
+    imageMiddleware(process.env.MEAL_PATH).single('img'),
+    validationMiddleware(baseSchema.idControl, 'params'),
+    placeController.placeEditMealImage)
 
 router.put('/edit/punchcard',
     authMiddleware,
