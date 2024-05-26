@@ -35,7 +35,7 @@ router.post('/check',
 router.post('/add/basket',
     authMiddleware,
     rolesMiddleware(['user']),
-    validationMiddleware(userSchema.userBasket, 'body'),
+    validationMiddleware(userSchema.userBasketAdd, 'body'),
     userController.userAddBasket)
 
 router.post('/add/payment/:slug',
@@ -56,7 +56,7 @@ router.put('/update/profile',
 router.put('/update/basket',
     authMiddleware,
     rolesMiddleware(['user']),
-    validationMiddleware(userSchema.userBasket, 'body'),
+    validationMiddleware(userSchema.userBasketEdit, 'body'),
     userController.userUpdateBasket)
 
 // GET
