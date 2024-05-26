@@ -18,7 +18,7 @@ const userSchema = {
         username: Joi.string().max(100).optional()
     }),
     userBasket: Joi.object({
-        mealId: Joi.number().positive().required(),
+        id: Joi.number().positive().required(),
         count: Joi.number().positive().optional(),
         extra_meals: Joi.array().items(Joi.object({ name: Joi.string().required(), price: Joi.number().positive().required() })).optional(),
         meal_sizes: Joi.array().items(Joi.object({ size: Joi.string().valid('Small', 'Medium', 'Large').required(), price: Joi.number().positive().required() })).optional()

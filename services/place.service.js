@@ -245,6 +245,17 @@ class PlaceService {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
   }
+  async fetchPlacePunchcardsService(placeId) {
+    try {
+      const punchcards = await Models.Punchcards.findAndCountAll({
+        where: { placeId: placeId, isActive: true },
+        attributes: ['id', 'name', 'point', 'mealId']
+      }).catch((err) => console.log(err))
+      return Response.Success('Successful!', punchcards)
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
   async fetchPlaceService(slug) {
     try {
       let result = []
