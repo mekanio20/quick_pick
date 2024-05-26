@@ -26,6 +26,12 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use('/uploads', express.static('public'))
 
+app.get('/test', (req, res) => {
+    res.sendFile(__dirname + "/test.html", (err, data) => {
+        console.log(err)
+    })
+})
+
 app.use('/api/v1', router)
 app.all('*', (req, res) => { return res.status(404).sendFile(`${path.join(__dirname + '/public/404.html')}`) })
 

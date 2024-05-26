@@ -304,7 +304,7 @@ class PlaceService {
         }
       }
       const mesals = await Models.Meals.findAll({
-        attributes: ['price'],
+        attributes: ['price', 'time'],
         include: {
           model: Models.PlaceCategories,
           attributes: ['placeId'],
@@ -312,6 +312,11 @@ class PlaceService {
         }
       }).catch((err) => console.log(err))
       
+      const time = await mesals.map((item) => item.time)
+      if (time.length >= 2) result.push({ times: [Math.min(...time), Math.max(...time)] })
+      else if (item.length === 1) result.push({ times: [0, Math.max(...prices)] })
+      else result.push({ times: [0, 0] })
+
       const prices = await mesals.map((item) => item.price)
       if (prices.length >= 2) result.push({ prices: [Math.min(...prices), Math.max(...prices)] })
       else result.push({ prices: prices[0] })
