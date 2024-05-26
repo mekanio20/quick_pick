@@ -4,8 +4,8 @@ const Response = require('../helpers/response.service')
 const nodemailer = require('nodemailer')
 const uuid = require('uuid')
 const redis = require('../ioredis')
-const Models = require('../config/models')
 const { Op } = require('sequelize')
+const Models = require('../config/models')
 const stripe = require('stripe')(process.env.STRIPE_SECRET)
 
 class UserService {
@@ -241,7 +241,7 @@ class UserService {
   async userUpdateBasketService(body, userId) {
     try {
       const isExist = await Models.Baskets.findOne({
-        where: { isActive: true, mealId: body.mealId, userId: userId },
+        where: { isActive: true, id: body.id, userId: userId },
         attributes: ['id'],
      }).catch((err) => console.log(err))
      if (isExist) {

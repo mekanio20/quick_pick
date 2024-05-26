@@ -92,6 +92,11 @@ router.get('/schedules',
     rolesMiddleware(['place']),
     placeController.fetchPlaceSchedule)
 
+router.get('/punchcards',
+    authMiddleware,
+    rolesMiddleware(['place']),
+    placeController.fetchPlacePunchcards)
+
 router.get('/:slug',
     validationMiddleware(baseSchema.slugControl, 'params'),
     placeController.fetchPlace)
