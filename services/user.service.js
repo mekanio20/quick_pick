@@ -189,7 +189,6 @@ class UserService {
     })
 
     const names = baskets.map((item) => item.meal.name).toString()
-
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(sum * 100),
       currency: 'eur',

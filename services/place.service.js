@@ -257,6 +257,19 @@ class PlaceService {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
   }
+  async fetchPlaceHomeService(placeId) {
+    try {
+      const account = await Models.StripeAccounts.findOne({
+        where: { placeId: placeId },
+        attributes: ['id', 'stripe']
+      }).catch((err) => console.log(err))
+      if (!account) { return Response.BadRequest('Account not found!', []) }
+      const balance = await stripe.balance.retrieve({ stripeAccount: account.stripe })
+      return Response.Success('Successful!', balance)
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
   async fetchPlaceService(slug) {
     try {
       let result = []
