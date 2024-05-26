@@ -270,8 +270,8 @@ class PlaceService {
         attributes: { exclude: ['createdAt', 'updatedAt'] }
       }).catch((err) => console.log(err))
 
-      const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-      const day = days[new Date().getDay() - 1]
+      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+      const day = days[new Date().getDay()]
       if (schedule.length > 0) {
         result.push({ schedule: schedule })
         for (let item of schedule) {
