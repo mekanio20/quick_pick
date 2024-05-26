@@ -199,6 +199,14 @@ class UserService {
       }
     })
 
+    // const charge = await stripe.charges.create({
+    //   amount: Math.round(sum * 100),
+    //   currency: 'eur',
+    //   source: body.token,
+    //   description: names,
+    //   destination: stripe_account.stripe
+    // });
+
     if (!paymentIntent.client_secret) {
       return Response.BadRequest('Payment transaction failed', [])
     } else if (paymentIntent.client_secret) {
@@ -210,7 +218,7 @@ class UserService {
       item.isActive = false
       await item.save()
     }
-    return Response.Success('Successfull!', [{ client_secret: paymentIntent.client_secret }])
+    return Response.Success('Successfull!', [{ client_secret: charge }])
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }

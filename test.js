@@ -11,7 +11,7 @@ checkStatus();
 
 document
   .querySelector("#payment-form")
-  .addEventListener("submit", handleSubmit);
+  .addEventListener("submit", handleSubmit)
 
 // Fetches a payment intent and captures the client secret
 async function initialize() {
@@ -43,8 +43,7 @@ async function handleSubmit(e) {
   const { error } = await stripe.confirmPayment({
     elements,
     confirmParams: {
-      // Make sure to change this to your payment completion page
-      return_url: "http://localhost:4242/checkout.html",
+      return_url: "http://localhost:5001/api/v1/admin/test",
     },
   });
 
