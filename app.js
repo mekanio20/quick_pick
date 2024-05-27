@@ -4,6 +4,7 @@ const express = require('express')
 const helmet = require('helmet')
 const path = require('path')
 const fs = require('fs')
+const rolesMiddleware = require('./middlewares/roles.middleware')
 
 require('dotenv').config()
 const app = express()
@@ -14,6 +15,7 @@ require('./config/models')
 const database = require('./config/database')
 const router = require('./routers/index.router')
 
+app.set('view engine', 'ejs')
 app.disable('x-powered-by')
 app.use(cors({ origin: true }))
 app.use(helmet())
@@ -25,12 +27,6 @@ app.use(morgan('dev'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use('/uploads', express.static('public'))
-
-app.get('/test', (req, res) => {
-    res.sendFile(__dirname + "/test.html", (err, data) => {
-        console.log(err)
-    })
-})
 
 app.use('/api/v1', router)
 app.all('*', (req, res) => { return res.status(404).sendFile(`${path.join(__dirname + '/public/404.html')}`) })

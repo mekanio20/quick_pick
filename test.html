@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -10,10 +10,10 @@
     <script src="test.js" defer></script>
   </head>
   <body>
-    <!-- Display a payment form -->
+
     <form id="payment-form">
       <div id="payment-element">
-        <!--Stripe.js injects the Payment Element-->
+
       </div>
       <button id="submit">
         <div class="spinner hidden" id="spinner"></div>
@@ -22,4 +22,91 @@
       <div id="payment-message" class="hidden"></div>
     </form>
   </body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stripe Card Token Oluşturma</title>
+<script src="https://js.stripe.com/v3/"></script>
+<style>
+  /* Kart giriş alanının stilini özelleştirme */
+  #card-element {
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+
+  /* Hata mesajlarının stili */
+  #card-errors {
+    color: red;
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+
+  /* Ödeme düğmesinin stili */
+  button[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<div style="max-width: 400px; margin: 0 auto;">
+  <h2>Ödeme Yap</h2>
+  <form id="payment-form">
+    <div id="card-element">
+      <!-- Stripe.js aracılığıyla oluşturulan kart giriş alanı buraya eklenecek -->
+    </div>
+
+    <!-- Hata mesajlarını gösterecek alan -->
+    <div id="card-errors" role="alert"></div>
+
+    <button type="submit">Ödeme Yap</button>
+  </form>
+</div>
+
+<script>
+
+  let stripe = Stripe('pk_test_51OwnJm067vf7BB5cfmdS62RbG5jlQ372SI0sdhTLl5YazFYAWdSEg3kjnMeIDvzKIC9r45uBBurbwVGjLuFlRlBs007nCMMh1P');
+
+  var elements = stripe.elements();
+  var cardElement = elements.create('card');
+  cardElement.mount('#card-element');
+
+  var cardErrors = document.getElementById('card-errors');
+
+  var form = document.getElementById('payment-form');
+  form.addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    stripe.createToken(cardElement).then(function(result) {
+      console.log(result);
+      if (result.error) {
+
+        cardErrors.textContent = result.error.message;
+      } else {
+
+        console.log('Kart tokeni:', result.token);
+
+        var tokenInput = document.createElement('input');
+        tokenInput.setAttribute('type', 'hidden');
+        tokenInput.setAttribute('name', 'stripeToken');
+        tokenInput.setAttribute('value', result.token.id);
+        form.appendChild(tokenInput);
+
+      }
+    });
+  });
+</script>
+
+</body>
 </html>
