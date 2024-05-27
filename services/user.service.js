@@ -189,27 +189,15 @@ class UserService {
     })
 
     const names = baskets.map((item) => item.meal.name).toString()
-    const paymentIntent = await stripe.paymentIntents.create({
+    const charge = await stripe.charges.create({
       amount: Math.round(sum * 100),
       currency: 'eur',
-      payment_method_types: ['card'],
+      source: body.token,
       description: names,
-      transfer_data: {
-        destination: stripe_account.stripe
-      }
+      destination: stripe_account.stripe
     })
 
-    // const charge = await stripe.charges.create({
-    //   amount: Math.round(sum * 100),
-    //   currency: 'eur',
-    //   source: body.token,
-    //   description: names,
-    //   destination: stripe_account.stripe
-    // });
-
-    if (!paymentIntent.client_secret) {
-      return Response.BadRequest('Payment transaction failed', [])
-    } else if (paymentIntent.client_secret) {
+    if (charge.client_secret.status === "succeeded") {
       order.payment = true
       await order.save()
     }
@@ -218,6 +206,7 @@ class UserService {
       item.isActive = false
       await item.save()
     }
+
     return Response.Success('Successfull!', [{ client_secret: charge }])
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
@@ -344,7 +333,7 @@ class UserService {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
   }
-  async fetchBasketService(slug, userId) {
+  async fetchBasketService(userId) {
     try {
       const basket_payment = await Models.Baskets.findAndCountAll({
         where: { userId: userId, type: 'payment', isActive: true },
@@ -356,11 +345,10 @@ class UserService {
           include: {
             model: Models.PlaceCategories,
             where: { isActive: true },
-            attributes: [],
+            attributes: ['placeId'],
             required: true,
             include: {
               model: Models.Places,
-              where: { slug: slug },
               attributes: ['slug'],
               required: true
             }
@@ -377,11 +365,10 @@ class UserService {
           include: {
             model: Models.PlaceCategories,
             where: { isActive: true },
-            attributes: [],
+            attributes: ['placeId'],
             required: true,
             include: {
               model: Models.Places,
-              where: { slug: slug },
               attributes: ['slug'],
               required: true
             }

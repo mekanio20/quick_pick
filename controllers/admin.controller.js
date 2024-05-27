@@ -16,8 +16,7 @@ class AdminController {
     // GET
     async Test(req, res) {
         try {
-            const meals = await Models.Meals.findOne({ where: { id: 1 }})
-            return res.status(200).json(meals)
+            res.render('index.ejs')
         } catch (error) {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
         }

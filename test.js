@@ -40,6 +40,10 @@ async function handleSubmit(e) {
   e.preventDefault();
   setLoading(true);
 
+  let token = await stripe.createToken(elements,(res)=> {
+    console.log(res);
+  })
+
   const { error } = await stripe.confirmPayment({
     elements,
     confirmParams: {

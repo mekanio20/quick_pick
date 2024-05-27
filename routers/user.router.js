@@ -76,10 +76,9 @@ router.get('/punchcard/:slug',
     validationMiddleware(baseSchema.slugControl, 'params'),
     userController.fetchPunchcard)
 
-router.get('/basket/:slug',
+router.get('/basket',
     authMiddleware,
     rolesMiddleware(['user']),
-    validationMiddleware(baseSchema.slugControl, 'params'),
     userController.fetchBasket)
 
 router.get('/claim',
