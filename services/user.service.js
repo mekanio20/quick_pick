@@ -395,7 +395,7 @@ class UserService {
             required: true,
             include: {
               model: Models.Places,
-              attributes: ['slug'],
+              attributes: ['name', 'slug'],
               required: true
             }
           }
@@ -415,7 +415,7 @@ class UserService {
             required: true,
             include: {
               model: Models.Places,
-              attributes: ['slug'],
+              attributes: ['name', 'slug'],
               required: true
             }
           }
@@ -426,7 +426,23 @@ class UserService {
           item.meal.price = 0
           item.meal.point = 0
         }
+        if (item.extra_meals == null) item.extra_meals = []
+        if (item.meal_sizes == null) item.meal_sizes = []
       })
+      basket_payment.rows.forEach(async (item) => {
+        if (item.extra_meals == null) item.extra_meals = []
+        if (item.meal_sizes == null) item.meal_sizes = []
+      })
+      // let pay_basket = await basket_payment.rows.reduce((total, item) => {
+      //   return total + item.rows.reduce((subtotal, row) => {
+      //       subtotal += row.meal.price;
+      //       subtotal += row.extra_meals.reduce((extraTotal, extraMeal) => extraTotal + extraMeal.price, 0);
+      //       subtotal += row.meal_sizes.reduce((sizeTotal, mealSize) => sizeTotal + mealSize.price, 0);
+      //       return subtotal
+      //   }, 0)
+      // }, 0)
+      // console.log(pay_basket);
+      // basket_payment.rows.forEach((item) => item.total_price = pay_basket)
       const result = {}
       result.count = basket_payment.count + basket_punchcard.count
       result.rows = [...basket_punchcard.rows, ...basket_payment.rows]
