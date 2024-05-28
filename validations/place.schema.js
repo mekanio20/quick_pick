@@ -45,7 +45,6 @@ const placeSchema = {
     }),
     placeAddMeal: Joi.object({
         name: Joi.string().max(255).required(),
-        desc: Joi.string().max(255).optional(),
         price: Joi.number().positive().required(),
         point: Joi.number().positive().optional(),
         time: Joi.number().positive().required(),
@@ -81,7 +80,7 @@ const placeSchema = {
     placeEditMeal: Joi.object({
         id: Joi.number().positive().required(),
         name: Joi.string().max(255).optional(),
-        desc: Joi.string().max(255).optional(),
+        ingredients: Joi.string().optional(),
         price: Joi.number().positive().optional(),
         point: Joi.number().positive().optional(),
         time: Joi.string().max(10).optional(),

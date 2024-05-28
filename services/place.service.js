@@ -163,7 +163,7 @@ class PlaceService {
     try {
       const meal = await Models.Meals.findOne({
         where: { slug: slug, isActive: true },
-        attributes: { exclude: ['recomendo', 'placeCategoryId', 'isActive', 'createdAt', 'updatedAt'] }
+        attributes: { exclude: ['recomendo', 'isActive', 'createdAt', 'updatedAt'] }
       }).catch((err) => console.log(err))
       if (!meal) { return Response.NotFound('No information found!', []) }
       return Response.Success('Successful!', meal)
