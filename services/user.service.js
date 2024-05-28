@@ -111,11 +111,57 @@ class UserService {
   }
   async userAddBasketService(body, userId) {
     try {
-      // const isExist = await Models.Baskets.findAll({ where: { userId: userId, isActive: true } })
-      // if (isExist.length > 0) { return Response.BadRequest('Please empty your cart first!', []) }
+      const basket = await Models.Baskets.findAll({
+        where: { userId: userId, isActive: true },
+        include: {
+          model: Models.Meals,
+          attributes: ['placeCategoryId'],
+          include: {
+            model: Models.PlaceCategories,
+            attributes: ['placeId']
+          }
+        }
+      }).catch((err) => console.log(err))
+      const place = await Models.Meals.findOne({
+        where: { id: body.mealId, isActive: true },
+        attributes: ['id', 'name', 'extra_meals', 'meal_sizes'],
+          include: {
+            model: Models.PlaceCategories,
+            where: { isActive: true },
+            attributes: ['placeId'],
+            required: true,
+            include: {
+              model: Models.Places, 
+              attributes: ['slug'],
+              required: true
+            }
+        }
+      }).catch((err) => console.log(err))
+      if (!place) { return Response.BadRequest('Meal not found!', []) }
+      if (body?.extra_meals?.length > 0) {
+        let found = await body.extra_meals.every(bItem => {
+          return place.extra_meals.some(aItem => {
+              return aItem.name === bItem.name && aItem.price === bItem.price
+          })
+        })
+        if (found === false) { return Response.BadRequest('There is no such extra meal', []) }
+      }
+      if (body?.meal_sizes?.length > 0) {
+        let found = await body.meal_sizes.every(bItem => {
+          return place.meal_sizes.some(aItem => {
+              return aItem.size === bItem.size && aItem.price === bItem.price
+          })
+        })
+        if (found === false) { return Response.BadRequest('There is no such meal size', []) }
+      }
+      if (basket.length > 0) {
+        let _place = place?.place_category?.placeId
+        let _bool = await basket.some(item => item?.meal?.place_category?.placeId === _place)
+        if (!_bool) return Response.BadRequest('Please empty your cart first!', [])
+      }
       body.userId = userId
-      const basket = await Models.Baskets.create(body)
-      if (!basket) { return Response.BadRequest('Error occurred!', []) }
+      const basket_create = await Models.Baskets.create(body)
+      if (!basket_create) { return Response.BadRequest('Error occurred!', []) }
       return Response.Created('Created successfully!', [])
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
@@ -385,7 +431,7 @@ class UserService {
       result.count = basket_payment.count + basket_punchcard.count
       result.rows = [...basket_punchcard.rows, ...basket_payment.rows]
       if (result.count === 0) { return Response.NotFound('No information found!', []) }
-      return Response.Success('Successful!', result)
+      return Response.Success('Successful!', [result])
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
