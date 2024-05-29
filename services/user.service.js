@@ -433,21 +433,23 @@ class UserService {
         if (item.extra_meals == null) item.extra_meals = []
         if (item.meal_sizes == null) item.meal_sizes = []
       })
-      // let pay_basket = await basket_payment.rows.reduce((total, item) => {
-      //   return total + item.rows.reduce((subtotal, row) => {
-      //       subtotal += row.meal.price;
-      //       subtotal += row.extra_meals.reduce((extraTotal, extraMeal) => extraTotal + extraMeal.price, 0);
-      //       subtotal += row.meal_sizes.reduce((sizeTotal, mealSize) => sizeTotal + mealSize.price, 0);
-      //       return subtotal
-      //   }, 0)
-      // }, 0)
-      // console.log(pay_basket);
-      // basket_payment.rows.forEach((item) => item.total_price = pay_basket)
-      const result = {}
-      result.count = basket_payment.count + basket_punchcard.count
-      result.rows = [...basket_punchcard.rows, ...basket_payment.rows]
-      if (result.count === 0) { return Response.NotFound('No information found!', []) }
-      return Response.Success('Successful!', [result])
+      let data = []
+      let stepPrice = 0
+      let totalPrice = 0
+      let array = basket_payment.rows
+      if (basket_punchcard.count > 0) data.push([...basket_punchcard.rows])
+      array.forEach(async (item) => {
+        stepPrice += item.meal.price
+        item.extra_meals.forEach((extraMeal) => stepPrice += extraMeal.price)
+        item.meal_sizes.forEach((mealSize) => stepPrice += mealSize.price)
+        stepPrice = stepPrice * item.count
+        data.push(item, { stepPrice: stepPrice })
+        totalPrice += stepPrice
+        stepPrice = 0
+      })
+      data.push({ totalPrice: totalPrice })
+      if (data.count === 0) { return Response.NotFound('No information found!', []) }
+      return Response.Success('Successful!', data)
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
