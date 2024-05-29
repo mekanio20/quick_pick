@@ -436,9 +436,11 @@ class UserService {
       let data = []
       let stepPrice = 0
       let totalPrice = 0
+      let totalTime = 0
       let array = basket_payment.rows
       if (basket_punchcard.count > 0) data.push([...basket_punchcard.rows])
       array.forEach(async (item) => {
+        if (totalTime < item.meal.time) totalTime = item.meal.time
         stepPrice += item.meal.price
         item.extra_meals.forEach((extraMeal) => stepPrice += extraMeal.price)
         item.meal_sizes.forEach((mealSize) => stepPrice += mealSize.price)
@@ -448,7 +450,10 @@ class UserService {
         totalPrice += stepPrice
         stepPrice = 0
       })
-      if (data.length > 0) data.push({ totalPrice: totalPrice })
+      if (data.length > 0) {
+        data.push({ totalPrice: totalPrice })
+        data.push({ totalTime: totalTime })
+      }
       if (data.length === 0) { return Response.NotFound('No information found!', []) }
       return Response.Success('Successful!', data)
     } catch (error) {
