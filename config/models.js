@@ -138,7 +138,6 @@ const Baskets = database.define('baskets', {
 const Orders = database.define('orders', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false, unique: true },
     status: { type: DataTypes.ENUM({ values: ['Order Placed', 'Preparation Started', 'Ready in 5 Minutes', 'Order Finished', 'Order Collected'] }), defaultValue: 'Order Placed' },
-    // payment: { type: DataTypes.ENUM({ values: ['Cash', 'Card'] }), allowNull: false },
     type: { type: DataTypes.ENUM({ values: ['Pick-up', 'Dine-in'] }), allowNull: false },
     sum: { type: DataTypes.DOUBLE, allowNull: false },
     note: { type: DataTypes.STRING, allowNull: true },
@@ -235,15 +234,20 @@ PromotionUses.belongsTo(Promotions)
 Users.hasMany(PromotionUses)
 PromotionUses.belongsTo(Users)
 
+// Orders -> UserId
+
+Users.hasMany(Orders)
+Orders.belongsTo(Users)
+
+// Orders -> PlaceId
+
+Places.hasMany(Orders)
+Orders.belongsTo(Places)
+
 // OrderItems -> OrderId
 
 Orders.hasMany(OrderItems)
 OrderItems.belongsTo(Orders)
-
-// OrderItems -> UserId
-
-Users.hasMany(OrderItems)
-OrderItems.belongsTo(Users)
 
 // OrderItems -> MealId
 

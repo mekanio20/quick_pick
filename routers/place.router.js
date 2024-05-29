@@ -102,6 +102,11 @@ router.get('/home',
     rolesMiddleware(['place']),
     placeController.fetchPlaceHome)
 
+router.get('/orders',
+    authMiddleware,
+    rolesMiddleware(['place']),
+    placeController.fetchPlaceOrder)
+
 router.get('/:slug',
     validationMiddleware(baseSchema.slugControl, 'params'),
     placeController.fetchPlace)
