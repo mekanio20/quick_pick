@@ -443,12 +443,13 @@ class UserService {
         item.extra_meals.forEach((extraMeal) => stepPrice += extraMeal.price)
         item.meal_sizes.forEach((mealSize) => stepPrice += mealSize.price)
         stepPrice = stepPrice * item.count
-        data.push(item, { stepPrice: stepPrice })
+        item.dataValues.stepPrice = stepPrice
+        data.push(item)
         totalPrice += stepPrice
         stepPrice = 0
       })
-      data.push({ totalPrice: totalPrice })
-      if (data.count === 0) { return Response.NotFound('No information found!', []) }
+      if (data.length > 0) data.push({ totalPrice: totalPrice })
+      if (data.length === 0) { return Response.NotFound('No information found!', []) }
       return Response.Success('Successful!', data)
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
