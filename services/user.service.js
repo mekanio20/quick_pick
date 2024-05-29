@@ -208,7 +208,6 @@ class UserService {
           extra_meals: item.extra_meals,
           meal_sizes: item.meal_sizes,
           mealId: item.meal.id,
-          userId: userId
         })
       }
     })
@@ -224,7 +223,9 @@ class UserService {
       tip: body.tip || 0,
       sum: sum,
       note: body.note || null, 
-      schedule: body.schedule || new Date()
+      schedule: body.schedule || new Date(),
+      placeId: baskets[0].meal.place_category.placeId,
+      userId: userId,
     }).catch((err) => console.log(err))
 
     order_info.forEach(async (item) => {
@@ -243,7 +244,7 @@ class UserService {
       destination: stripe_account.stripe
     })
 
-    if (charge.client_secret.status === "succeeded") {
+    if (charge?.client_secret?.status === "succeeded") {
       order.payment = true
       await order.save()
     }

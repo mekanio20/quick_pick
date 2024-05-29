@@ -270,6 +270,20 @@ class PlaceService {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
   }
+  async fetchPlaceOrderService(placeId) {
+    try {
+      const orders = await Models.Orders.findAndCountAll({
+        where: { placeId: placeId },
+        include: {
+          model: Models.OrderItems
+        }
+      }).catch((err) => console.log(err))
+      if (!orders) { return Response.BadRequest('Orders not found!', []) }
+      return Response.Success('Successful!', orders)
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
   async fetchPlaceService(slug) {
     try {
       let result = []
