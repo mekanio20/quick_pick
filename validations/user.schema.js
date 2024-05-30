@@ -34,6 +34,7 @@ const userSchema = {
         placeId: Joi.number().positive().required()
     }),
     userAddPayment: Joi.object({
+        token: Joi.string().required(),
         type: Joi.string().valid('Dine-in', 'Pick-up').required(),
         tip: Joi.number().positive().optional(),
         note: Joi.string().max(255).optional(),

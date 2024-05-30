@@ -51,9 +51,10 @@ router.post('/add/punchcard',
     validationMiddleware(placeSchema.placeAddPunchcard, 'body'),
     placeController.placeAddPunchcard)
 
-router.post('/add/account',
+router.post('/add/account/:id',
     authMiddleware,
-    rolesMiddleware(['place']),
+    rolesMiddleware(['admin']),
+    validationMiddleware(baseSchema.idControl, 'params'),
     placeController.placeAddAccount)
 
 // GET
@@ -185,5 +186,9 @@ router.delete('/delete/punchcard/:id',
     rolesMiddleware(['place']),
     validationMiddleware(baseSchema.idControl, 'params'),
     placeController.deletePunchcard)
+
+router.delete('/delete/account/:id',
+    rolesMiddleware(['admin']),
+    placeController.deleteAccount)
 
 module.exports = router

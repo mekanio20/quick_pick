@@ -1,3 +1,4 @@
+require('dotenv').config();
 const Models = require('../config/models')
 const Functions = require('../helpers/functions.service')
 const Response = require('../helpers/response.service')
@@ -84,28 +85,40 @@ class PlaceService {
   }
   async placeAddAccountService(placeId) {
     try {
-      const placeEmail = await Models.Places.findOne({ where: { id: placeId }, attributes: ['email'] })
+      const placeEmail = await Models.Places.findOne({ where: { id: placeId }, attributes: ['id', 'email'] })
       if (!placeEmail) { return Response.BadRequest('Email is not defined!', []) }
+      const stripe_account = await Models.StripeAccounts.findOne({ where: { placeId: placeEmail.id } })
+      if (stripe_account) { return Response.BadRequest('Account already exist!', []) }
       // Account create
       const account = await stripe.accounts.create({
         type: 'custom',
         business_type: 'individual',
         requested_capabilities: ['card_payments', 'transfers']
       })
-      const stripe = await Models.StripeAccounts.create({
-        stripe: account.id,
-        placeId: placeId
-      }).catch((err) => console.log(err))
-      if (!stripe) { return Response.BadRequest('An unknown error occurred!', []) }
+      if (!account) { return Response.BadRequest('An unknown error occurred!', []) }
       // Accoutn Link
       const accountLink = await stripe.accountLinks.create({
         account: account.id,
         success_url: 'http://localhost:5001/success',
         failure_url: 'http://localhost:5001/failure',
-        type: 'custom_account_verification',
+        type: 'account_onboarding',
         collect: 'eventually_due'
       })
+      if (!accountLink) { return Response.BadRequest('An unknown error occurred!', []) }
+      await this.placeAddStripeAccount(account.id, placeEmail.id)
       return Response.Created('Created successfully!', accountLink)
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
+  async placeAddStripeAccount(accountId, placeId) {
+    try {
+      const stripe = await Models.StripeAccounts.create({
+        stripe: accountId,
+        placeId: placeId
+      }).catch((err) => console.log(err))
+      if (!stripe) { return Response.BadRequest('An unknown error occurred!', []) }
+      return Response.Created('Create account!', [])
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
@@ -485,6 +498,14 @@ class PlaceService {
       }).catch((err) => console.log(err))
       if (!punchcard) { return Response.Forbidden('Not allowed!', []) }
       return Response.Success('Successfully deleted!', [])
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
+  async deleteAccountService(id) {
+    try {
+      const deletedAccount = await stripe.accounts.del(id)
+      return Response.Success('Deleted!', deletedAccount)
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }

@@ -215,7 +215,6 @@ class UserService {
     const stripe_account = await Models.StripeAccounts.findOne({
       where: { placeId: baskets[0].meal.place_category.placeId }
     }).catch((err) => console.log(err))
-
     if (!stripe_account) { return Response.BadRequest('Payment transaction failed!', []) }
 
     const order = await Models.Orders.create({
@@ -225,7 +224,7 @@ class UserService {
       note: body.note || null, 
       schedule: body.schedule || new Date(),
       placeId: baskets[0].meal.place_category.placeId,
-      userId: userId,
+      userId: userId
     }).catch((err) => console.log(err))
 
     order_info.forEach(async (item) => {
@@ -244,7 +243,7 @@ class UserService {
       destination: stripe_account.stripe
     })
 
-    if (charge?.client_secret?.status === "succeeded") {
+    if (charge?.status === "succeeded") {
       order.payment = true
       await order.save()
     }
