@@ -247,7 +247,7 @@ class UserService {
       sum: sum,
       note: body.note || null, 
       payment: true,
-      schedule: body.schedule || new Date(),
+      schedule: body.schedule || null,
       placeId: placeId,
       userId: userId
     }).catch((err) => console.log(err))

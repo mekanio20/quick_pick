@@ -282,15 +282,22 @@ class PlaceService {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
   }
-  async fetchPlaceOrderService(placeId) {
+  async fetchPlaceOrderService(placeId, query) {
     try {
+      let page = query.page || 1
+      let limit = query.limit || 4
+      let offset = page * limit - limit
       const orders = await Models.Orders.findAndCountAll({
         where: { placeId: placeId },
+        attributes: { exclude: ['placeId', 'updatedAt'] },
         include: {
-          model: Models.OrderItems
-        }
+          model: Models.OrderItems,
+          attributes: { exclude: ['orderId', 'createdAt', 'updatedAt'] }
+        },
+        limit: Number(limit),
+        offset: Number(offset)
       }).catch((err) => console.log(err))
-      if (!orders) { return Response.BadRequest('Orders not found!', []) }
+      if (orders.count === 0) { return Response.BadRequest('Orders not found!', []) }
       return Response.Success('Successful!', orders)
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
