@@ -283,6 +283,14 @@ class PlaceController {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
         }
     }
+    async placeEditStatus(req, res) {
+        try {
+            const data = await placeService.placeEditStatusService(req.body, req.user.id)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
     // DELETE
     async deleteAlbum(req, res) {
         try {

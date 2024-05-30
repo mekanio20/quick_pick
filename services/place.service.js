@@ -499,6 +499,35 @@ class PlaceService {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
   }
+  async placeEditStatusService(body, placeId) {
+    try {
+      let order_status = null
+      const order = await Models.Orders.findOne({ where: { id: body.id, placeId: placeId } })
+      if (!order) { return Response.Forbidden('Not allowed!', []) }
+      switch (order.status) {
+        case "Order Placed":
+          order_status = "Preparation Started"
+          break;
+        case "Preparation Started":
+          order_status = "Ready in 5 Minutes"
+          break;
+        case "Ready in 5 Minutes":
+          order_status = "Order Finished"
+          break;
+        case "Order Finished":
+          order_status = "Order Collected"
+          break;
+        default:
+          order_status = "Order Collected"
+          break;
+      }
+      order.status = order_status
+      await order.save()
+      return Response.Success('Successfully updated!', [])
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
   // DELETE
   async deleteAlbumService(id, placeId) {
     try {

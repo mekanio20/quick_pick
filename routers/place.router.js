@@ -173,6 +173,12 @@ router.put('/edit/punchcard',
     validationMiddleware(placeSchema.placeEditPunchcard, 'body'),
     placeController.placeEditPunchcard)
 
+router.put('/edit/status',
+    authMiddleware,
+    rolesMiddleware(['place']),
+    validationMiddleware(placeSchema.placeEditStatus, 'body'),
+    placeController.placeEditStatus)
+
 // DELETE
 router.delete('/delete/album/:id',
     authMiddleware,
