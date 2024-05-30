@@ -85,7 +85,7 @@ class PlaceController {
     }
     async placeAddAccount(req, res) {
         try {
-            const data = await placeService.placeAddAccountService(req.user.id)
+            const data = await placeService.placeAddAccountService(req.params.id)
             return res.status(data.status).json(data)
         } catch (error) {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
@@ -295,6 +295,14 @@ class PlaceController {
     async deletePunchcard(req, res) {
         try {
             const data = await placeService.deletePunchcardService(req.params.id, req.user.id)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
+    async deleteAccount(req, res) {
+        try {
+            const data = await placeService.deleteAccountService(req.params.id)
             return res.status(data.status).json(data)
         } catch (error) {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
