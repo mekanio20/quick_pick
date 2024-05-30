@@ -3,7 +3,8 @@ const Models = require('../config/models')
 const Functions = require('../helpers/functions.service')
 const Response = require('../helpers/response.service')
 const jwt = require('jsonwebtoken')
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
+const { Op } = require('sequelize');
 const stripe = require('stripe')(process.env.STRIPE_SECRET)
 
 class PlaceService {
@@ -299,6 +300,48 @@ class PlaceService {
       }).catch((err) => console.log(err))
       if (orders.count === 0) { return Response.BadRequest('Orders not found!', []) }
       return Response.Success('Successful!', orders)
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
+  async fetchPlaceOrderHistoryService(placeId) {
+    try {
+      let page = query.page || 1
+      let limit = query.limit || 4
+      let offset = page * limit - limit
+      const order_history = await Models.Orders.findAndCountAll({
+        where: { placeId: placeId, status: 'Order Collected' },
+        attributes: { exclude: ['placeId', 'updatedAt'] },
+        include: {
+          model: Models.OrderItems,
+          attributes: { exclude: ['orderId', 'createdAt', 'updatedAt'] }
+        },
+        limit: Number(limit),
+        offset: Number(offset)
+      }).catch((err) => console.log(err))
+      if (order_history.count === 0) { return Response.BadRequest('Order history not found!', []) }
+      return Response.Success('Successful!', order_history)
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
+  async fetchPlaceOrderScheduleService(placeId) {
+    try {
+      let page = query.page || 1
+      let limit = query.limit || 4
+      let offset = page * limit - limit
+      const order_schedule = await Models.Orders.findAndCountAll({
+        where: { placeId: placeId, schedule: { [Op.ne]: null } },
+        attributes: { exclude: ['placeId', 'updatedAt'] },
+        include: {
+          model: Models.OrderItems,
+          attributes: { exclude: ['orderId', 'createdAt', 'updatedAt'] }
+        },
+        limit: Number(limit),
+        offset: Number(offset)
+      }).catch((err) => console.log(err))
+      if (order_schedule.count === 0) { return Response.BadRequest('Order schedule not found!', []) }
+      return Response.Success('Successful!', order_schedule)
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }

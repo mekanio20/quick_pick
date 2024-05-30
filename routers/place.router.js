@@ -109,6 +109,16 @@ router.get('/orders',
     validationMiddleware(baseSchema.queryControl, 'query'),
     placeController.fetchPlaceOrder)
 
+router.get('/order/history',
+    authMiddleware,
+    rolesMiddleware(['place']),
+    placeController.fetchPlaceOrderHistory)
+
+router.get('/order/schedule',
+    authMiddleware,
+    rolesMiddleware(['place']),
+    placeController.fetchPlaceOrderSchedule)
+
 router.get('/:slug',
     validationMiddleware(baseSchema.slugControl, 'params'),
     placeController.fetchPlace)
