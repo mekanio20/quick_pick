@@ -3,7 +3,8 @@ const Models = require('../config/models')
 const Functions = require('../helpers/functions.service')
 const Response = require('../helpers/response.service')
 const jwt = require('jsonwebtoken')
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
+const { Op } = require('sequelize');
 const stripe = require('stripe')(process.env.STRIPE_SECRET)
 
 class PlaceService {
@@ -283,16 +284,65 @@ class PlaceService {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
   }
-  async fetchPlaceOrderService(placeId) {
+  async fetchPlaceOrderService(placeId, query) {
     try {
+      let page = query.page || 1
+      let limit = query.limit || 4
+      let offset = page * limit - limit
       const orders = await Models.Orders.findAndCountAll({
         where: { placeId: placeId },
+        attributes: { exclude: ['placeId', 'updatedAt'] },
         include: {
-          model: Models.OrderItems
-        }
+          model: Models.OrderItems,
+          attributes: { exclude: ['orderId', 'createdAt', 'updatedAt'] }
+        },
+        limit: Number(limit),
+        offset: Number(offset)
       }).catch((err) => console.log(err))
-      if (!orders) { return Response.BadRequest('Orders not found!', []) }
+      if (orders.count === 0) { return Response.BadRequest('Orders not found!', []) }
       return Response.Success('Successful!', orders)
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
+  async fetchPlaceOrderHistoryService(placeId) {
+    try {
+      let page = query.page || 1
+      let limit = query.limit || 4
+      let offset = page * limit - limit
+      const order_history = await Models.Orders.findAndCountAll({
+        where: { placeId: placeId, status: 'Order Collected' },
+        attributes: { exclude: ['placeId', 'updatedAt'] },
+        include: {
+          model: Models.OrderItems,
+          attributes: { exclude: ['orderId', 'createdAt', 'updatedAt'] }
+        },
+        limit: Number(limit),
+        offset: Number(offset)
+      }).catch((err) => console.log(err))
+      if (order_history.count === 0) { return Response.BadRequest('Order history not found!', []) }
+      return Response.Success('Successful!', order_history)
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
+  async fetchPlaceOrderScheduleService(placeId) {
+    try {
+      let page = query.page || 1
+      let limit = query.limit || 4
+      let offset = page * limit - limit
+      const order_schedule = await Models.Orders.findAndCountAll({
+        where: { placeId: placeId, schedule: { [Op.ne]: null } },
+        attributes: { exclude: ['placeId', 'updatedAt'] },
+        include: {
+          model: Models.OrderItems,
+          attributes: { exclude: ['orderId', 'createdAt', 'updatedAt'] }
+        },
+        limit: Number(limit),
+        offset: Number(offset)
+      }).catch((err) => console.log(err))
+      if (order_schedule.count === 0) { return Response.BadRequest('Order schedule not found!', []) }
+      return Response.Success('Successful!', order_schedule)
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
@@ -445,6 +495,35 @@ class PlaceService {
         { where: { id: body.id, placeId: placeId } })
         .catch((err) => console.log(err))
       if (!punchcard) { return Response.Forbidden('Not allowed!', []) }
+      return Response.Success('Successfully updated!', [])
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
+  async placeEditStatusService(body, placeId) {
+    try {
+      let order_status = null
+      const order = await Models.Orders.findOne({ where: { id: body.id, placeId: placeId } })
+      if (!order) { return Response.Forbidden('Not allowed!', []) }
+      switch (order.status) {
+        case "Order Placed":
+          order_status = "Preparation Started"
+          break;
+        case "Preparation Started":
+          order_status = "Ready in 5 Minutes"
+          break;
+        case "Ready in 5 Minutes":
+          order_status = "Order Finished"
+          break;
+        case "Order Finished":
+          order_status = "Order Collected"
+          break;
+        default:
+          order_status = "Order Collected"
+          break;
+      }
+      order.status = order_status
+      await order.save()
       return Response.Success('Successfully updated!', [])
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }

@@ -174,7 +174,23 @@ class PlaceController {
     }
     async fetchPlaceOrder(req, res) {
         try {
-            const data = await placeService.fetchPlaceOrderService(req.user.id)
+            const data = await placeService.fetchPlaceOrderService(req.user.id, req.query)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
+    async fetchPlaceOrderHistory(req, res) {
+        try {
+            const data = await placeService.fetchPlaceOrderHistoryService(req.user.id)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
+    async fetchPlaceOrderSchedule(req, res) {
+        try {
+            const data = await placeService.fetchPlaceOrderScheduleService(req.user.id)
             return res.status(data.status).json(data)
         } catch (error) {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
@@ -262,6 +278,14 @@ class PlaceController {
     async placeEditPunchcard(req, res) {
         try {
             const data = await placeService.placeEditPunchcardService(req.body, req.user.id)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
+    async placeEditStatus(req, res) {
+        try {
+            const data = await placeService.placeEditStatusService(req.body, req.user.id)
             return res.status(data.status).json(data)
         } catch (error) {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })

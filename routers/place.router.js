@@ -106,7 +106,18 @@ router.get('/home',
 router.get('/orders',
     authMiddleware,
     rolesMiddleware(['place']),
+    validationMiddleware(baseSchema.queryControl, 'query'),
     placeController.fetchPlaceOrder)
+
+router.get('/order/history',
+    authMiddleware,
+    rolesMiddleware(['place']),
+    placeController.fetchPlaceOrderHistory)
+
+router.get('/order/schedule',
+    authMiddleware,
+    rolesMiddleware(['place']),
+    placeController.fetchPlaceOrderSchedule)
 
 router.get('/:slug',
     validationMiddleware(baseSchema.slugControl, 'params'),
@@ -161,6 +172,12 @@ router.put('/edit/punchcard',
     rolesMiddleware(['place']),
     validationMiddleware(placeSchema.placeEditPunchcard, 'body'),
     placeController.placeEditPunchcard)
+
+router.put('/edit/status',
+    authMiddleware,
+    rolesMiddleware(['place']),
+    validationMiddleware(placeSchema.placeEditStatus, 'body'),
+    placeController.placeEditStatus)
 
 // DELETE
 router.delete('/delete/album/:id',
