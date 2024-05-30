@@ -42,7 +42,7 @@ router.post('/add/payment/:slug',
     authMiddleware,
     rolesMiddleware(['user']),
     validationMiddleware(baseSchema.slugControl, 'params'),
-    // validationMiddleware(userSchema.userAddPayment, 'body'),
+    validationMiddleware(userSchema.userAddPayment, 'body'),
     userController.userAddPayment)
 
 // PUT

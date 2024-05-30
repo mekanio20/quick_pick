@@ -124,7 +124,7 @@ class UserService {
       }).catch((err) => console.log(err))
       const place = await Models.Meals.findOne({
         where: { id: body.mealId, isActive: true },
-        attributes: ['id', 'name', 'extra_meals', 'meal_sizes'],
+        attributes: ['id', 'name', 'point', 'extra_meals', 'meal_sizes'],
           include: {
             model: Models.PlaceCategories,
             where: { isActive: true },
@@ -160,6 +160,7 @@ class UserService {
         if (!_bool) return Response.BadRequest('Please empty your cart first!', [])
       }
       body.userId = userId
+      body.score = place.point
       const basket_create = await Models.Baskets.create(body)
       if (!basket_create) { return Response.BadRequest('Error occurred!', []) }
       return Response.Created('Created successfully!', [])
@@ -171,7 +172,7 @@ class UserService {
     try {
       const baskets = await Models.Baskets.findAll({
         where: { isActive: true, userId: userId },
-        attributes: { exclude: ['score', 'userId', 'mealId', 'createdAt', 'updatedAt'] },
+        attributes: { exclude: ['userId', 'mealId', 'createdAt', 'updatedAt'] },
         include: {
           model: Models.Meals,
           where: { isActive: true },
@@ -190,10 +191,23 @@ class UserService {
         }
      }).catch((err) => console.log(err))
      if (baskets.length == 0) return Response.BadRequest('There are no items in your cart!', [])
+     const placeId = await baskets[0].meal.place_category.placeId
+
+     const orders = await Models.Orders.count({
+      where: {
+        userId: userId,
+        status: {
+          [Op.or]: ['Order Placed', 'Preparation Started', 'Ready in 5 Minutes', 'Order Finished']
+        }
+      }
+     }).catch((err) => console.log(err))
+     if (orders > 0) { return Response.BadRequest('Please wait for your order to be completed!', []) }
 
      let sum = 0
+     let score = 0
      let order_info = []
      baskets.forEach((item) => {
+      score += item.score
       let totalPrice = 0
       let totalSizePrice = 0
       let totalExtraPrice = 0
@@ -213,26 +227,9 @@ class UserService {
     })
     sum = Number(sum.toFixed(2)) + Number(body.tip) || 0
     const stripe_account = await Models.StripeAccounts.findOne({
-      where: { placeId: baskets[0].meal.place_category.placeId }
+      where: { placeId: placeId }
     }).catch((err) => console.log(err))
-    if (!stripe_account) { return Response.BadRequest('Payment transaction failed!', []) }
-
-    const order = await Models.Orders.create({
-      type: body.type,
-      tip: body.tip || 0,
-      sum: sum,
-      note: body.note || null, 
-      schedule: body.schedule || new Date(),
-      placeId: baskets[0].meal.place_category.placeId,
-      userId: userId
-    }).catch((err) => console.log(err))
-
-    order_info.forEach(async (item) => {
-      item.orderId = await order.id
-      await Models.OrderItems.create(item)
-        .then(() => console.log(true))
-        .catch((err) => console.log(err))
-    })
+    if (!stripe_account) { return Response.BadRequest('Payment account not found!', []) }
 
     const names = baskets.map((item) => item.meal.name).toString()
     const charge = await stripe.charges.create({
@@ -243,17 +240,38 @@ class UserService {
       destination: stripe_account.stripe
     })
 
-    if (charge?.status === "succeeded") {
-      order.payment = true
-      await order.save()
-    }
+    if (charge?.status !== "succeeded") { return Response.BadRequest('Payment not made!', []) }
+    const order = await Models.Orders.create({
+      type: body.type,
+      tip: body.tip || 0,
+      sum: sum,
+      note: body.note || null, 
+      payment: true,
+      schedule: body.schedule || new Date(),
+      placeId: placeId,
+      userId: userId
+    }).catch((err) => console.log(err))
 
+    order_info.forEach(async (item) => {
+      item.orderId = await order.id
+      await Models.OrderItems.create(item)
+        .then(() => console.log(true))
+        .catch((err) => console.log(err))
+    })
+
+    await Models.PunchCardSteps.create({
+      score: score,
+      userId: userId,
+      placeId: placeId
+    }).then(() => console.log('punchcard added...'))
+    .catch((err) => console.log(err))
+    
     for (const item of baskets) {
       item.isActive = false
       await item.save()
     }
 
-    return Response.Success('Successfull!', [{ client_secret: charge }])
+    return Response.Success('Successfull!', [order])
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
@@ -383,7 +401,7 @@ class UserService {
     try {
       const basket_payment = await Models.Baskets.findAndCountAll({
         where: { userId: userId, type: 'payment', isActive: true },
-        attributes: ['id', 'count', 'type', 'extra_meals', 'meal_sizes'],
+        attributes: ['id', 'count', 'score', 'type', 'extra_meals', 'meal_sizes'],
         include: {
           model: Models.Meals,
           where: { isActive: true },
