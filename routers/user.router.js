@@ -87,11 +87,6 @@ router.get('/claim',
     validationMiddleware(userSchema.userClaim, 'query'),
     userController.userClaim)
 
-// router.get('/logout',
-//     authMiddleware,
-//     rolesMiddleware(['user']),
-//     userController.userLogout)
-
 // DELETE
 router.delete('/basket/:id',
     authMiddleware,

@@ -141,6 +141,7 @@ const Orders = database.define('orders', {
     type: { type: DataTypes.ENUM({ values: ['Pick-up', 'Dine-in'] }), allowNull: false },
     sum: { type: DataTypes.DOUBLE, allowNull: false },
     note: { type: DataTypes.STRING, allowNull: true },
+    time: { type: DataTypes.INTEGER, defaultValue: 0 },
     tip: { type: DataTypes.DOUBLE, defaultValue: 0 }, // cay pul bermek ucin
     payment: { type: DataTypes.BOOLEAN, defaultValue: false },
     schedule: { type: DataTypes.DATE, allowNull: true },
