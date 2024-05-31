@@ -53,7 +53,8 @@ class HomeService {
     async searchMainService(search) {
         try {
             const result = await Models.Places.findAndCountAll({
-                where: { name: { [Op.like]: `%${search}%` } }
+                attributes: { exclude: ['password', 'zipcode', 'createdAt', 'updatedAt'] },
+                where: { isActive: true, name: { [Op.like]: `%${search}%` } }
             }).catch((err) => console.log(err))
             return Response.Success('Successful!', result)
         } catch (error) {

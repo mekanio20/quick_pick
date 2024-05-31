@@ -111,6 +111,30 @@ class UserController {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
         }
     }
+    async fetchOrder(req, res) {
+        try {
+            const data = await userService.fetchOrderService(req.user.id)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
+    async fetchOrderDetail(req, res) {
+        try {
+            const data = await userService.fetchOrderDetailService(req.user.id, req.params.id)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
+    async fetchOrderHistory(req, res) {
+        try {
+            const data = await userService.fetchOrderHistoryService(req.user.id, req.params.slug)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
     async userClaim(req, res) {
         try {
             const data = await userService.userClaimService(req.query, req.user.id)
