@@ -205,12 +205,14 @@ class UserService {
 
      let sum = 0
      let score = 0
+     let time = 0
      let order_info = []
      baskets.forEach((item) => {
       score += item.score
       let totalPrice = 0
       let totalSizePrice = 0
       let totalExtraPrice = 0
+      if (time < item.meal.time) time = item.meal.time
       if (item.meal_sizes) totalSizePrice = item.meal_sizes.reduce((acc, meal) => acc + meal.price, 0)
       if (item.extra_meals) totalExtraPrice = item.extra_meals.reduce((acc, meal) => acc + meal.price, 0)
       if (item.meal.price) {
@@ -248,6 +250,7 @@ class UserService {
       note: body.note || null, 
       payment: true,
       schedule: body.schedule || null,
+      time: time,
       placeId: placeId,
       userId: userId
     }).catch((err) => console.log(err))
@@ -478,16 +481,6 @@ class UserService {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
   }
-  // async userLogoutService(userId) {
-  //   try {
-  //     await Models.Users.update({ isActive: false }, { where: { id: userId } })
-  //       .catch((err) => console.log(err))
-  //     const token = jwt.sign({}, process.env.PRIVATE_KEY, { expiresIn: 0 })
-  //     return Response.Success('Successful!', { token })
-  //   } catch (error) {
-  //     throw { status: 500, type: "error", msg: error, detail: [] }
-  //   }
-  // }
   async userClaimService(query, userId) {
     try {
       const punchcard = await Models.PunchCardSteps.findOne({

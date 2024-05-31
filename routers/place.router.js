@@ -112,11 +112,13 @@ router.get('/orders',
 router.get('/order/history',
     authMiddleware,
     rolesMiddleware(['place']),
+    validationMiddleware(baseSchema.queryControl, 'query'),
     placeController.fetchPlaceOrderHistory)
 
 router.get('/order/schedule',
     authMiddleware,
     rolesMiddleware(['place']),
+    validationMiddleware(baseSchema.queryControl, 'query'),
     placeController.fetchPlaceOrderSchedule)
 
 router.get('/:slug',
@@ -173,10 +175,10 @@ router.put('/edit/punchcard',
     validationMiddleware(placeSchema.placeEditPunchcard, 'body'),
     placeController.placeEditPunchcard)
 
-router.put('/edit/status',
+router.put('/edit/status/:id',
     authMiddleware,
     rolesMiddleware(['place']),
-    validationMiddleware(placeSchema.placeEditStatus, 'body'),
+    validationMiddleware(baseSchema.idControl, 'params'),
     placeController.placeEditStatus)
 
 // DELETE

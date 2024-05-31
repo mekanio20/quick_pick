@@ -96,10 +96,6 @@ const placeSchema = {
         name: Joi.string().max(255).optional(),
         point: Joi.number().positive().optional(),
         mealId: Joi.number().positive().optional()
-    }),
-    placeEditStatus: Joi.object({
-        id: Joi.number().positive().required(),
-        status: Joi.string().valid('Preparation Started', 'Ready in 5 Minutes', 'Order Finished', 'Order Collected').required()
     })
 }
 

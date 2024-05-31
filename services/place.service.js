@@ -5,6 +5,7 @@ const Response = require('../helpers/response.service')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt');
 const { Op } = require('sequelize');
+const { Sequelize } = require('../config/database');
 const stripe = require('stripe')(process.env.STRIPE_SECRET)
 
 class PlaceService {
@@ -279,7 +280,34 @@ class PlaceService {
       }).catch((err) => console.log(err))
       if (!account) { return Response.BadRequest('Account not found!', []) }
       const balance = await stripe.balance.retrieve({ stripeAccount: account.stripe })
-      return Response.Success('Successful!', balance)
+      const allAmounts = [...balance.available, ...balance.pending]
+      const sum = allAmounts.reduce((total, item) => total + item.amount, 0)
+
+      const orders = await Models.Orders.count({ where: { placeId: placeId, status: 'Order Collected' } })
+      let result = null
+      let meal = null
+      if (orders > 0) {
+        result = await Models.OrderItems.findAll({
+          attributes: [
+            'mealId',
+            [Sequelize.fn('COUNT', Sequelize.col('mealId')), 'mealCount']
+          ],
+          include: {
+            model: Models.Orders,
+            attributes: [],
+            where: { placeId: placeId }
+          },
+          group: ['mealId'],
+          order: [[Sequelize.fn('COUNT', Sequelize.col('mealId')), 'DESC']],
+          limit: 1
+        }).catch((err) => console.log(err))
+  
+        meal = await Models.Meals.findOne({
+          where: { id: result[0].mealId },
+          attributes: ['id', 'name', 'slug']
+        }).catch((err) => console.log(err))
+      }
+      return Response.Success('Successful!', {sum: sum / 100, orders, meal})
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
@@ -290,22 +318,34 @@ class PlaceService {
       let limit = query.limit || 4
       let offset = page * limit - limit
       const orders = await Models.Orders.findAndCountAll({
-        where: { placeId: placeId },
+        where: { placeId: placeId, status: { [Op.ne]: 'Order Collected' } },
         attributes: { exclude: ['placeId', 'updatedAt'] },
         include: {
           model: Models.OrderItems,
-          attributes: { exclude: ['orderId', 'createdAt', 'updatedAt'] }
+          attributes: { exclude: ['orderId', 'mealId', 'createdAt', 'updatedAt'] },
+          include: {
+            model: Models.Meals,
+            attributes: ['id', 'name', 'slug']
+          }
         },
         limit: Number(limit),
         offset: Number(offset)
       }).catch((err) => console.log(err))
       if (orders.count === 0) { return Response.BadRequest('Orders not found!', []) }
+      orders.rows.forEach(async (item) => {
+        let start_date = new Date(item.createdAt).toLocaleTimeString()
+        let end_date = await Functions.addMinutesToTime(start_date, item.time)
+        item.dataValues.times = {
+          start_date: start_date,
+          end_date: end_date
+        }
+      })
       return Response.Success('Successful!', orders)
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
   }
-  async fetchPlaceOrderHistoryService(placeId) {
+  async fetchPlaceOrderHistoryService(placeId, query) {
     try {
       let page = query.page || 1
       let limit = query.limit || 4
@@ -326,7 +366,7 @@ class PlaceService {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
   }
-  async fetchPlaceOrderScheduleService(placeId) {
+  async fetchPlaceOrderScheduleService(placeId, query) {
     try {
       let page = query.page || 1
       let limit = query.limit || 4
@@ -500,10 +540,10 @@ class PlaceService {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
   }
-  async placeEditStatusService(body, placeId) {
+  async placeEditStatusService(id, placeId) {
     try {
       let order_status = null
-      const order = await Models.Orders.findOne({ where: { id: body.id, placeId: placeId } })
+      const order = await Models.Orders.findOne({ where: { id: id, placeId: placeId } })
       if (!order) { return Response.Forbidden('Not allowed!', []) }
       switch (order.status) {
         case "Order Placed":
@@ -524,7 +564,7 @@ class PlaceService {
       }
       order.status = order_status
       await order.save()
-      return Response.Success('Successfully updated!', [])
+      return Response.Success('Successfully updated!', { status: order.status } )
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
