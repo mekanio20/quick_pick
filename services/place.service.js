@@ -76,6 +76,10 @@ class PlaceService {
         }
       }).catch((err) => console.log(err))
       if (!meal) { return Response.Forbidden('Not allowed', []) }
+      const punchcard = await Models.Punchcards.count({
+        where: { placeId: placeId }
+      }).catch((err) => console.log(err))
+      if (punchcard >= 3) { return Response.BadRequest('Your limit is up!', []) }
       body.placeId = placeId
       const [_, created] = await Models.Punchcards.findOrCreate({ where: body, defaults: body })
       if (!created) { return Response.BadRequest('Already exists!', []) }
