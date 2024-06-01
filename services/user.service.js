@@ -460,7 +460,7 @@ class UserService {
       let totalPrice = 0
       let totalTime = 0
       let array = basket_payment.rows
-      if (basket_punchcard.count > 0) data.baskets.push([...basket_punchcard.rows])
+      if (basket_punchcard.count > 0) data.baskets.push(...basket_punchcard.rows)
       array.forEach(async (item) => {
         if (totalTime < item.meal.time) totalTime = item.meal.time
         stepPrice += item.meal.price
