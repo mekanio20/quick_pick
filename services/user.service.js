@@ -454,12 +454,12 @@ class UserService {
         if (item.extra_meals == null) item.extra_meals = []
         if (item.meal_sizes == null) item.meal_sizes = []
       })
-      let data = []
+      let data = { baskets: [] }
       let stepPrice = 0
       let totalPrice = 0
       let totalTime = 0
       let array = basket_payment.rows
-      if (basket_punchcard.count > 0) data.push([...basket_punchcard.rows])
+      if (basket_punchcard.count > 0) data.baskets.push([...basket_punchcard.rows])
       array.forEach(async (item) => {
         if (totalTime < item.meal.time) totalTime = item.meal.time
         stepPrice += item.meal.price
@@ -467,15 +467,17 @@ class UserService {
         item.meal_sizes.forEach((mealSize) => stepPrice += mealSize.price)
         stepPrice = stepPrice * item.count
         item.dataValues.stepPrice = stepPrice
-        data.push(item)
+        data.baskets.push(item)
         totalPrice += stepPrice
         stepPrice = 0
       })
-      if (data.length > 0) {
-        data.push({ totalPrice: totalPrice })
-        data.push({ totalTime: totalTime })
+      if (data.baskets.length > 0) {
+        data.statistic = {
+          totalPrice: totalPrice,
+          totalTime: totalTime
+        }
       }
-      if (data.length === 0) { return Response.NotFound('No information found!', []) }
+      if (data.baskets.length === 0) { return Response.NotFound('No information found!', {}) }
       return Response.Success('Successful!', data)
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
