@@ -624,6 +624,17 @@ class PlaceService {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
   }
+  async deleteCategoryService(id, placeId) {
+    try {
+      const category = await Models.PlaceCategories.destroy({
+        where: { id: id, placeId: placeId }
+      }).catch((err) => console.log(err))
+      if (!category) { return Response.Forbidden('Not allowed!', []) }
+      return Response.Success('Successfully deleted!', [])
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
   async deleteAccountService(id) {
     try {
       const deletedAccount = await stripe.accounts.del(id)

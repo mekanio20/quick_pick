@@ -324,6 +324,14 @@ class PlaceController {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
         }
     }
+    async deleteCategory(req, res) {
+        try {
+            const data = await placeService.deleteCategoryService(req.params.id, req.user.id)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
     async deleteAccount(req, res) {
         try {
             const data = await placeService.deleteAccountService(req.params.id)
