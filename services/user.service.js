@@ -474,8 +474,8 @@ class UserService {
       })
       if (data.baskets.length > 0) {
         data.statistic = {
-          totalPrice: totalPrice.toFixed(2),
-          totalTime: totalTime.toFixed(2)
+          totalPrice: Number(totalPrice.toFixed(2)),
+          totalTime: Number(totalTime.toFixed(2))
         }
       }
       if (data.baskets.length === 0) { return Response.NotFound('No information found!', {}) }
