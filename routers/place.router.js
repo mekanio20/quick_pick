@@ -121,6 +121,12 @@ router.get('/order/schedule',
     validationMiddleware(baseSchema.queryControl, 'query'),
     placeController.fetchPlaceOrderSchedule)
 
+router.get('/search/item',
+    authMiddleware,
+    rolesMiddleware(['place']),
+    validationMiddleware(baseSchema.searchControl, 'query'),
+    placeController.fetchPlaceSearchItem)
+
 router.get('/:slug',
     validationMiddleware(baseSchema.slugControl, 'params'),
     placeController.fetchPlace)

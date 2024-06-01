@@ -1,8 +1,8 @@
 const router = require('express').Router()
 const homeController = require('../controllers/home.controller')
 const validationMiddleware = require('../middlewares/validation.middleware')
-const rolesMiddleware = require('../middlewares/roles.middleware')
 const homeSchema = require('../validations/home.schema')
+const baseSchema = require('../validations/base.schema')
 
 // GET
 router.get('/main',
@@ -12,7 +12,7 @@ router.get('/main',
 router.get('/categories', homeController.homeCategories)
 
 router.get('/search',
-    validationMiddleware(homeSchema.searchMain, 'query'),
+    validationMiddleware(baseSchema.searchControl, 'query'),
     homeController.searchMain)
 
 module.exports = router

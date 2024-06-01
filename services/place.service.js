@@ -390,6 +390,24 @@ class PlaceService {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
   }
+  async fetchPlaceSearchItemService(placeId, search) {
+    try {
+      const meals = await Models.PlaceCategories.findAndCountAll({
+        attributes: ['id', 'name', 'slug'],
+        where: { isActive: true, placeId: placeId },
+        include: [
+          {
+            model: Models.Meals,
+            where: { isActive: true, name: { [Op.like]: `%${search}%` } },
+            attributes: ['id', 'name', 'slug', 'img', 'price', 'point', 'time', 'type'],
+          }
+        ]
+      }).catch((err) => console.log(err))
+      return Response.Success('Successful!', meals)
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
   async fetchPlaceService(slug) {
     try {
       let result = []
