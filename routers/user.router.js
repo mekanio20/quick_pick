@@ -81,6 +81,23 @@ router.get('/basket',
     rolesMiddleware(['user']),
     userController.fetchBasket)
 
+router.get('/order',
+    authMiddleware,
+    rolesMiddleware(['user']),
+    userController.fetchOrder)
+
+router.get('/order/detai/:id',
+    authMiddleware,
+    rolesMiddleware(['user']),
+    validationMiddleware(baseSchema.idControl, 'params'),
+    userController.fetchOrderDetail)
+
+router.get('/order/history/:slug',
+    authMiddleware,
+    rolesMiddleware(['user']),
+    validationMiddleware(baseSchema.slugControl, 'params'),
+    userController.fetchOrderHistory)
+
 router.get('/claim',
     authMiddleware,
     rolesMiddleware(['user']),

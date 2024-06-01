@@ -481,6 +481,55 @@ class UserService {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
   }
+  async fetchOrderService(userId) {
+    try {
+      const order = await Models.Orders.findOne({
+        where: { userI: userId, status: { [Op.ne]: "Order Collected" } },
+        include: {
+          model: Models.Places,
+          attributes: ['id', 'name', 'slug', 'logo']
+        }
+      }).catch((err) => console.log(err))
+      if (!order) { return Response.NotFound('Order not found!', []) }
+      return Response.Success('Successful!', [order])
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
+  async fetchOrderDetailService(userId, id) {
+    try {
+      const order = await Models.OrderItems.findAndCountAll({
+        where: { id: id },
+        include: {
+          model: Models.Orders,
+          where: { userId: userId, status: { [Op.ne]: "Order Collected" } },
+          required: true,
+          attributes: []
+        }
+      }).catch((err) => console.log(err))
+      if (!order) { return Response.NotFound('Order detail not found!', []) }
+      return Response.Success('Successful!', order)
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
+  async fetchOrderHistoryService(userId, slug) {
+    try {
+      const order = await Models.Orders.findAndCountAll({
+          where: { userId: userId, status: "Order Collected" },
+          include: {
+            model: Models.Places,
+            where: { slug: slug },
+            required: true,
+            attributes: ['id', 'name', 'slug', 'logo']
+          }
+      }).catch((err) => console.log(err))
+      if (!order) { return Response.NotFound('Order history not found!', []) }
+      return Response.Success('Successful!', order)
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
   async userClaimService(query, userId) {
     try {
       const punchcard = await Models.PunchCardSteps.findOne({
