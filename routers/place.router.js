@@ -206,6 +206,12 @@ router.delete('/delete/punchcard/:id',
     validationMiddleware(baseSchema.idControl, 'params'),
     placeController.deletePunchcard)
 
+router.delete('/delete/category/:id',
+    authMiddleware,
+    rolesMiddleware(['place']),
+    validationMiddleware(baseSchema.idControl, 'params'),
+    placeController.deleteCategory)
+
 router.delete('/delete/account/:id',
     rolesMiddleware(['admin']),
     placeController.deleteAccount)
