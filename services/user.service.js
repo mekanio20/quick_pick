@@ -138,21 +138,22 @@ class UserService {
         }
       }).catch((err) => console.log(err))
       if (!place) { return Response.BadRequest('Meal not found!', []) }
+      console.log(JSON.stringify(place, null, 2))
       if (body?.extra_meals?.length > 0) {
         let found = await body.extra_meals.every(bItem => {
-          return place.extra_meals.some(aItem => {
-              return aItem.name === bItem.name && aItem.price === bItem.price
+          return place?.extra_meals?.some(aItem => {
+            return aItem.name === bItem.name && aItem.price === bItem.price
           })
         })
-        if (found === false) { return Response.BadRequest('There is no such extra meal', []) }
+        if (found == false) { return Response.BadRequest('There is no such extra meal', []) }
       }
       if (body?.meal_sizes?.length > 0) {
         let found = await body.meal_sizes.every(bItem => {
-          return place.meal_sizes.some(aItem => {
+          return place?.meal_sizes?.some(aItem => {
               return aItem.size === bItem.size && aItem.price === bItem.price
           })
         })
-        if (found === false) { return Response.BadRequest('There is no such meal size', []) }
+        if (found == false) { return Response.BadRequest('There is no such meal size', []) }
       }
       if (basket.length > 0) {
         let _place = place?.place_category?.placeId
