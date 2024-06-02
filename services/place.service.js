@@ -335,14 +335,7 @@ class PlaceService {
         offset: Number(offset)
       }).catch((err) => console.log(err))
       if (orders.count === 0) { return Response.BadRequest('Orders not found!', []) }
-      orders.rows.forEach(async (item) => {
-        let start_date = new Date(item.createdAt).toLocaleTimeString()
-        let end_date = await Functions.addMinutesToTime(start_date, item.time)
-        item.dataValues.times = {
-          start_date: start_date,
-          end_date: end_date
-        }
-      })
+      orders.rows.forEach(async (item) => { if (item.time) item.dataValues.time = Number(item.time) * 60 })
       return Response.Success('Successful!', orders)
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
