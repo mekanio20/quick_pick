@@ -336,14 +336,7 @@ class PlaceService {
         offset: Number(offset)
       }).catch((err) => console.log(err))
       if (orders.count === 0) { return Response.BadRequest('Orders not found!', []) }
-      orders.rows.forEach(async (item) => {
-        let start_date = new Date(item.createdAt).toLocaleTimeString()
-        let end_date = await Functions.addMinutesToTime(start_date, item.time)
-        item.dataValues.times = {
-          start_date: start_date,
-          end_date: end_date
-        }
-      })
+      orders.rows.forEach(async (item) => { if (item.time) item.dataValues.time = Number(item.time) * 60 })
       return Response.Success('Successful!', orders)
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
@@ -387,6 +380,24 @@ class PlaceService {
       }).catch((err) => console.log(err))
       if (order_schedule.count === 0) { return Response.BadRequest('Order schedule not found!', []) }
       return Response.Success('Successful!', order_schedule)
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
+  async fetchPlaceSearchItemService(placeId, search) {
+    try {
+      const meals = await Models.PlaceCategories.findAndCountAll({
+        attributes: ['id', 'name', 'slug'],
+        where: { isActive: true, placeId: placeId },
+        include: [
+          {
+            model: Models.Meals,
+            where: { isActive: true, name: { [Op.like]: `%${search}%` } },
+            attributes: ['id', 'name', 'slug', 'img', 'price', 'point', 'time', 'type'],
+          }
+        ]
+      }).catch((err) => console.log(err))
+      return Response.Success('Successful!', meals)
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
