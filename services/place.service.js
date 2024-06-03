@@ -241,7 +241,7 @@ class PlaceService {
   async fetchPlaceScheduleService(placeId) {
     try {
       const schedule = await Models.PlaceSchedules.findAndCountAll({
-        attributes: { exclude: ['placeId', 'createdAt', 'updatedAt'] },
+        attributes: { exclude: ['placeId', 'updatedAt'] },
         include: {
           model: Models.Places,
           where: { id: placeId, isActive: true },
