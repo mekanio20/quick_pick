@@ -29,31 +29,6 @@ class Functions {
       }
     }
   }
-  async addMinutesToTime(time, minutesToAdd) {
-    let [timePart, modifier] = time.split(" ")
-    let [hours, minutes, seconds] = timePart.split(":").map(Number)
-
-    if (modifier === "PM" && hours !== 12) { hours += 12 }
-    else if (modifier === "AM" && hours === 12) { hours = 0 }
-
-    let date = new Date()
-    date.setHours(hours, minutes, seconds, 0)
-    date.setMinutes(date.getMinutes() + minutesToAdd)
-
-    let newHours = date.getHours()
-    let newMinutes = date.getMinutes()
-    let newSeconds = date.getSeconds()
-    let newModifier = newHours >= 12 ? "PM" : "AM"
-
-    newHours = newHours % 12
-    newHours = newHours ? newHours : 12
-
-    newHours = newHours < 10 ? "0" + newHours : newHours
-    newMinutes = newMinutes < 10 ? "0" + newMinutes : newMinutes
-    newSeconds = newSeconds < 10 ? "0" + newSeconds : newSeconds
-
-    return `${newHours}:${newMinutes}:${newSeconds} ${newModifier}`
-  }
 }
 
 module.exports = new Functions()
