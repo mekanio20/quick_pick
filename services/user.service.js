@@ -491,12 +491,15 @@ class UserService {
     try {
       const order = await Models.Orders.findOne({
         where: { userId: userId, status: { [Op.ne]: "Order Collected" } },
+        attributes: { exclude: ['updatedAt', 'userId', 'placeId'] },
         include: {
           model: Models.Places,
           attributes: ['id', 'name', 'slug', 'logo']
         }
       }).catch((err) => console.log(err))
       if (!order) { return Response.NotFound('Order not found!', []) }
+      const order_count = await Models.OrderItems.count({ where: { orderId: order.id } })
+      order.dataValues.totalCount = order_count
       return Response.Success('Successful!', [order])
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
@@ -505,10 +508,9 @@ class UserService {
   async fetchOrderDetailService(userId, id) {
     try {
       const order = await Models.OrderItems.findAndCountAll({
-        where: { id: id },
         include: {
           model: Models.Orders,
-          where: { userId: userId, status: { [Op.ne]: "Order Collected" } },
+          where: { id: id, userId: userId, status: { [Op.ne]: "Order Collected" } },
           required: true,
           attributes: []
         }

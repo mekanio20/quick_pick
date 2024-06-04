@@ -86,7 +86,7 @@ router.get('/order',
     rolesMiddleware(['user']),
     userController.fetchOrder)
 
-router.get('/order/detai/:id',
+router.get('/order/detail/:id',
     authMiddleware,
     rolesMiddleware(['user']),
     validationMiddleware(baseSchema.idControl, 'params'),
