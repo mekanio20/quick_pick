@@ -387,7 +387,11 @@ class PlaceService {
         attributes: { exclude: ['placeId', 'updatedAt'] },
         include: {
           model: Models.OrderItems,
-          attributes: { exclude: ['orderId', 'createdAt', 'updatedAt'] }
+          attributes: { exclude: ['orderId', 'createdAt', 'updatedAt'] },
+          include: {
+            model: Models.Meals,
+            attributes: ['id', 'name', 'slug', 'price']
+          }
         },
         limit: Number(limit),
         offset: Number(offset)
