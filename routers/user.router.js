@@ -92,10 +92,9 @@ router.get('/order/detai/:id',
     validationMiddleware(baseSchema.idControl, 'params'),
     userController.fetchOrderDetail)
 
-router.get('/order/history/:slug',
+router.get('/order/history',
     authMiddleware,
     rolesMiddleware(['user']),
-    validationMiddleware(baseSchema.slugControl, 'params'),
     userController.fetchOrderHistory)
 
 router.get('/claim',

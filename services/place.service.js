@@ -241,7 +241,7 @@ class PlaceService {
   async fetchPlaceScheduleService(placeId) {
     try {
       const schedule = await Models.PlaceSchedules.findAndCountAll({
-        attributes: { exclude: ['placeId', 'createdAt', 'updatedAt'] },
+        attributes: { exclude: ['placeId', 'updatedAt'] },
         include: {
           model: Models.Places,
           where: { id: placeId, isActive: true },
@@ -328,21 +328,50 @@ class PlaceService {
           attributes: { exclude: ['orderId', 'mealId', 'createdAt', 'updatedAt'] },
           include: {
             model: Models.Meals,
-            attributes: ['id', 'name', 'slug']
+            attributes: ['id', 'name', 'slug', 'price']
           }
         },
         limit: Number(limit),
         offset: Number(offset)
       }).catch((err) => console.log(err))
       if (orders.count === 0) { return Response.BadRequest('Orders not found!', []) }
-      orders.rows.forEach(async (item) => {
-        let start_date = new Date(item.createdAt).toLocaleTimeString()
-        let end_date = await Functions.addMinutesToTime(start_date, item.time)
-        item.dataValues.times = {
-          start_date: start_date,
-          end_date: end_date
+      orders.rows.forEach((item) => {
+        if (item.createdAt) {
+          const date = new Date(item.createdAt)
+          date.setTime(date.getTime() + Number(item.time) * 60 * 1000)
+          item.dataValues.times = {
+            start_time: item.createdAt,
+            end_time: date
+          }
         }
       })
+      return Response.Success('Successful!', orders)
+    } catch (error) {
+      throw { status: 500, type: "error", msg: error, detail: [] }
+    }
+  }
+  async fetchPlaceOrderFinishedService(placeId, query) {
+    try {
+      let page = query.page || 1
+      let limit = query.limit || 4
+      let offset = page * limit - limit
+      const start_date = new Date().setHours(0,0,0,0)
+      const end_date = new Date().setHours(23,59,59,999)
+      const orders = await Models.Orders.findAndCountAll({
+        where: { placeId: placeId, status: 'Order Collected', createdAt: { [Op.gte]: start_date, [Op.lte]: end_date } },
+        attributes: { exclude: ['placeId', 'updatedAt'] },
+        include: {
+          model: Models.OrderItems,
+          attributes: { exclude: ['orderId', 'mealId', 'createdAt', 'updatedAt'] },
+          include: {
+            model: Models.Meals,
+            attributes: ['id', 'name', 'slug', 'price']
+          }
+        },
+        limit: Number(limit),
+        offset: Number(offset)
+      }).catch((err) => console.log(err))
+      if (orders.count === 0) { return Response.BadRequest('Order finished not found!', []) }
       return Response.Success('Successful!', orders)
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
