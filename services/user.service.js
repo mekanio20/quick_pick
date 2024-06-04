@@ -519,13 +519,12 @@ class UserService {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
   }
-  async fetchOrderHistoryService(userId, slug) {
+  async fetchOrderHistoryService(userId) {
     try {
       const order = await Models.Orders.findAndCountAll({
           where: { userId: userId, status: "Order Collected" },
           include: {
             model: Models.Places,
-            where: { slug: slug },
             required: true,
             attributes: ['id', 'name', 'slug', 'logo']
           }

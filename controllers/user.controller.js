@@ -129,7 +129,7 @@ class UserController {
     }
     async fetchOrderHistory(req, res) {
         try {
-            const data = await userService.fetchOrderHistoryService(req.user.id, req.params.slug)
+            const data = await userService.fetchOrderHistoryService(req.user.id)
             return res.status(data.status).json(data)
         } catch (error) {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
