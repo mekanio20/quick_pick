@@ -525,6 +525,7 @@ class UserService {
     try {
       const order = await Models.Orders.findAndCountAll({
           where: { userId: userId, status: "Order Collected" },
+          attributes: { exclude: ['payment', 'userId', 'placeId', 'updatedAt'] },
           include: {
             model: Models.Places,
             required: true,
