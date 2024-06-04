@@ -228,7 +228,7 @@ class UserService {
         })
       }
     })
-    sum = Number(sum.toFixed(2)) + Number(body.tip) || 0
+    // sum = Number(sum.toFixed(2)) + Number(body.tip) || 0
     const stripe_account = await Models.StripeAccounts.findOne({
       where: { placeId: placeId }
     }).catch((err) => console.log(err))
@@ -459,6 +459,7 @@ class UserService {
       let stepPrice = 0
       let totalPrice = 0
       let totalTime = 0
+      let totalPoint = 0
       let array = basket_payment.rows
       if (basket_punchcard.count > 0) data.baskets.push(...basket_punchcard.rows)
       array.forEach(async (item) => {
@@ -470,12 +471,14 @@ class UserService {
         item.dataValues.stepPrice = stepPrice
         data.baskets.push(item)
         totalPrice += stepPrice
+        totalPoint += item.meal.point
         stepPrice = 0
       })
       if (data.baskets.length > 0) {
         data.statistic = {
           totalPrice: Number(totalPrice.toFixed(2)),
-          totalTime: Number(totalTime.toFixed(2))
+          totalTime: Number(totalTime.toFixed(2)),
+          totalPoint: Number(totalPoint.toFixed(2))
         }
       }
       if (data.baskets.length === 0) { return Response.NotFound('No information found!', {}) }

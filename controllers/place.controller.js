@@ -180,6 +180,14 @@ class PlaceController {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
         }
     }
+    async fetchPlaceOrderFinished(req, res) {
+        try {
+            const data = await placeService.fetchPlaceOrderFinishedService(req.user.id, req.query)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
     async fetchPlaceOrderHistory(req, res) {
         try {
             const data = await placeService.fetchPlaceOrderHistoryService(req.user.id, req.query)

@@ -109,6 +109,12 @@ router.get('/orders',
     validationMiddleware(baseSchema.queryControl, 'query'),
     placeController.fetchPlaceOrder)
 
+router.get('/order/finished',
+    authMiddleware,
+    rolesMiddleware(['place']),
+    validationMiddleware(baseSchema.queryControl, 'query'),
+    placeController.fetchPlaceOrderFinished)
+
 router.get('/order/history',
     authMiddleware,
     rolesMiddleware(['place']),
