@@ -490,7 +490,7 @@ class UserService {
   async fetchOrderService(userId) {
     try {
       const order = await Models.Orders.findOne({
-        where: { userI: userId, status: { [Op.ne]: "Order Collected" } },
+        where: { userId: userId, status: { [Op.ne]: "Order Collected" } },
         include: {
           model: Models.Places,
           attributes: ['id', 'name', 'slug', 'logo']
