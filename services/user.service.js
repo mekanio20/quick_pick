@@ -4,8 +4,9 @@ const Response = require('../helpers/response.service')
 const nodemailer = require('nodemailer')
 const uuid = require('uuid')
 const redis = require('../ioredis')
-const { Op } = require('sequelize')
+const { Op, or } = require('sequelize')
 const Models = require('../config/models')
+const { Sequelize } = require('../config/database')
 const stripe = require('stripe')(process.env.STRIPE_SECRET)
 
 class UserService {
@@ -304,18 +305,51 @@ class UserService {
   }
   async userUpdateBasketService(body, userId) {
     try {
-      const isExist = await Models.Baskets.findOne({
-        where: { isActive: true, id: body.id, userId: userId },
-        attributes: ['id'],
-     }).catch((err) => console.log(err))
-     if (isExist) {
-      const obj = {}
-      for (const item in body) if (item) obj[item] = body[item]
-      await Models.Baskets.update(obj, { where: { id: isExist.id } })
-        .catch((err) => console.log(err))
-      return Response.Success('Successfully updated!', [])
-    }
-    return Response.BadRequest('An unknown error occurred!', [])
+      const basket = await Models.Baskets.findOne({
+        where: { id: body.id, userId: userId, isActive: true },
+        include: {
+          model: Models.Meals,
+          attributes: ['name', 'point', 'extra_meals', 'meal_sizes'],
+          required: true,
+          include: {
+            model: Models.PlaceCategories,
+            attributes: ['placeId'],
+            required: true,
+            include: {
+              model: Models.Places,
+              attributes: ['name'],
+              required: true
+            }
+          }
+        }
+      }).catch((err) => console.log(err))
+      if (basket.length === 0) { return Response.BadRequest('Meal not found!', []) }
+
+      const meal = await basket.meal
+   
+     if (body?.extra_meals?.length > 0) {
+      let found = await body.extra_meals.every(bItem => {
+        return meal?.extra_meals?.some(aItem => {
+          return aItem.name === bItem.name && aItem.price === bItem.price
+        })
+      })
+        if (found == false) { return Response.BadRequest('There is no such extra meal', []) }
+      }
+      if (body?.meal_sizes?.length > 0) {
+        let found = await body.meal_sizes.every(bItem => {
+          return meal?.meal_sizes?.some(aItem => {
+            return aItem.size === bItem.size && aItem.price === bItem.price
+        })
+      })
+        if (found == false) { return Response.BadRequest('There is no such meal size', []) }
+      }
+   
+    const obj = {}
+    for (const item in body) if (item) obj[item] = body[item]
+    await Models.Baskets.update(obj, { where: { id: basket.id } })
+      .catch((err) => console.log(err))
+    
+    return Response.Success('Successfully updated!', [])
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
@@ -336,22 +370,18 @@ class UserService {
   async fetchAllPunchcardsService(userId) {
     try {
       const punchcard_steps = await Models.PunchCardSteps.findAll({
-        where: {
-          userId: userId, 
-          isActive: true,
-          score: { [Op.gt]: 0 }
-        },
-        attributes: ['id', 'score'],
+        where: { userId: userId, isActive: true },
+        attributes: [[Sequelize.fn('SUM', Sequelize.col('score')), 'totalScore']],
         include: {
           model: Models.Places,
-          attributes: ['id', 'name', 'slug', 'color'],
-          where: { isActive: true },
+          attributes: ['id', 'name', 'slug', 'logo', 'color', 'reward'],
           include: {
             model: Models.Punchcards,
-            attributes: ['id', 'name', 'point', 'mealId'],
-            where: { isActive: true }
-          }
-        }
+            as: 'punchcard',
+            attributes: ['id', 'name', 'point']
+          },
+        },
+        group: ['punchcard_steps.userId', 'punchcard_steps.placeId', 'place.id', 'place.punchcard.id']
       }).catch((err) => console.log(err))
       if (!punchcard_steps) { return Response.NotFound('No information found!', []) }
       
@@ -361,10 +391,11 @@ class UserService {
         if (!existingPlace) {
           result.push({
             id: item.place.id,
+            score: Number(item.dataValues.totalScore),
             name: item.place.name,
             slug: item.place.slug,
-            score: item.score,
             color: item.place.color,
+            rewar: item.place.reward,
             punchcards: [item.place.punchcard]
           })
         } else { existingPlace.punchcards.push(item.place.punchcard) }
@@ -468,7 +499,7 @@ class UserService {
         item.extra_meals.forEach((extraMeal) => stepPrice += extraMeal.price)
         item.meal_sizes.forEach((mealSize) => stepPrice += mealSize.price)
         stepPrice = stepPrice * item.count
-        item.dataValues.stepPrice = stepPrice
+        item.dataValues.stepPrice = Number(stepPrice.toFixed(2))
         data.baskets.push(item)
         totalPrice += stepPrice
         totalPoint += item.meal.point
@@ -507,15 +538,20 @@ class UserService {
   }
   async fetchOrderDetailService(userId, id) {
     try {
-      const order = await Models.OrderItems.findAndCountAll({
+      const order = await Models.Orders.findAndCountAll({
+        where: { id: id, userId: userId, status: { [Op.ne]: "Order Collected" } },
+        attributes: { exclude: ['placeId', 'userId', 'updatedAt'] },
         include: {
-          model: Models.Orders,
-          where: { id: id, userId: userId, status: { [Op.ne]: "Order Collected" } },
+          model: Models.OrderItems,
+          attributes: { exclude: ['createdAt', 'updatedAt', 'orderId', 'mealId'] },
           required: true,
-          attributes: []
+          include: {
+            model: Models.Meals,
+            attributes: ['id', 'name', 'slug', 'img', 'price', 'ingredients']
+          }
         }
       }).catch((err) => console.log(err))
-      if (!order) { return Response.NotFound('Order detail not found!', []) }
+      if (order.count === 0) { return Response.NotFound('Order detail not found!', []) }
       return Response.Success('Successful!', order)
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
