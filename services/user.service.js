@@ -4,7 +4,7 @@ const Response = require('../helpers/response.service')
 const nodemailer = require('nodemailer')
 const uuid = require('uuid')
 const redis = require('../ioredis')
-const { Op } = require('sequelize')
+const { Op, or } = require('sequelize')
 const Models = require('../config/models')
 const stripe = require('stripe')(process.env.STRIPE_SECRET)
 
@@ -507,15 +507,20 @@ class UserService {
   }
   async fetchOrderDetailService(userId, id) {
     try {
-      const order = await Models.OrderItems.findAndCountAll({
+      const order = await Models.Orders.findAndCountAll({
+        where: { id: id, userId: userId, status: { [Op.ne]: "Order Collected" } },
+        attributes: { exclude: ['placeId', 'userId', 'updatedAt'] },
         include: {
-          model: Models.Orders,
-          where: { id: id, userId: userId, status: { [Op.ne]: "Order Collected" } },
+          model: Models.OrderItems,
+          attributes: { exclude: ['createdAt', 'updatedAt', 'orderId', 'mealId'] },
           required: true,
-          attributes: []
+          include: {
+            model: Models.Meals,
+            attributes: ['id', 'name', 'slug', 'img', 'price', 'ingredients']
+          }
         }
       }).catch((err) => console.log(err))
-      if (!order) { return Response.NotFound('Order detail not found!', []) }
+      if (order.count === 0) { return Response.NotFound('Order detail not found!', []) }
       return Response.Success('Successful!', order)
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
