@@ -304,18 +304,51 @@ class UserService {
   }
   async userUpdateBasketService(body, userId) {
     try {
-      const isExist = await Models.Baskets.findOne({
-        where: { isActive: true, id: body.id, userId: userId },
-        attributes: ['id'],
-     }).catch((err) => console.log(err))
-     if (isExist) {
-      const obj = {}
-      for (const item in body) if (item) obj[item] = body[item]
-      await Models.Baskets.update(obj, { where: { id: isExist.id } })
-        .catch((err) => console.log(err))
-      return Response.Success('Successfully updated!', [])
-    }
-    return Response.BadRequest('An unknown error occurred!', [])
+      const basket = await Models.Baskets.findOne({
+        where: { id: body.id, userId: userId, isActive: true },
+        include: {
+          model: Models.Meals,
+          attributes: ['name', 'point', 'extra_meals', 'meal_sizes'],
+          required: true,
+          include: {
+            model: Models.PlaceCategories,
+            attributes: ['placeId'],
+            required: true,
+            include: {
+              model: Models.Places,
+              attributes: ['name'],
+              required: true
+            }
+          }
+        }
+      }).catch((err) => console.log(err))
+      if (basket.length === 0) { return Response.BadRequest('Meal not found!', []) }
+
+      const meal = await basket.meal
+   
+     if (body?.extra_meals?.length > 0) {
+      let found = await body.extra_meals.every(bItem => {
+        return meal?.extra_meals?.some(aItem => {
+          return aItem.name === bItem.name && aItem.price === bItem.price
+        })
+      })
+        if (found == false) { return Response.BadRequest('There is no such extra meal', []) }
+      }
+      if (body?.meal_sizes?.length > 0) {
+        let found = await body.meal_sizes.every(bItem => {
+          return meal?.meal_sizes?.some(aItem => {
+            return aItem.size === bItem.size && aItem.price === bItem.price
+        })
+      })
+        if (found == false) { return Response.BadRequest('There is no such meal size', []) }
+      }
+   
+    const obj = {}
+    for (const item in body) if (item) obj[item] = body[item]
+    await Models.Baskets.update(obj, { where: { id: basket.id } })
+      .catch((err) => console.log(err))
+    
+    return Response.Success('Successfully updated!', [])
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
@@ -468,7 +501,7 @@ class UserService {
         item.extra_meals.forEach((extraMeal) => stepPrice += extraMeal.price)
         item.meal_sizes.forEach((mealSize) => stepPrice += mealSize.price)
         stepPrice = stepPrice * item.count
-        item.dataValues.stepPrice = stepPrice
+        item.dataValues.stepPrice = Number(stepPrice.toFixed(2))
         data.baskets.push(item)
         totalPrice += stepPrice
         totalPoint += item.meal.point
