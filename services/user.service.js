@@ -6,6 +6,7 @@ const uuid = require('uuid')
 const redis = require('../ioredis')
 const { Op, or } = require('sequelize')
 const Models = require('../config/models')
+const { Sequelize } = require('../config/database')
 const stripe = require('stripe')(process.env.STRIPE_SECRET)
 
 class UserService {
@@ -369,22 +370,18 @@ class UserService {
   async fetchAllPunchcardsService(userId) {
     try {
       const punchcard_steps = await Models.PunchCardSteps.findAll({
-        where: {
-          userId: userId, 
-          isActive: true,
-          score: { [Op.gt]: 0 }
-        },
-        attributes: ['id', 'score'],
+        where: { userId: userId, isActive: true },
+        attributes: [[Sequelize.fn('SUM', Sequelize.col('score')), 'totalScore']],
         include: {
           model: Models.Places,
-          attributes: ['id', 'name', 'slug', 'color'],
-          where: { isActive: true },
+          attributes: ['id', 'name', 'slug', 'logo', 'color', 'reward'],
           include: {
             model: Models.Punchcards,
-            attributes: ['id', 'name', 'point', 'mealId'],
-            where: { isActive: true }
-          }
-        }
+            as: 'punchcard',
+            attributes: ['id', 'name', 'point']
+          },
+        },
+        group: ['punchcard_steps.userId', 'punchcard_steps.placeId', 'place.id', 'place.punchcard.id']
       }).catch((err) => console.log(err))
       if (!punchcard_steps) { return Response.NotFound('No information found!', []) }
       
@@ -394,10 +391,11 @@ class UserService {
         if (!existingPlace) {
           result.push({
             id: item.place.id,
+            score: Number(item.dataValues.totalScore),
             name: item.place.name,
             slug: item.place.slug,
-            score: item.score,
             color: item.place.color,
+            rewar: item.place.reward,
             punchcards: [item.place.punchcard]
           })
         } else { existingPlace.punchcards.push(item.place.punchcard) }
