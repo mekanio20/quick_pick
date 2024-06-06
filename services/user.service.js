@@ -495,13 +495,13 @@ class UserService {
       if (basket_punchcard.count > 0) data.baskets.push(...basket_punchcard.rows)
       array.forEach(async (item) => {
         if (totalTime < item.meal.time) totalTime = item.meal.time
-        stepPrice += item.meal.price
-        item.extra_meals.forEach((extraMeal) => stepPrice += extraMeal.price)
-        item.meal_sizes.forEach((mealSize) => stepPrice += mealSize.price)
-        stepPrice = stepPrice * item.count
+        stepPrice += Number(item.meal.price)
+        item.extra_meals.forEach((extraMeal) => stepPrice += Number(extraMeal.price))
+        item.meal_sizes.forEach((mealSize) => stepPrice += Number(mealSize.price))
+        stepPrice = Number(stepPrice) * Number(item.count)
         item.dataValues.stepPrice = Number(stepPrice.toFixed(2))
         data.baskets.push(item)
-        totalPrice += stepPrice
+        totalPrice += Number(stepPrice.toFixed(2))
         totalPoint += item.meal.point
         stepPrice = 0
       })

@@ -319,7 +319,7 @@ class PlaceService {
   async fetchPlaceOrderService(placeId, query) {
     try {
       let page = query.page || 1
-      let limit = query.limit || 4
+      let limit = query.limit || 10
       let offset = page * limit - limit
       const orders = await Models.Orders.findAndCountAll({
         where: { placeId: placeId, status: { [Op.ne]: 'Order Collected' } },
@@ -358,7 +358,7 @@ class PlaceService {
       let offset = page * limit - limit
       const start_date = new Date().setHours(0,0,0,0)
       const end_date = new Date().setHours(23,59,59,999)
-      const orders = await Models.Orders.findAndCountAll({
+      const orders = await Models.Orders.findAll({
         where: { placeId: placeId, status: 'Order Collected', createdAt: { [Op.gte]: start_date, [Op.lte]: end_date } },
         attributes: { exclude: ['placeId', 'updatedAt'] },
         include: {
@@ -372,8 +372,9 @@ class PlaceService {
         limit: Number(limit),
         offset: Number(offset)
       }).catch((err) => console.log(err))
-      if (orders.count === 0) { return Response.BadRequest('Order finished not found!', []) }
-      return Response.Success('Successful!', orders)
+      const order = { count: orders.length, rows: orders }
+      if (order.count === 0) { return Response.BadRequest('Order finished not found!', []) }
+      return Response.Success('Successful!', order)
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
@@ -381,14 +382,14 @@ class PlaceService {
   async fetchPlaceOrderHistoryService(placeId, query) {
     try {
       let page = query.page || 1
-      let limit = query.limit || 4
+      let limit = query.limit || 10
       let offset = page * limit - limit
-      const order_history = await Models.Orders.findAndCountAll({
+      const order_history = await Models.Orders.findAll({
         where: { placeId: placeId, status: 'Order Collected' },
         attributes: { exclude: ['placeId', 'updatedAt'] },
         include: {
           model: Models.OrderItems,
-          attributes: { exclude: ['orderId', 'createdAt', 'updatedAt'] },
+          attributes: { exclude: ['orderId', 'mealId', 'createdAt', 'updatedAt'] },
           include: {
             model: Models.Meals,
             attributes: ['id', 'name', 'slug', 'price']
@@ -397,8 +398,9 @@ class PlaceService {
         limit: Number(limit),
         offset: Number(offset)
       }).catch((err) => console.log(err))
-      if (order_history.count === 0) { return Response.BadRequest('Order history not found!', []) }
-      return Response.Success('Successful!', order_history)
+      const history = { count: order_history.length, rows: order_history }
+      if (history.count === 0) { return Response.BadRequest('Order history not found!', []) }
+      return Response.Success('Successful!', history)
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
