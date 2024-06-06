@@ -278,15 +278,11 @@ class PlaceService {
   }
   async fetchPlaceHomeService(placeId) {
     try {
-      const account = await Models.StripeAccounts.findOne({
-        where: { placeId: placeId },
-        attributes: ['id', 'stripe']
+      const order_sum = await Models.Orders.findAll({
+        where: { placeId: placeId, payment: true, status: 'Order Collected' },
+        attributes: [[Sequelize.fn('SUM', Sequelize.col('sum')), 'totalSum']]
       }).catch((err) => console.log(err))
-      if (!account) { return Response.BadRequest('Account not found!', []) }
-      const balance = await stripe.balance.retrieve({ stripeAccount: account.stripe })
-      const allAmounts = [...balance.available, ...balance.pending]
-      const sum = allAmounts.reduce((total, item) => total + item.amount, 0)
-
+      const sum = await order_sum[0].dataValues.totalSum
       const orders = await Models.Orders.count({ where: { placeId: placeId, status: 'Order Collected' } })
       let result = null
       let meal = null
@@ -311,7 +307,7 @@ class PlaceService {
           attributes: ['id', 'name', 'slug']
         }).catch((err) => console.log(err))
       }
-      return Response.Success('Successful!', {sum: sum / 100, orders, meal})
+      return Response.Success('Successful!', {sum: sum, orders, meal})
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
