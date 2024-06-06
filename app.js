@@ -1,43 +1,67 @@
-const cors = require('cors')
-const morgan = require('morgan')
-const express = require('express')
-const helmet = require('helmet')
-const path = require('path')
-const fs = require('fs')
-const rolesMiddleware = require('./middlewares/roles.middleware')
+const Sentry = require("@sentry/node");
 
-require('dotenv').config()
-const app = express()
-const port = process.env.PORT || 5001
-const ip = 'localhost'
+// Ensure to call this before requiring any other modules!
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+});
+const cors = require("cors");
+const morgan = require("morgan");
+const express = require("express");
+const helmet = require("helmet");
+const path = require("path");
+const fs = require("fs");
+const rolesMiddleware = require("./middlewares/roles.middleware");
 
-require('./config/models')
-const database = require('./config/database')
-const router = require('./routers/index.router')
+require("dotenv").config();
+const app = express();
+const port = process.env.PORT || 5001;
+const ip = "localhost";
 
-app.set('view engine', 'ejs')
-app.disable('x-powered-by')
-app.use(cors({ origin: true }))
-app.use(helmet())
+require("./config/models");
+const database = require("./config/database");
+const router = require("./routers/index.router");
 
-let accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' })
-app.use(morgan('common', { stream: accessLogStream }))
-app.use(morgan('dev'))
+app.set("view engine", "ejs");
+app.disable("x-powered-by");
+app.use(cors({ origin: true }));
+app.use(helmet());
 
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
-app.use('/uploads', express.static('public'))
+let accessLogStream = fs.createWriteStream(path.join(__dirname, "access.log"), {
+  flags: "a",
+});
+app.use(morgan("common", { stream: accessLogStream }));
+app.use(morgan("dev"));
 
-app.use('/api/v1', router)
-app.all('*', (req, res) => { return res.status(404).sendFile(`${path.join(__dirname + '/public/404.html')}`) })
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use("/uploads", express.static("public"));
+
+app.use("/api/v1", router);
+
+// error handlers
+// app.get("/debug-sentry", function mainHandler(req, res) {
+//   throw new Error("My first Sentry error!");
+// });
+Sentry.setupExpressErrorHandler(app);
+app.use(function (err, req, res, next) {
+  if (err) {
+    res.status(500).send("Something went wrong!");
+  }
+});
+
+app.all("*", (req, res) => {
+  return res
+    .status(404)
+    .sendFile(`${path.join(__dirname + "/public/404.html")}`);
+});
 
 app.listen(port, async () => {
-    try {
-        await database.authenticate()
-        await database.sync({})
-        console.log('Database connected...')
-        console.log(`Server is running: http://${ip}:${port}`)
-    } catch (error) {
-        throw error
-    }
-})
+  try {
+    await database.authenticate();
+    await database.sync({});
+    console.log("Database connected...");
+    console.log(`Server is running: http://${ip}:${port}`);
+  } catch (error) {
+    throw error;
+  }
+});
