@@ -94,6 +94,7 @@ const Meals = database.define('meals', {
     img: { type: DataTypes.STRING, allowNull: true },
     price: { type: DataTypes.DOUBLE, allowNull: false },
     point: { type: DataTypes.SMALLINT, defaultValue: 0 },
+    tax: { type: DataTypes.SMALLINT, defaultValue: 0 },
     time: { type: DataTypes.SMALLINT, allowNull: false },
     ingredients: { type: DataTypes.TEXT, allowNull: false },
     type: { type: DataTypes.ENUM({ values: ['Meat', 'Vegan', 'Kosher', 'Vegetarian', 'Halal', 'Gluten Free'] }) },

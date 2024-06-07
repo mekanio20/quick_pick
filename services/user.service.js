@@ -170,7 +170,7 @@ class UserService {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
   }
-  async userAddPaymentService(body, userId, slug) {
+  async userAddPaymentService(body, userId) {
     try {
       const baskets = await Models.Baskets.findAll({
         where: { isActive: true, userId: userId },
@@ -183,12 +183,7 @@ class UserService {
           include: {
             model: Models.PlaceCategories,
             attributes: ['placeId'],
-            required: true,
-            include: {
-              model: Models.Places,
-              attributes: ['slug'],
-              where: { slug: slug }
-            }
+            required: true
           }
         }
      }).catch((err) => console.log(err))
@@ -440,7 +435,7 @@ class UserService {
         include: {
           model: Models.Meals,
           where: { isActive: true },
-          attributes: ['id', 'name', 'slug', 'price', 'point', 'img', 'time'],
+          attributes: ['id', 'name', 'slug', 'price', 'point', 'img', 'ingredients', 'time', 'tax'],
           include: {
             model: Models.PlaceCategories,
             where: { isActive: true },
@@ -478,6 +473,7 @@ class UserService {
         if (item.meal) {
           item.meal.price = 0
           item.meal.point = 0
+          item.meal.tax = 0
         }
         if (item.extra_meals == null) item.extra_meals = []
         if (item.meal_sizes == null) item.meal_sizes = []
@@ -491,6 +487,7 @@ class UserService {
       let totalPrice = 0
       let totalTime = 0
       let totalPoint = 0
+      let totalTax = 0
       let array = basket_payment.rows
       if (basket_punchcard.count > 0) data.baskets.push(...basket_punchcard.rows)
       array.forEach(async (item) => {
@@ -502,14 +499,16 @@ class UserService {
         item.dataValues.stepPrice = Number(stepPrice.toFixed(2))
         data.baskets.push(item)
         totalPrice += Number(stepPrice.toFixed(2))
-        totalPoint += item.meal.point
+        totalPoint += Number(item.meal.point)
+        totalTax += Number(item.meal.tax)
         stepPrice = 0
       })
       if (data.baskets.length > 0) {
         data.statistic = {
           totalPrice: Number(totalPrice.toFixed(2)),
           totalTime: Number(totalTime.toFixed(2)),
-          totalPoint: Number(totalPoint.toFixed(2))
+          totalPoint: Number(totalPoint.toFixed(2)),
+          totalTax: Number(totalTax.toFixed(2))
         }
       }
       if (data.baskets.length === 0) { return Response.NotFound('No information found!', {}) }
