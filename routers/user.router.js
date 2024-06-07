@@ -38,10 +38,9 @@ router.post('/add/basket',
     validationMiddleware(userSchema.userBasketAdd, 'body'),
     userController.userAddBasket)
 
-router.post('/add/payment/:slug',
+router.post('/add/payment',
     authMiddleware,
     rolesMiddleware(['user']),
-    validationMiddleware(baseSchema.slugControl, 'params'),
     validationMiddleware(userSchema.userAddPayment, 'body'),
     userController.userAddPayment)
 

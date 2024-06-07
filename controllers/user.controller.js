@@ -55,7 +55,7 @@ class UserController {
     }
     async userAddPayment(req, res) {
         try {
-            const data = await userService.userAddPaymentService(req.body, req.user.id, req.params.slug)
+            const data = await userService.userAddPaymentService(req.body, req.user.id)
             return res.status(data.status).json(data)
         } catch (error) {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })

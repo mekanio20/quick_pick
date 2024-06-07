@@ -170,7 +170,7 @@ class UserService {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
   }
-  async userAddPaymentService(body, userId, slug) {
+  async userAddPaymentService(body, userId) {
     try {
       const baskets = await Models.Baskets.findAll({
         where: { isActive: true, userId: userId },
@@ -183,12 +183,7 @@ class UserService {
           include: {
             model: Models.PlaceCategories,
             attributes: ['placeId'],
-            required: true,
-            include: {
-              model: Models.Places,
-              attributes: ['slug'],
-              where: { slug: slug }
-            }
+            required: true
           }
         }
      }).catch((err) => console.log(err))
