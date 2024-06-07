@@ -440,7 +440,7 @@ class UserService {
         include: {
           model: Models.Meals,
           where: { isActive: true },
-          attributes: ['id', 'name', 'slug', 'price', 'point', 'img', 'time'],
+          attributes: ['id', 'name', 'slug', 'price', 'point', 'img', 'ingredients', 'time', 'tax'],
           include: {
             model: Models.PlaceCategories,
             where: { isActive: true },
