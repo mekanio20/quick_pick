@@ -15,9 +15,8 @@ const baseSchema = {
     }),
     queryControl: Joi.object({
         page: Joi.number().positive().optional(),
-        limit: Joi.ref('page'),
-        order: Joi.string().valid('asc', 'desc').optional(),
-        status: Joi.string().valid('all', true, false).optional()
+        limit: Joi.number().positive().optional(),
+        order: Joi.string().valid('asc', 'desc').optional()
     })
 }
 
