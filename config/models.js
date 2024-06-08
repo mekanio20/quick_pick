@@ -109,8 +109,8 @@ const Meals = database.define('meals', {
 const Promotions = database.define('promotions', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true, allowNull: false, unique: true },
     code: { type: DataTypes.STRING(50), allowNull: false },
-    min_price: { type: DataTypes.INTEGER, allowNull: false }, // 100$
-    percentage: { type: DataTypes.SMALLINT, allowNull: false }, // 25%
+    limit: { type: DataTypes.INTEGER, allowNull: false },
+    percentage: { type: DataTypes.SMALLINT, allowNull: false },
     isActive: { type: DataTypes.BOOLEAN, defaultValue: true },
     createdAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW },
     updatedAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW }
