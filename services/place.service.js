@@ -411,12 +411,26 @@ class PlaceService {
         attributes: { exclude: ['placeId', 'updatedAt'] },
         include: {
           model: Models.OrderItems,
-          attributes: { exclude: ['orderId', 'createdAt', 'updatedAt'] }
+          attributes: { exclude: ['orderId', 'mealId', 'createdAt', 'updatedAt'] },
+          include: {
+            model: Models.Meals,
+            attributes: ['id', 'name', 'slug', 'price']
+          }
         },
         limit: Number(limit),
         offset: Number(offset)
       }).catch((err) => console.log(err))
       if (order_schedule.count === 0) { return Response.BadRequest('Order schedule not found!', []) }
+      order_schedule.rows.forEach((item) => {
+        if (item.createdAt) {
+          const date = new Date(item.createdAt)
+          date.setTime(date.getTime() + Number(item.time) * 60 * 1000)
+          item.dataValues.times = {
+            start_time: item.createdAt,
+            end_time: date
+          }
+        }
+      })
       return Response.Success('Successful!', order_schedule)
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
