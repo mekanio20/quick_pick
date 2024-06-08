@@ -424,11 +424,9 @@ class PlaceService {
       if (order_schedule.count === 0) { return Response.BadRequest('Order schedule not found!', []) }
       order_schedule.rows.forEach((item) => {
         if (item.createdAt) {
-          const date = new Date(item.createdAt)
-          date.setTime(date.getTime() + Number(item.time) * 60 * 1000)
           item.dataValues.times = {
             start_time: item.createdAt,
-            end_time: date
+            end_time: item.schedule
           }
         }
       })
