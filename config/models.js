@@ -54,7 +54,6 @@ const Places = database.define('places', {
     color: { type: DataTypes.STRING(50), allowNull: true },
     copacity: { type: DataTypes.ENUM({ values: ['Quite', 'Moderate', 'Busy'] }), defaultValue: 'Quite' },
     dine_in: { type: DataTypes.BOOLEAN, defaultValue: true }, // otyryp iymek, alyp gitmek
-    tax: { type: DataTypes.SMALLINT, defaultValue: 0 }, // otyryan yerin ucin toleg, prosentde
     open_close: { type: DataTypes.BOOLEAN, defaultValue: true },
     auto_accept: { type: DataTypes.BOOLEAN, defaultValue: false },
     isActive: { type: DataTypes.BOOLEAN, defaultValue: false },
