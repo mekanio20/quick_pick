@@ -204,7 +204,7 @@ class UserService {
      let score = 0
      let time = 0
      let order_info = []
-     baskets.forEach((item) => {
+     baskets.forEach(async (item) => {
       score += item.score
       let totalPrice = 0
       let totalSizePrice = 0
@@ -213,7 +213,7 @@ class UserService {
       if (item.meal_sizes) totalSizePrice = item.meal_sizes.reduce((acc, meal) => acc + meal.price, 0)
       if (item.extra_meals) totalExtraPrice = item.extra_meals.reduce((acc, meal) => acc + meal.price, 0)
       if (item.meal.price) {
-        totalPrice = (totalExtraPrice + totalSizePrice + Number(item.meal.price))
+        totalPrice = (totalExtraPrice + totalSizePrice + Number(item.meal.price) + Number(item.meal.tax))
         sum += Number(totalPrice.toFixed(2)) * Number(item.count)
         order_info.push({
           quantity: item.count,
@@ -243,7 +243,7 @@ class UserService {
     const order = await Models.Orders.create({
       type: body.type,
       tip: body.tip || 0,
-      sum: sum,
+      sum: Number(sum.toFixed(2)),
       note: body.note || null, 
       payment: true,
       schedule: body.schedule || null,
@@ -537,20 +537,41 @@ class UserService {
   }
   async fetchOrderDetailService(userId, id) {
     try {
-      const order = await Models.Orders.findAndCountAll({
+      const order = await Models.Orders.findOne({
         where: { id: id, userId: userId, status: { [Op.ne]: "Order Collected" } },
         attributes: { exclude: ['placeId', 'userId', 'updatedAt'] },
-        include: {
-          model: Models.OrderItems,
-          attributes: { exclude: ['createdAt', 'updatedAt', 'orderId', 'mealId'] },
-          required: true,
-          include: {
-            model: Models.Meals,
-            attributes: ['id', 'name', 'slug', 'img', 'price', 'ingredients']
+        include: [
+          {
+            model: Models.OrderItems,
+            attributes: { exclude: ['createdAt', 'updatedAt', 'orderId', 'mealId'] },
+            required: true,
+            include: {
+              model: Models.Meals,
+              attributes: ['id', 'name', 'slug', 'img', 'price', 'tax', 'point', 'ingredients']
+            }
+          },
+          {
+            model: Models.Places,
+            attributes: ['id', 'name', 'slug', 'logo']
           }
-        }
+        ]
       }).catch((err) => console.log(err))
-      if (order.count === 0) { return Response.NotFound('Order detail not found!', []) }
+      if (!order) { return Response.NotFound('Order detail not found!', {}) }
+      let array = await order.order_items
+      let totalPoint = 0
+      let totalTax = 0
+      array.forEach(async (item) => {
+        if (item.meal) {
+          totalPoint += Number(item.meal.point)
+          totalTax += Number(item.meal.tax)
+        }
+      })
+      let totalPrice = Number(await order.sum) + Number(await order.tip) + Number(totalTax)
+      order.dataValues.statistic = {
+        totalPrice: Number(totalPrice.toFixed(2)),
+        totalPoint: Number(totalPoint.toFixed(2)),
+        totalTax: Number(totalTax.toFixed(2))
+      }
       return Response.Success('Successful!', order)
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }

@@ -352,10 +352,11 @@ class PlaceService {
       let page = query.page || 1
       let limit = query.limit || 4
       let offset = page * limit - limit
-      const start_date = new Date().setHours(0,0,0,0)
-      const end_date = new Date().setHours(23,59,59,999)
+      const date = new Date()
+      const start_date = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+      const end_date = new Date(start_date.getTime() + 86400000)
       const orders = await Models.Orders.findAll({
-        where: { placeId: placeId, status: 'Order Collected', createdAt: { [Op.gte]: start_date, [Op.lte]: end_date } },
+        where: { placeId: placeId, status: 'Order Collected', createdAt: { [Op.between]: [start_date, end_date] } },
         attributes: { exclude: ['placeId', 'updatedAt'] },
         include: {
           model: Models.OrderItems,
