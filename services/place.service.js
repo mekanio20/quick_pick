@@ -453,13 +453,13 @@ class PlaceService {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
   }
-  async fetchPlaceService(slug) {
+  async fetchPlaceService(slug, query) {
     try {
       let result = []
       const place = await Models.Places.findOne({
         where: { slug: slug, isActive: true },
         attributes: {
-          exclude: ['password', 'zipcode', 'reward', 'dine_in', 'tax', 'auto_accept', 'createdAt', 'updatedAt']
+          exclude: ['password', 'zipcode', 'reward', 'dine_in', 'auto_accept', 'createdAt', 'updatedAt']
         }
       }).catch((err) => console.log(err))
       if (!place) { return Response.NotFound('No information found!', []) }
@@ -504,6 +504,11 @@ class PlaceService {
       const prices = await mesals.map((item) => item.price)
       if (prices.length >= 2) result.push({ prices: [Math.min(...prices), Math.max(...prices)] })
       else result.push({ prices: prices[0] })
+
+      let distance = { metres: 0, minutes: 0 }
+      distance.metres = Number((await Functions.haversineDistance(query.lat, query.lon, place.latitude, place.longitude)).toFixed(2))
+      distance.minutes = Number((await Functions.walkingTime(distance.metres)).toFixed(2))
+      result.push({ distance: distance })
 
       return Response.Success('Successful!', result)
     } catch (error) {

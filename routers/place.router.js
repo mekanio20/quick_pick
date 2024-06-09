@@ -135,6 +135,7 @@ router.get('/search/item',
 
 router.get('/:slug',
     validationMiddleware(baseSchema.slugControl, 'params'),
+    validationMiddleware(placeSchema.placeDistance, 'query'),
     placeController.fetchPlace)
 
 // PUT
