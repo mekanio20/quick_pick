@@ -22,9 +22,6 @@ router.put('/edit/status',
     validationMiddleware(adminSchema.editStatus, 'body'),
     adminController.editStatus)
 
-<<<<<<< HEAD
-module.exports = router
-=======
 // DELETE
 router.delete('/delete/category/:id',
     rolesMiddleware(['admin']),
@@ -32,4 +29,3 @@ router.delete('/delete/category/:id',
     adminController.deleteCategory)
 
 module.exports = router
->>>>>>> 8302a852bbc8bef2dcbfbff06e218eb2f353d67d
