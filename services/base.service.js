@@ -27,6 +27,15 @@ class BaseService {
             throw { status: 500, type: 'error', msg: error, detail: [] }
         }
     }
+    async deleteService(id) {
+        try {
+            const del = await this.Model.destroy({ while: { id: Number(id) } })
+            if (!del) { return Response.BadRequest('An unknown error occurred!', []) }
+            return Response.Success('Delete successful!', [])
+        } catch (error) {
+            throw { status: 500, type: 'error', msg: error, detail: [] }
+        }
+    }
 }
 
 module.exports = BaseService
