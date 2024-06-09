@@ -33,12 +33,6 @@ class HomeService {
                     }
                 }
             }).catch((err) => console.log(err))
-            let distance = { metres: 0, minutes: 0 }
-            places.forEach(async (item) => {
-                distance.metres = Number((await Functions.haversineDistance(query.lat, query.lon, item.latitude, item.longitude)).toFixed(2))
-                distance.minutes = Number((await Functions.walkingTime(distance.metres)).toFixed(2))
-                item.dataValues.distance = distance
-            })
             if (places.length === 0) { return Response.NotFound('No information found!', []) }
             return Response.Success('Successful!', places)
         } catch (error) {
