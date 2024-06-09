@@ -9,7 +9,7 @@ class PlaceController {
     // POST
     async placeRegister(req, res) {
         try {
-            const hash = await bcrypt.hash(req.bod.password, 5)
+            const hash = await bcrypt.hash(req.body.password, 5)
             const slug = await Functions.generateSlug(req.body.name)
             const isExist = { slug: slug, email: req.body.email }
             const body = req.body
@@ -17,8 +17,6 @@ class PlaceController {
             body.password = hash
             body.slug = slug
             const data = await new baseService(Models.Places).addService(isExist, body)
-            const token = await Functions.generateJwt({ id: data.detail.id, role: "place" })
-            data.detail.token = token
             return res.status(data.status).json(data)
         } catch (error) {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })

@@ -11,6 +11,7 @@ const baseSchema = require('../validations/base.schema')
 // POST
 router.post('/register',
     limitterMiddleware(),
+    rolesMiddleware(['admin']),
     validationMiddleware(placeSchema.placeRegister, 'body'),
     placeController.placeRegister) 
 

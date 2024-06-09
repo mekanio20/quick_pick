@@ -4,6 +4,15 @@ const bcrypt = require('bcrypt')
 const uuid = require('uuid')
 
 class AdminController {
+    // POST
+    async addCategory(req, res) {
+        try {
+            const data = await new baseService(Models.Categories).addService(req.body)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
     // PUT
     async editStatus(req, res) {
         try {
@@ -13,10 +22,11 @@ class AdminController {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
         }
     }
-    // GET
-    async Test(req, res) {
+    // DELETE
+    async deleteCategory(req, res) {
         try {
-            res.render('index.ejs')
+            const data = await new baseService(Models.Categories).deleteService(req.params.id)
+            return res.status(data.status).json(data)
         } catch (error) {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
         }
