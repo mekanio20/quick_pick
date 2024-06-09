@@ -13,6 +13,10 @@ const baseSchema = {
     searchControl: Joi.object({
         q: Joi.string().max(255).required()
     }),
+    distanceControl: Joi.object({
+        lat: Joi.number().positive().optional(),
+        lon: Joi.number().positive().optional()
+    }),
     queryControl: Joi.object({
         page: Joi.number().positive().optional(),
         limit: Joi.number().positive().optional(),

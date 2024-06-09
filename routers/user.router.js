@@ -78,6 +78,7 @@ router.get('/punchcard/:slug',
 router.get('/basket',
     authMiddleware,
     rolesMiddleware(['user']),
+    validationMiddleware(baseSchema.distanceControl, 'query'),
     userController.fetchBasket)
 
 router.get('/order',

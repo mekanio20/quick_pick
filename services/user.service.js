@@ -427,7 +427,7 @@ class UserService {
       throw { status: 500, type: "error", msg: error, detail: [] }
     }
   }
-  async fetchBasketService(userId) {
+  async fetchBasketService(userId, query) {
     try {
       const basket_payment = await Models.Baskets.findAndCountAll({
         where: { userId: userId, type: 'payment', isActive: true },
@@ -443,7 +443,7 @@ class UserService {
             required: true,
             include: {
               model: Models.Places,
-              attributes: ['name', 'slug'],
+              attributes: ['name', 'slug', 'latitude', 'longitude'],
               required: true
             }
           }
@@ -463,7 +463,7 @@ class UserService {
             required: true,
             include: {
               model: Models.Places,
-              attributes: ['name', 'slug'],
+              attributes: ['name', 'slug', 'latitude', 'longitude'],
               required: true
             }
           }
@@ -503,15 +503,21 @@ class UserService {
         totalTax += Number(item.meal.tax)
         stepPrice = 0
       })
-      if (data.baskets.length > 0) {
-        data.statistic = {
-          totalPrice: Number(totalPrice.toFixed(2)),
-          totalTime: Number(totalTime.toFixed(2)),
-          totalPoint: Number(totalPoint.toFixed(2)),
-          totalTax: Number(totalTax.toFixed(2))
-        }
-      }
       if (data.baskets.length === 0) { return Response.NotFound('No information found!', {}) }
+
+      data.statistic = {
+        totalPrice: Number(totalPrice.toFixed(2)),
+        totalTime: Number(totalTime.toFixed(2)),
+        totalPoint: Number(totalPoint.toFixed(2)),
+        totalTax: Number(totalTax.toFixed(2))
+      }
+      
+      let distance = { metres: 0, minutes: 0 }
+      let place = basket_payment.rows[0]?.meal?.place_category?.place || basket_punchcard.rows[0]?.meal?.place_category?.place
+      distance.metres = Number((await Functions.haversineDistance(query.lat, query.lon, place?.latitude, place?.longitude)).toFixed(2))
+      distance.minutes = Number((await Functions.walkingTime(distance.metres)).toFixed(2))
+      data.distance = distance
+
       return Response.Success('Successful!', data)
     } catch (error) {
       throw { status: 500, type: "error", msg: error, detail: [] }
