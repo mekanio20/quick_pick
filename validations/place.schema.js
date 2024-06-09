@@ -1,10 +1,6 @@
 const Joi = require('joi')
 
 const placeSchema = {
-    placeLogin: Joi.object({
-        email: Joi.string().max(100).email().required(),
-        password: Joi.string().min(4).max(25).regex(/^[a-zA-Z0-9!?^.,_@#$%&*:;=+]{4,25}$/).required()
-    }),
     placeRegister: Joi.object({
         name: Joi.string().max(100).required(),
         type: Joi.string().valid('Cafe', 'Bakery', 'Restaurant', 'Bar').required(),
@@ -34,9 +30,6 @@ const placeSchema = {
         tax: Joi.number().positive().max(50).optional(),
         open_close: Joi.boolean().optional(),
         auto_accept: Joi.boolean().optional()
-    }),
-    placeAddCategory: Joi.object({
-        name: Joi.string().max(255).required()
     }),
     placeAddSchedule: Joi.object({
         day: Joi.string().valid('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday').required(),

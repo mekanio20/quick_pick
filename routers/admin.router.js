@@ -1,6 +1,7 @@
 const router = require('express').Router()
 const adminController = require('../controllers/admin.controller')
 const validationMiddleware = require('../middlewares/validation.middleware')
+const limitterMiddleware = require('../middlewares/limitter.middleware')
 const rolesMiddleware = require('../middlewares/roles.middleware')
 const adminSchema = require('../validations/admin.schema')
 const baseSchema = require('../validations/base.schema')
@@ -11,9 +12,14 @@ router.get('/default',
     adminController.Default)
 
 // POST
+router.post('/login',
+    limitterMiddleware(),
+    validationMiddleware(baseSchema.loginControl, 'body'),
+    adminController.loginAdmin)
+
 router.post('/add/category',
     rolesMiddleware(['admin']),
-    validationMiddleware(adminSchema.addCategory, 'body'),
+    validationMiddleware(baseSchema.nameControl, 'body'),
     adminController.addCategory)
 
 // PUT

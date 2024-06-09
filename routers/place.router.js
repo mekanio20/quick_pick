@@ -17,7 +17,7 @@ router.post('/register',
 
 router.post('/login',
     limitterMiddleware(),
-    validationMiddleware(placeSchema.placeLogin, 'body'),
+    validationMiddleware(baseSchema.loginControl, 'body'),
     placeController.placeLogin)
 
 router.post('/add/album',
@@ -30,7 +30,7 @@ router.post('/add/album',
 router.post('/add/category',
     authMiddleware,
     rolesMiddleware(['place']),
-    validationMiddleware(placeSchema.placeAddCategory, 'body'),
+    validationMiddleware(baseSchema.nameControl, 'body'),
     placeController.placeAddCategory)
 
 router.post('/add/schedule',
@@ -52,10 +52,10 @@ router.post('/add/punchcard',
     validationMiddleware(placeSchema.placeAddPunchcard, 'body'),
     placeController.placeAddPunchcard)
 
-router.post('/add/account/:id',
+router.post('/add/account',
     authMiddleware,
     rolesMiddleware(['admin']),
-    validationMiddleware(baseSchema.idControl, 'params'),
+    validationMiddleware(baseSchema.idControl, 'body'),
     placeController.placeAddAccount)
 
 // GET

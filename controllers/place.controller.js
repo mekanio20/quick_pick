@@ -83,7 +83,7 @@ class PlaceController {
     }
     async placeAddAccount(req, res) {
         try {
-            const data = await placeService.placeAddAccountService(req.params.id)
+            const data = await placeService.placeAddAccountService(req.body.id)
             return res.status(data.status).json(data)
         } catch (error) {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })

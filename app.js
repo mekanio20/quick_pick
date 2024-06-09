@@ -7,8 +7,8 @@ const fs = require('fs')
 
 require('dotenv').config()
 const app = express()
-const port = process.env.PORT || 5001
 const ip = 'localhost'
+const port = process.env.PORT || 5001
 
 require('./config/models')
 const database = require('./config/database')

@@ -1,54 +1,83 @@
-#### USER ####
-// POST
-1) http://31.44.2.32:5001/api/v1/user/register --- POST --- req.body { phone, email, username, fullname }
-2) http://31.44.2.32:5001/api/v1/user/verification --- POST --- req.body { code } --- req.header.Authorization: Bearer {token}
-3) http://31.44.2.32:5001/api/v1/user/login --- POST --- req.body { email }
-4) http://31.44.2.32:5001/api/v1/user/check --- POST --- req.body { code } --- req.header.Authorization: Bearer {token}
-5) http://31.44.2.32:5001/api/v1/user/add/basket --- POST --- req.body { mealId, count, extra_meals: [{ name: , price: }], meal_sizes: : [{ size: , price: }] } --- req.header.Authorization: Bearer {token}
-// PUT
-6) http://31.44.2.32:5001/api/v1/user/update/profile --- PUT --- req.body { phone, email, img, birthday, username, fullname } --- req.header.Authorization: Bearer {token}
-7) http://31.44.2.32:5001/api/v1/user/update/basket --- PUT --- req.body { mealId, count, extra_meals: [{ name: , price: }], meal_sizes: : [{ size: , price: }] } --- req.header.Authorization: Bearer {token}
+#### ADMIN ####
 // GET
-8) http://31.44.2.32:5001/api/v1/user/profile --- GET --- req.header.Authorization: Bearer {token}
-9) http://31.44.2.32:5001/api/v1/user/punchcards --- GET --- req.header.Authorization: Bearer {token}
-10) http://31.44.2.32:5001/api/v1/user/punchcard/:slug --- GET --- req.header.Authorization: Bearer {token}
-11) http://31.44.2.32:5001/api/v1/user/basket --- GET --- req.header.Authorization: Bearer {token}
-12) http://localhost:5001/api/v1/user/claim?punchcardId=1&placeId=1 --- GET --- req.header.Authorization: Bearer {token}
-// DELETE
-14) http://31.44.2.32:5001/api/v1/user/basket/:id -- DELETE --- req.header.Authorization: Bearer {token}
-
-#### PLACE ####
+1) http://31.44.2.32:5001/api/v1/admin/default --- GET --- req.header.Authorization: Bearer {token} --- DEFAULT CREATE
 // POST
-1) http://31.44.2.32:5001/api/v1/place/register --- POST --- req.body { name, type: ['Cafe', 'Bakery', 'Restaurant', 'Bar'], password, email, phone_primary, address, latitude, longitude }
-2) http://31.44.2.32:5001/api/v1/place/login --- POST --- req.body { email, password }
-3) http://31.44.2.32:5001/api/v1/place/add/album --- POST --- req.files { photo: { maxCount: 5 } } --- req.header.Authorization: Bearer {token}
-4) http://31.44.2.32:5001/api/v1/place/add/category --- POST --- req.body { name } --- req.header.Authorization: Bearer {token}
-5) http://31.44.2.32:5001/api/v1/place/add/schedule --- POST --- req.body { day: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], opent_time, close_time } --- req.header.Authorization: Bearer {token}
-6) http://31.44.2.32:5001/api/v1/place/add/meal --- POST --- req.body { name, desc, price, point, time, type: ['Meat', 'Vegan', 'Kosher', 'Vegetarian', 'Halal', 'Gluten Free'], recomendo, extra_meals[{name: ,price: }], meal_sizes[{size: , price: }], allergens[{name: }], paceCategoryId } --- req.header.Authorization: Bearer {token}
-7) http://31.44.2.32:5001/api/v1/place/add/punchcard --- POST --- req.body { name, point, mealId } --- req.file { icon } --- req.header.Authorization: Bearer {token}
-// GET
-8) http://31.44.2.32:5001/api/v1/place/categories/:slug --- GET --- req.params { slug }
-9) http://31.44.2.32:5001/api/v1/place/meals? --- GET --- req.query { caf -> cafeSlug, cat -> categorySlug, page, limit }
-10) http://31.44.2.32:5001/api/v1/place/meal/:slug --- GET --- req.params { slug }
-11) http://31.44.2.32:5001/api/v1/place/recommendations/:slug --- GET --- req.params { slug }
-12) http://31.44.2.32:5001/api/v1/place/profile --- GET --- req.header.Authorization: Bearer {token}
-13) http://31.44.2.32:5001/api/v1/place/logout --- GET --- req.header.Authorization: Bearer {token}
-14) http://31.44.2.32:5001/api/v1/place/albums/:slug --- GET --- req.params { slug }
-15) http://31.44.2.32:5001/api/v1/place/:slug --- GET --- req.params { slug }
+2) http://31.44.2.32:5001/api/v1/admin/login --- POST --- req.body { email, password } --- req.header.Authorization: Bearer {token}
+2) http://31.44.2.32:5001/api/v1/admin/add/category --- POST --- req.body { name } --- req.header.Authorization: Bearer {token}
 // PUT
-16) http://31.44.2.32:5001/api/v1/place/edit --- PUT --- req.body { name, email, type, desc, phone_primary, phone_secondary, address, latitude, longitude, website, zipcode, color, copacity, dine_in, tax, open_close, auto_accept } (optional) --- req.files { logo, banner, reward } --- req.header.Authorization: Bearer {token}
-17) http://31.44.2.32:5001/api/v1/place/edit/album --- PUT --- req.params { id } --- req.file { img } --- req.header.Authorization: Bearer {token}
-18) http://31.44.2.32:5001/api/v1/place/edit/schedule --- PUT --- req.body { id, day: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], opent_time, close_time } --- req.header.Authorization: Bearer {token}
-19) http://31.44.2.32:5001/api/v1/place/edit/category --- PUT --- req.body { id, name } --- req.header.Authorization: Bearer {token}
-20) http://31.44.2.32:5001/api/v1/place/edit/meal --- PUT --- req.body { id, name, desc, price, point, time, type: ['Meat', 'Vegan', 'Kosher', 'Vegetarian', 'Halal', 'Gluten Free'], recomendo, extra_meals[{name: ,price: }], meal_sizes[{size: , price: }], allergens[{ name: }], paceCategoryId } --- req.header.Authorization: Bearer {token}
-21) http://31.44.2.32:5001/api/v1/place/edit/punchcard --- PUT --- req.body { id, name, point, mealId } --- req.file { img } --- req.header.Authorization: Bearer {token}
+3) http://31.44.2.32:5001/api/v1/admin/edit/status --- POST --- req.body { id, isActive } --- req.header.Authorization: Bearer {token}
 // DELETE
-22) http://31.44.2.32:5001/api/v1/place/delete/album/:id --- DELETE --- req.params { id } --- req.header.Authorization: Bearer {token}
-23) http://31.44.2.32:5001/api/v1/place/delete/schedule/:id --- DELETE --- req.params { id } --- req.header.Authorization: Bearer {token}
-24) http://31.44.2.32:5001/api/v1/place/delete/meal/:id --- DELETE --- req.params { id } --- req.header.Authorization: Bearer {token}
-25) http://31.44.2.32:5001/api/v1/place/delete/punchcard/:id --- DELETE --- req.params { id } --- req.header.Authorization: Bearer {token}
+4) http://31.44.2.32:5001/api/v1/admin/delete/category/:id --- POST --- req.body { id, isActive } --- req.header.Authorization: Bearer {token}
 
-### HOME ###
-1) http://31.44.2.32:5001/api/v1/home/main? --- GET --- req.query { cat: "categoryId", type: {'Meat', 'Vegan', 'Kosher', 'Vegetarian', 'Halal', 'Gluten Free'} startPrice, endPrice }
+#### HOME ####
+// GET
+1) http://31.44.2.32:5001/api/v1/home/main --- GET --- req.query { cat: "categoryId", type: {'Meat', 'Vegan', 'Kosher', 'Vegetarian', 'Halal', 'Gluten Free'} startPrice, endPrice }
 2) http://31.44.2.32:5001/api/v1/home/categories --- GET
 3) http://31.44.2.32:5001/api/v1/home/search?q= --- GET
+
+#### PLACE ####
+// GET
+1) http://31.44.2.32:5001/api/v1/place/categories/:slug --- GET --- req.params { slug: "cafeSlug" }
+2) http://31.44.2.32:5001/api/v1/place/meals --- GET --- req.query { caf: "cafeSlug", cat: "categorySlug", page, limit }
+3) http://31.44.2.32:5001/api/v1/place/meal/:slug --- GET --- req.params { slug: "mealSlug }
+4) http://31.44.2.32:5001/api/v1/place/recommendations/:slug --- GET --- req.params { slug: "cafeSlug" }
+5) http://31.44.2.32:5001/api/v1/place/profile --- GET --- req.header.Authorization: Bearer {token}
+6) http://31.44.2.32:5001/api/v1/place/logout --- GET --- req.header.Authorization: Bearer {token}
+7) http://31.44.2.32:5001/api/v1/place/albums/:slug --- GET --- req.params { slug: "cafeSlug" }
+8) http://31.44.2.32:5001/api/v1/place/schedules --- GET --- req.header.Authorization: Bearer {token}
+9) http://31.44.2.32:5001/api/v1/place/punchcards --- GET --- req.header.Authorization: Bearer {token}
+10) http://31.44.2.32:5001/api/v1/place/home --- GET --- req.header.Authorization: Bearer {token}
+11) http://31.44.2.32:5001/api/v1/place/orders --- GET --- req.query { page, limit } --- req.header.Authorization: Bearer {token}
+12) http://31.44.2.32:5001/api/v1/place/order/finished --- GET --- req.query { page, limit } --- req.header.Authorization: Bearer {token}
+13) http://31.44.2.32:5001/api/v1/place/order/history --- GET --- req.query { page, limit } --- req.header.Authorization: Bearer {token}
+14) http://31.44.2.32:5001/api/v1/place/order/schedule --- GET --- req.query { page, limit } --- req.header.Authorization: Bearer {token}
+15) http://31.44.2.32:5001/api/v1/place/search/item?q= --- GET --- req.header.Authorization: Bearer {token}
+16) http://31.44.2.32:5001/api/v1/place/:slug --- GET --- req.params { slug: "cafeSlug" } --- req.query { lat: "user latitude", lon: "user longitude" }
+// POST
+17) http://31.44.2.32:5001/api/v1/place/register --- POST --- req.body { name, type: ['Cafe', 'Bakery', 'Restaurant', 'Bar'], password, email, phone_primary, address, latitude, longitude } --- req.header.Authorization: Bearer {token} - (ROLE ADMIN)
+18) http://31.44.2.32:5001/api/v1/place/login --- POST --- req.body { email, password }
+19) http://31.44.2.32:5001/api/v1/place/add/album --- POST --- req.files { photo: { maxCount: 5 } } --- req.header.Authorization: Bearer {token}
+20) http://31.44.2.32:5001/api/v1/place/add/category --- POST --- req.body { name } --- req.header.Authorization: Bearer {token}
+21) http://31.44.2.32:5001/api/v1/place/add/schedule --- POST --- req.body { day: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], opent_time, close_time } --- req.header.Authorization: Bearer {token}
+22) http://31.44.2.32:5001/api/v1/place/add/meal --- POST --- req.body { name, price, point, time, tax, recomendo, ingredients, type: ['Meat', 'Vegan', 'Kosher', 'Vegetarian', 'Halal', 'Gluten Free'], extra_meals[{name: ,price: }], meal_sizes[{size: , price: }], allergens[{name: }], paceCategoryId } --- req.header.Authorization: Bearer {token}
+23) http://31.44.2.32:5001/api/v1/place/add/punchcard --- POST --- req.body { name, point, mealId } --- req.header.Authorization: Bearer {token}
+24) http://31.44.2.32:5001/api/v1/place/add/account --- POST --- req.body { id: "cafeId" } --- req.header.Authorization: Bearer {token} -- (ROLE ADMIN)
+// PUT
+16) http://31.44.2.32:5001/api/v1/place/edit --- PUT --- req.body { name, email, type, desc, phone_primary, phone_secondary, address, latitude, longitude, website, zipcode, color, copacity, dine_in, tax, open_close, auto_accept } (optional) --- req.files { logo, banner, reward } --- req.header.Authorization: Bearer {token}
+17) http://31.44.2.32:5001/api/v1/place/edit/album/:id --- PUT --- req.params { id: "cafeId" } --- req.file { img } --- req.header.Authorization: Bearer {token}
+18) http://31.44.2.32:5001/api/v1/place/edit/schedule --- PUT --- req.body { id, day: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], opent_time, close_time } --- req.header.Authorization: Bearer {token}
+19) http://31.44.2.32:5001/api/v1/place/edit/category --- PUT --- req.body { id, name } --- req.header.Authorization: Bearer {token}
+20) http://31.44.2.32:5001/api/v1/place/edit/meal --- PUT --- req.body { id, name, recomendo, ingredients, price, point, time, type: ['Meat', 'Vegan', 'Kosher', 'Vegetarian', 'Halal', 'Gluten Free'], extra_meals[{name: ,price: }], meal_sizes[{size: , price: }], allergens[{ name: }], paceCategoryId } --- req.header.Authorization: Bearer {token}
+20) http://31.44.2.32:5001/api/v1/place/edit/meal/image/:id --- PUT --- req.params { id: "cafeId" } --- req.header.Authorization: Bearer {token}
+21) http://31.44.2.32:5001/api/v1/place/edit/punchcard --- PUT --- req.body { id, name, point, mealId } --- req.file { img } --- req.header.Authorization: Bearer {token}
+22) http://31.44.2.32:5001/api/v1/place/edit/status/:id --- PUT --- req.params { id: "orderId" } --- req.header.Authorization: Bearer {token}
+// DELETE
+23) http://31.44.2.32:5001/api/v1/place/delete/album/:id --- DELETE --- req.params { id: "cafeId" } --- req.header.Authorization: Bearer {token}
+24) http://31.44.2.32:5001/api/v1/place/delete/schedule/:id --- DELETE --- req.params { id: "cafeId" } --- req.header.Authorization: Bearer {token}
+25) http://31.44.2.32:5001/api/v1/place/delete/meal/:id --- DELETE --- req.params { id: "mealId" } --- req.header.Authorization: Bearer {token}
+26) http://31.44.2.32:5001/api/v1/place/delete/punchcard/:id --- DELETE --- req.params { id: "punchcardId" } --- req.header.Authorization: Bearer {token}
+27) http://31.44.2.32:5001/api/v1/place/delete/category/:id --- DELETE --- req.params { id: "categoryId" } --- req.header.Authorization: Bearer {token}
+28) http://31.44.2.32:5001/api/v1/place/delete/account/:id --- DELETE --- req.params { id: "accountId - (stripe)" } --- req.header.Authorization: Bearer {token} --- (ROLE ADMIN)
+
+#### USER ####
+// GET
+1) http://31.44.2.32:5001/api/v1/user/profile --- GET --- req.header.Authorization: Bearer {token}
+2) http://31.44.2.32:5001/api/v1/user/punchcards --- GET --- req.header.Authorization: Bearer {token}
+3) http://31.44.2.32:5001/api/v1/user/punchcard/:slug --- GET --- req.params { slug: "cafeSlug" } --- req.header.Authorization: Bearer {token}
+4) http://31.44.2.32:5001/api/v1/user/basket --- GET --- req.query { lat: "user latitude", lon: "user longitude" } --- req.header.Authorization: Bearer {token}
+5) http://31.44.2.32:5001/api/v1/user/order --- GET --- req.header.Authorization: Bearer {token}
+6) http://31.44.2.32:5001/api/v1/user/order/detail/:id --- GET --- req.params { id: "orderId" } --- req.header.Authorization: Bearer {token}
+7) http://31.44.2.32:5001/api/v1/user/order/history --- GET --- req.header.Authorization: Bearer {token}
+8) http://localhost:5001/api/v1/user/claim --- GET --- req.query { punchcardId, placeId }--- req.header.Authorization: Bearer {token}
+// POST
+9) http://31.44.2.32:5001/api/v1/user/register --- POST --- req.body { email, fullname, username, phone }
+10) http://31.44.2.32:5001/api/v1/user/verification --- POST --- req.body { code } --- req.header.Authorization: Bearer {token}
+11) http://31.44.2.32:5001/api/v1/user/login --- POST --- req.body { email }
+12) http://31.44.2.32:5001/api/v1/user/check --- POST --- req.body { code } --- req.header.Authorization: Bearer {token}
+13) http://31.44.2.32:5001/api/v1/user/add/basket --- POST --- req.body { mealId, count, extra_meals: [{ name: , price: }], meal_sizes: : [{ size: , price: }] } --- req.header.Authorization: Bearer {token}
+14) http://31.44.2.32:5001/api/v1/user/add/payment --- POST --- req.body { token - (stripe token), type - ('Dine-in', 'Pick-up'), tip, note, schedule } --- req.header.Authorization: Bearer {token}
+// PUT
+15) http://31.44.2.32:5001/api/v1/user/update/profile --- PUT --- req.body { phone, email, birthday, username, fullname } --- req.file { img } --- req.header.Authorization: Bearer {token}
+16) http://31.44.2.32:5001/api/v1/user/update/basket --- PUT --- req.body { id, count, extra_meals: [{ name: , price: }], meal_sizes: : [{ size: , price: }] } --- req.header.Authorization: Bearer {token}
+// DELETE
+17) http://31.44.2.32:5001/api/v1/user/basket/:id -- DELETE --- req.params { id: "basketId" } --- req.header.Authorization: Bearer {token}

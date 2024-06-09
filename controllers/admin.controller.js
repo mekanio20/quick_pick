@@ -1,10 +1,27 @@
 const baseService = require('../services/base.service')
+const Functions = require('../helpers/functions.service')
+const Response = require('../helpers/response.service')
 const Models = require('../config/models')
 const bcrypt = require('bcrypt')
 const uuid = require('uuid')
 
 class AdminController {
     // POST
+    async loginAdmin(req, res) {
+        try {
+            const admin = await Models.Users.findOne({ where: { email: body.email } })
+            if (!admin) { return Response.NotFound('No information found!', []) }
+            const hash = await bcrypt.compare(body.password, admin.password)
+            if (!hash) { return Response.Forbidden('Password is incorrect!', []) }
+            admin.isActive = true
+            await admin.save()
+            const token = await Functions.generateJwt({ id: admin.id, role: "admin" })
+            const data = await Response.Success('Successful!', token)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
     async addCategory(req, res) {
         try {
             const data = await new baseService(Models.Categories).addService(req.body)
