@@ -98,7 +98,11 @@ const placeSchema = {
         name: Joi.string().max(255).optional(),
         point: Joi.number().positive().optional(),
         mealId: Joi.number().positive().optional()
-    })
+    }),
+    placeDistance: Joi.object({
+        lat: Joi.number().positive().optional(),
+        lon: Joi.number().positive().optional()
+    }),
 }
 
 module.exports = placeSchema

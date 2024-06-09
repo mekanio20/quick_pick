@@ -214,7 +214,7 @@ class PlaceController {
     }
     async fetchPlace(req, res) {
         try {
-            const data = await placeService.fetchPlaceService(req.params.slug)
+            const data = await placeService.fetchPlaceService(req.params.slug, req.query)
             return res.status(data.status).json(data)
         } catch (error) {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
