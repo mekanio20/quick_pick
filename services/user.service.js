@@ -28,6 +28,7 @@ class UserService {
         uuid: uuid.v4(),
         roleId: 2
       }
+      console.log(customer, code)
       const token = await Functions.generateJwt(customer, '3m')
       let transporter = nodemailer.createTransport({
         service: 'gmail',
@@ -55,8 +56,10 @@ class UserService {
     try {
       const systemcode = await redis.get(user.email)
       if (String(code) !== systemcode) { return Response.BadRequest('The verification code is invalid', []) }
+      console.log(systemcode)
       const customer = await Models.Users.create(user)
         .catch((err) => { console.log(err) })
+      console.log(JSON.stringify(customer, null, 2))
       if (!customer) { return Response.BadRequest('An unknown error occurred!', []) }
       const token = await Functions.generateJwt({ id: customer.id, role: "user" })
         .catch((err) => { console.log(err) })
@@ -72,6 +75,7 @@ class UserService {
       const code = (100000 + Math.floor(Math.random() * 100000)).toString()
       await redis.set(user.email, code)
       await redis.expire(user.email, 300)
+      console.log(JSON.stringify(user, null, 2))
       const otp_token = await Functions.generateJwt({email: user.email}, '3m')
       let transporter = nodemailer.createTransport({
         service: 'gmail',
@@ -103,6 +107,7 @@ class UserService {
       if (!customer) { return Response.BadRequest('An unknown error occurred!', []) }
       customer.isActive = true
       await customer.save()
+      console.log(JSON.stringify(customer, null, 2))
       const token = await Functions.generateJwt({ id: customer.id, role: "user" })
         .catch((err) => { console.log(err) })
       return Response.Success('User logged in!', [{ token }])
