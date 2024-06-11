@@ -52,6 +52,12 @@ router.post('/add/punchcard',
     validationMiddleware(placeSchema.placeAddPunchcard, 'body'),
     placeController.placeAddPunchcard)
 
+router.post('/add/promocode',
+    authMiddleware,
+    rolesMiddleware(['place']),
+    validationMiddleware(placeSchema.placeAddPromocode, 'body'),
+    placeController.placeAddPromocode)
+
 router.post('/add/account',
     authMiddleware,
     rolesMiddleware(['admin']),

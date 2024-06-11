@@ -81,6 +81,17 @@ class PlaceController {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
         }
     }
+    async placeAddPromocode(req, res) {
+        try {
+            const body = req.body
+            body.placeId = req.user.id
+            const isExist = { placeId: body.placeId }
+            const data = await new baseService(Models.Promotions).addService(isExist, body)
+            return res.status(data.status).json(data)
+        } catch (error) {
+            return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
+        }
+    }
     async placeAddAccount(req, res) {
         try {
             const data = await placeService.placeAddAccountService(req.body.id)

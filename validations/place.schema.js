@@ -96,6 +96,11 @@ const placeSchema = {
         lat: Joi.number().positive().optional(),
         lon: Joi.number().positive().optional()
     }),
+    placeAddPromocode: Joi.object({
+        code: Joi.string().max(50).required(),
+        limit: Joi.number().positive().required(),
+        percentage: Joi.number().positive().required()
+    }),
 }
 
 module.exports = placeSchema

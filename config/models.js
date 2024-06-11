@@ -252,7 +252,7 @@ OrderItems.belongsTo(Orders)
 
 // OrderItems -> MealId
 
-Meals.hasMany(OrderItems)
+Meals.hasMany(OrderItems, { onDelete: "cascade" })
 OrderItems.belongsTo(Meals)
 
 // Punchcards -> PlaceId
@@ -282,7 +282,7 @@ Baskets.belongsTo(Users)
 
 // Baskets -> MealId
 
-Meals.hasMany(Baskets)
+Meals.hasMany(Baskets, { onDelete: "cascade" })
 Baskets.belongsTo(Meals)
 
 module.exports = {
