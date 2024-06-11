@@ -128,7 +128,7 @@ class UserService {
           }
         }
       }).catch((err) => console.log(err))
-      const place = await Models.Meals.findOne({
+      const meal = await Models.Meals.findOne({
         where: { id: body.mealId, isActive: true },
         attributes: ['id', 'name', 'point', 'extra_meals', 'meal_sizes'],
           include: {
@@ -143,11 +143,10 @@ class UserService {
             }
         }
       }).catch((err) => console.log(err))
-      if (!place) { return Response.BadRequest('Meal not found!', []) }
-      console.log(JSON.stringify(place, null, 2))
+      if (!meal) { return Response.BadRequest('Meal not found!', []) }
       if (body?.extra_meals?.length > 0) {
         let found = await body.extra_meals.every(bItem => {
-          return place?.extra_meals?.some(aItem => {
+          return meal?.extra_meals?.some(aItem => {
             return aItem.name === bItem.name && aItem.price === bItem.price
           })
         })
@@ -155,19 +154,42 @@ class UserService {
       }
       if (body?.meal_sizes?.length > 0) {
         let found = await body.meal_sizes.every(bItem => {
-          return place?.meal_sizes?.some(aItem => {
+          return meal?.meal_sizes?.some(aItem => {
               return aItem.size === bItem.size && aItem.price === bItem.price
           })
         })
         if (found == false) { return Response.BadRequest('There is no such meal size', []) }
       }
       if (basket.length > 0) {
-        let _place = place?.place_category?.placeId
+        let _place = meal?.place_category?.placeId
         let _bool = await basket.some(item => item?.meal?.place_category?.placeId === _place)
         if (!_bool) return Response.BadRequest('Please empty your cart first!', [])
       }
+      let _extra_meals = JSON.stringify(body?.extra_meals) || null
+      let _meal_sizes = JSON.stringify(body?.meal_sizes) || null
+      let len = await basket.length
+      let temp_e_meal = null
+      let temp_s_meal = null
+      let count = 0
+      let point = 0
+      for (let i = 0; i < len; i++) {
+        temp_e_meal = await basket[i].extra_meals ? JSON.stringify(basket[i].extra_meals) : null
+        temp_s_meal = await basket[i].meal_sizes ? JSON.stringify(basket[i].meal_sizes) : null
+        console.log(typeof _meal_sizes, typeof temp_s_meal)
+        console.log('Extra meals --> ', _extra_meals === temp_e_meal)
+        console.log('Meal sizes --> ', _meal_sizes === temp_s_meal)
+        if (basket[i].mealId == body.mealId &&
+            temp_e_meal == _extra_meals &&
+            temp_s_meal == _meal_sizes) {
+              count = await basket[i].count + body?.count || 1
+              point = await meal.point * count
+              await Models.Baskets.update({ count: count, score: point }, { where: { id: basket[i].id } })
+                .catch((err) => console.log(err))
+              return Response.Success('Update successfully!', [])
+        }
+      }
       body.userId = userId
-      body.score = place.point
+      body.score = await meal.point * body?.count || 1
       const basket_create = await Models.Baskets.create(body)
       if (!basket_create) { return Response.BadRequest('Error occurred!', []) }
       return Response.Created('Created successfully!', [])
@@ -508,8 +530,8 @@ class UserService {
         item.dataValues.stepPrice = Number(stepPrice.toFixed(2))
         data.baskets.push(item)
         totalPrice += Number(stepPrice.toFixed(2))
-        totalPoint += Number(item.meal.point)
-        totalTax += Number(item.meal.tax)
+        totalTax += Number(item.meal.tax) * Number(item.count)
+        totalPoint += Number(item.score)
         stepPrice = 0
       })
       if (data.baskets.length === 0) { return Response.NotFound('No information found!', {}) }
