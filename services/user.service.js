@@ -195,6 +195,10 @@ class UserService {
      if (baskets.length == 0) return Response.BadRequest('There are no items in your cart!', [])
      const placeId = await baskets[0].meal.place_category.placeId
 
+     const isOpen = await Models.Places.findOne({ where: { id: placeId }, attributes: ['dine_in', 'open_close'] })
+     if (isOpen.open_close == false) { return Response.BadRequest('Vendor location is closed!', []) }
+     if (isOpen.dine_in == false) { return Response.BadRequest('Your need to pick up!', []) }
+
      const orders = await Models.Orders.count({
       where: {
         userId: userId,
@@ -390,7 +394,7 @@ class UserService {
         const existingPlace = result.find(place => place.id === item.place.id)
         if (!existingPlace) {
           result.push({
-            id: item.place.id,
+            placeId: item.place.id,
             score: Number(item.dataValues.totalScore),
             name: item.place.name,
             slug: item.place.slug,
@@ -519,8 +523,8 @@ class UserService {
       
       let distance = { metres: 0, minutes: 0 }
       let place = basket_payment.rows[0]?.meal?.place_category?.place || basket_punchcard.rows[0]?.meal?.place_category?.place
-      distance.metres = Number((await Functions.haversineDistance(query.lat, query.lon, place?.latitude, place?.longitude)).toFixed(2))
-      distance.minutes = Number((await Functions.walkingTime(distance.metres)).toFixed(2))
+      distance.metres = Math.abs(Number((await Functions.haversineDistance(query.lat, query.lon, place?.latitude, place?.longitude)).toFixed(2)))
+      distance.minutes = Math.abs(Number((await Functions.walkingTime(distance.metres)).toFixed(2)))
       data.distance = distance
 
       return Response.Success('Successful!', data)

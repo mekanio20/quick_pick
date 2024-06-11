@@ -505,8 +505,8 @@ class PlaceService {
       else result.push({ prices: prices[0] })
 
       let distance = { metres: 0, minutes: 0 }
-      distance.metres = Number((await Functions.haversineDistance(query.lat, query.lon, place.latitude, place.longitude)).toFixed(2))
-      distance.minutes = Number((await Functions.walkingTime(distance.metres)).toFixed(2))
+      distance.metres = Math.abs(Number((await Functions.haversineDistance(query.lat, query.lon, place.latitude, place.longitude)).toFixed(2)))
+      distance.minutes = Math.abs(Number((await Functions.walkingTime(distance.metres)).toFixed(2)))
       result.push({ distance: distance })
 
       return Response.Success('Successful!', result)
