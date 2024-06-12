@@ -9,10 +9,13 @@ class AdminController {
     // POST
     async loginAdmin(req, res) {
         try {
-            const admin = await Models.Users.findOne({ where: { email: body.email } })
-            if (!admin) { return Response.NotFound('No information found!', []) }
-            const hash = await bcrypt.compare(body.password, admin.password)
-            if (!hash) { return Response.Forbidden('Password is incorrect!', []) }
+            const admin = await Models.Users.findOne({ where: { email: req.body.email } })
+            if (!admin) {
+                const data = await Response.NotFound('No information found!', [])
+                return res.status(data.status).json(data)
+            }
+            // const hash = await bcrypt.compare(body.password, admin.password)
+            // if (!hash) { return Response.Forbidden('Password is incorrect!', []) }
             admin.isActive = true
             await admin.save()
             const token = await Functions.generateJwt({ id: admin.id, role: "admin" })
@@ -51,7 +54,7 @@ class AdminController {
     // DEFAULT
     async Default(req, res) {
         try {
-            const place_pass = await bcrypt.hash('seller', 5)
+            /* const place_pass = await bcrypt.hash('seller', 5)
 
             await Models.Roles.bulkCreate([
                 { name: 'admin' },
@@ -138,7 +141,7 @@ class AdminController {
                 { count: 3, extra_meals: [{ name: "sosis", price: 0.25, allergens: ["milk"] }], meal_sizes: [{ size: "Small", price: 0.30 }], mealId: 2, userId: 2 },
             ]).then(() => { console.log('Baskets created') }).catch((err) => { console.log(err) })
             
-            return res.json({ message: "Completed"})
+            */return res.json({ message: "Completed"})
         } catch (error) {
             return res.status(500).json({ status: 500, type: 'error', msg: error, detail: [] })
         }

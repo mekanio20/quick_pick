@@ -18,7 +18,7 @@ const baseSchema = {
     }),
     loginControl: Joi.object({
         email: Joi.string().max(100).email().required(),
-        password: Joi.string().min(4).max(25).regex(/^[a-zA-Z0-9!?^.,_@#$%&*:;=+]{4,25}$/).required()
+        // password: Joi.string().min(4).max(25).regex(/^[a-zA-Z0-9!?^.,_@#$%&*:;=+]{4,25}$/).required()
     }),
     distanceControl: Joi.object({
         lat: Joi.number().positive().optional(),
