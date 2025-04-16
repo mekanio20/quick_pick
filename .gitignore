@@ -1,7 +1,11 @@
 .env
-public/*
+public/foods
+public/img
+public/places
+public/punchcards
+public/users
 node_modules/
 access.log
 *.log
-yarn.lock
-test
+test*
+.DS_Store
